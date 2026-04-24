@@ -37,7 +37,7 @@ export default async function Page() {
 
       <div className="p-3">
         <div className="text-xs text-gray-400">
-          {p.category?.name}
+          {p.category?.[0]?.name}
         </div>
 
         <div className="text-sm font-medium">
