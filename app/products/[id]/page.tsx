@@ -17,18 +17,27 @@ export default async function ProductPage({
     .eq("id", id)
     .single()
 
-console.log("data =", data)
-    console.log("images =", data?.images)
-    console.log("DATA FULL =", JSON.stringify(data))
+  // ===== DEBUG LOG（看终端，不是浏览器）=====
+  console.log("==== PRODUCT DEBUG START ====")
+  console.log("product id =", id)
+  console.log("data =", data)
+  console.log("images raw =", data?.images)
+  console.log("==== PRODUCT DEBUG END ====")
 
   if (!data) {
     return <div className="p-10">Not found</div>
   }
-  
-  // 👉 排序（核心）
+
+  // 👉 排序（即使为空也安全）
   const images = (data.images || []).sort(
-    (a:any, b:any) => a.sort_order - b.sort_order
+    (a: any, b: any) => a.sort_order - b.sort_order
   )
+
+  // 👉 主图兜底（关键修复点）
+  const mainImage =
+    images.length > 0
+      ? images[0].image_url
+      : data.image_url
 
   return (
     <div className="max-w-6xl mx-auto p-8 grid md:grid-cols-2 gap-10">
@@ -36,24 +45,26 @@ console.log("data =", data)
       {/* 左侧：主图 + 缩略图 */}
       <div>
 
-        {/* 主图（默认第一张） */}
+        {/* 主图 */}
         <div className="bg-gray-100 rounded-xl flex items-center justify-center p-6">
           <img
-            src={images[0]?.image_url}
+            src={mainImage}
             className="max-h-[400px] object-contain"
           />
         </div>
 
-        {/* 缩略图列表 */}
-        <div className="flex gap-3 mt-4 flex-wrap">
-          {images.map((img:any) => (
-            <img
-              key={img.image_url}
-              src={img.image_url}
-              className="w-16 h-16 object-contain border rounded-md"
-            />
-          ))}
-        </div>
+        {/* 缩略图（只有有数据才显示） */}
+        {images.length > 0 && (
+          <div className="flex gap-3 mt-4 flex-wrap">
+            {images.map((img: any) => (
+              <img
+                key={img.image_url}
+                src={img.image_url}
+                className="w-16 h-16 object-contain border rounded-md"
+              />
+            ))}
+          </div>
+        )}
 
       </div>
 
