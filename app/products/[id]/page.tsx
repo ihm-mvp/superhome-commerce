@@ -21,6 +21,8 @@ export default async function ProductPage({
     return <div className="p-10">Not found</div>
   }
 
+console.log("images =", data.images)
+
   // 👉 排序（核心）
   const images = (data.images || []).sort(
     (a, b) => a.sort_order - b.sort_order
