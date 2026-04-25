@@ -8,14 +8,16 @@ export default async function Page() {
       id,
       sku_code,
       image_url,
-      category:categories(name)
+      categories (
+        name
+      )
     `)
 
-  // ===== 分组（核心）=====
+  // ===== 分组（稳定版）=====
   const grouped: Record<string, any[]> = {}
 
   products?.forEach((p: any) => {
-    const cat = p.category?.[0]?.name || 'Other'
+    const cat = p.categories?.name || 'Other'
 
     if (!grouped[cat]) {
       grouped[cat] = []
@@ -40,7 +42,7 @@ export default async function Page() {
         </p >
       </div>
 
-      {/* ===== CATEGORY NAV（快速入口）===== */}
+      {/* ===== CATEGORY NAV ===== */}
       <div className="flex flex-wrap gap-3">
         {categories.map((cat) => (
           <a
@@ -58,12 +60,10 @@ export default async function Page() {
         {categories.map((cat) => (
           <div key={cat} id={cat} className="space-y-4">
 
-            {/* 分类标题 */}
             <h2 className="text-xl font-semibold">
               {cat}
             </h2>
 
-            {/* 产品网格 */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
 
               {grouped[cat].map((p) => (
@@ -81,11 +81,9 @@ export default async function Page() {
                   </div>
 
                   <div className="p-3">
-
                     <div className="text-sm font-medium">
                       {p.sku_code}
                     </div>
-
                   </div>
 
                 </Link>
