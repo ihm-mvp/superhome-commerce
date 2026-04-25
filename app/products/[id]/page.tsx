@@ -29,11 +29,6 @@ export default async function ProductPage({
     (a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0)
   )
 
-  const mainImage =
-    sortedImages.length > 0
-      ? sortedImages[0].image_url
-      : product.image_url
-
   // ===== 外键 =====
   const { data: supplier } = await supabase
     .from("suppliers")
@@ -53,7 +48,7 @@ export default async function ProductPage({
     .select("*")
     .eq("product_id", id)
 
-  // ===== hiddenFields（核心）=====
+  // ===== hiddenFields =====
   const hiddenFields = {
     product: ["id", "image_url", "created_at", "category_id", "supplier_id", "level"],
     variant: ["id", "product_id", "price", "created_at"]
@@ -80,7 +75,7 @@ export default async function ProductPage({
       value: String(value),
     }))
 
-  // 👉 插入品牌 & 分类
+  // 插入品牌 / 分类
   if (supplier?.name) {
     displayFields.unshift({ label: "Brand", value: supplier.name })
   }
@@ -92,23 +87,9 @@ export default async function ProductPage({
   return (
     <div className="max-w-6xl mx-auto p-8 grid md:grid-cols-2 gap-10">
 
-      {/* 左：图片 */}
+      {/* 左：图片（唯一入口） */}
       <div>
-<div>
-  <ProductImages images={sortedImages} />
-</div>
-
-        {sortedImages.length > 1 && (
-          <div className="flex gap-3 mt-4 flex-wrap">
-            {sortedImages.map((img: any) => (
-              <img
-                key={img.image_url}
-                src={img.image_url}
-                className="w-16 h-16 object-contain border rounded-md"
-              />
-            ))}
-          </div>
-        )}
+        <ProductImages images={sortedImages} />
       </div>
 
       {/* 右：信息 */}
