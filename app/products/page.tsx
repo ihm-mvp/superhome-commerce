@@ -7,26 +7,51 @@ export default async function Page() {
     .select(`
       id,
       sku_code,
+      level,
       image_url,
       categories (
-        name
+        name,
+        display_name,
+        slug,
+        sort_order
       )
     `)
 
-  // ===== 分组（稳定版）=====
+  // ===== 分组 =====
   const grouped: Record<string, any[]> = {}
+  const categoryMeta: Record<string, any> = {}
 
   products?.forEach((p: any) => {
-    const cat = p.categories?.name || 'Other'
+    const cat = p.categories
 
-    if (!grouped[cat]) {
-      grouped[cat] = []
+    if (!cat) return
+
+    const key = cat.slug
+
+    if (!grouped[key]) {
+      grouped[key] = []
+      categoryMeta[key] = cat
     }
 
-    grouped[cat].push(p)
+    grouped[key].push(p)
   })
 
-  const categories = Object.keys(grouped)
+  // ===== 产品排序（level + sku）=====
+  const sortProducts = (arr: any[]) => {
+    return arr.sort((a, b) => {
+      const levelA = Number(a.level?.replace('L', '') || 99)
+      const levelB = Number(b.level?.replace('L', '') || 99)
+
+      if (levelA !== levelB) return levelA - levelB
+
+      return a.sku_code.localeCompare(b.sku_code)
+    })
+  }
+
+  // ===== 分类排序（sort_order）=====
+  const categories = Object.keys(grouped).sort((a, b) => {
+    return (categoryMeta[a].sort_order || 99) - (categoryMeta[b].sort_order || 99)
+  })
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-10 space-y-12">
@@ -38,61 +63,64 @@ export default async function Page() {
         </h1>
 
         <p className="text-gray-500 mt-2">
-          Curated furniture designed to fit real home layouts and complete your living spaces.
+          Curated furniture designed for real home layouts and complete your living spaces.
         </p >
       </div>
 
-      {/* ===== CATEGORY NAV ===== */}
-      <div className="flex flex-wrap gap-3">
-        {categories.map((cat) => (
-          <a
-            key={cat}
-            href= "px-4 py-2 text-sm border rounded-lg hover:bg-gray-100"
-          >
-            {cat}
-          </a >
-        ))}
-      </div>
-
-      {/* ===== CATEGORY SECTIONS ===== */}
+      {/* ===== CATEGORY PREVIEW ===== */}
       <div className="space-y-12">
 
-        {categories.map((cat) => (
-          <div key={cat} id={cat} className="space-y-4">
+        {categories.map((slug) => {
+          const meta = categoryMeta[slug]
+          const sorted = sortProducts(grouped[slug])
+          const preview = sorted.slice(0, 4) // 👈 每类只展示4个
 
-            <h2 className="text-xl font-semibold">
-              {cat}
-            </h2>
+          return (
+            <div key={slug} className="space-y-4">
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {/* 分类标题 */}
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-semibold">
+                  {meta.display_name}
+                </h2>
 
-              {grouped[cat].map((p) => (
                 <Link
-                  key={p.id}
-                  href={`/products/${p.id}`}
-                  className="block bg-white rounded-xl shadow-sm hover:shadow-md transition overflow-hidden"
+                  href={`/products/${meta.slug}`}
+                  className="text-sm text-gray-500"
                 >
-
-                  <div className="h-48 flex items-center justify-center bg-gray-100">
-                    <img
-                      src={p.image_url}
-                      className="max-h-full object-contain"
-                    />
-                  </div>
-
-                  <div className="p-3">
-                    <div className="text-sm font-medium">
-                      {p.sku_code}
-                    </div>
-                  </div>
-
+                  View all →
                 </Link>
-              ))}
+              </div>
+
+              {/* 产品预览 */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+
+                {preview.map((p) => (
+                  <Link
+                    key={p.id}
+                    href={`/products/${p.id}`}
+                    className="block bg-white rounded-xl shadow-sm hover:shadow-md transition overflow-hidden"
+                  >
+                    <div className="h-48 flex items-center justify-center bg-gray-100">
+                      <img
+                        src={p.image_url}
+                        className="max-h-full object-contain"
+                      />
+                    </div>
+
+                    <div className="p-3">
+                      <div className="text-sm font-medium">
+                        {p.sku_code}
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+
+              </div>
 
             </div>
-
-          </div>
-        ))}
+          )
+        })}
 
       </div>
     </div>
