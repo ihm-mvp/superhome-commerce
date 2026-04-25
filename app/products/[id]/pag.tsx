@@ -5,7 +5,7 @@ export default async function ProductPage({
 }: {
   params: { id: string }
 }) {
-  const id = params.id
+  const id = params.id   // ✅ 正确
 
   const { data: product } = await supabase
     .from("products")
@@ -47,13 +47,9 @@ export default async function ProductPage({
   return (
     <div className="max-w-6xl mx-auto p-8 grid md:grid-cols-2 gap-10">
 
-      {/* 左侧图片 */}
       <div>
         <div className="bg-gray-100 rounded-xl flex items-center justify-center p-6">
-          <img
-            src={mainImage}
-            className="max-h-[400px] object-contain"
-          />
+          < img src={mainImage} className="max-h-[400px] object-contain" />
         </div>
 
         {sortedImages.length > 1 && (
@@ -69,9 +65,7 @@ export default async function ProductPage({
         )}
       </div>
 
-      {/* 右侧信息 */}
       <div className="space-y-6">
-
         <div>
           <div className="text-sm text-gray-400 uppercase">
             {product.category?.[0]?.name}
@@ -101,14 +95,10 @@ export default async function ProductPage({
 
           <div className="space-y-2">
             {displayFields.map(([key, value]) => (
-              <div
-                key={key}
-                className="flex justify-between text-sm border-b pb-1"
-              >
+              <div key={key} className="flex justify-between text-sm border-b pb-1">
                 <span className="text-gray-500 capitalize">
                   {key.replace(/_/g, " ")}
                 </span>
-
                 <span className="text-gray-800 text-right max-w-[60%]">
                   {String(value)}
                 </span>
@@ -116,7 +106,6 @@ export default async function ProductPage({
             ))}
           </div>
         </div>
-
       </div>
 
     </div>
