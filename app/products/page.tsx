@@ -73,7 +73,8 @@ export default async function Page() {
             return (
               <a
                 key={slug}
-                href= "px-4 py-2 text-sm border rounded-lg hover:bg-gray-100 transition"
+                href={`#${slug}`} 
+                className= "px-4 py-2 text-sm border rounded-lg hover:bg-gray-100 transition"
               >
                 {meta.display_name}
               </a >
@@ -100,7 +101,7 @@ export default async function Page() {
                 </h2>
 
                 <Link
-                  href={`/products/${meta.slug}`}
+                  href={`/products/category/${meta.slug}`}
                   className="text-sm text-gray-500"
                 >
                   View all →

@@ -2,7 +2,7 @@ import { notFound } from "next/navigation"
 
 const layouts: any = {
   earlsbrook: {
-    name: "Lot 18 Earlsbrook Showhome",
+    name: "Lot 18 Earlsbrook",
     location: "Lincoln, Christchurch",
     beds: 4,
     baths: 2,
