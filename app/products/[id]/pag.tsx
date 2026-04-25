@@ -3,11 +3,10 @@ import { supabase } from "@/lib/supabase"
 export default async function ProductPage({
   params,
 }: {
-  params: Promise<{ id: string }>
+  params: { id: string }
 }) {
-  const { id } = await params
+  const id = params.id
 
-  // 产品
   const { data: product } = await supabase
     .from("products")
     .select(`
@@ -21,7 +20,6 @@ export default async function ProductPage({
     return <div className="p-10">Not found</div>
   }
 
-  // 图片
   const { data: images } = await supabase
     .from("product_images")
     .select("image_url, sort_order")
@@ -36,18 +34,15 @@ export default async function ProductPage({
       ? sortedImages[0].image_url
       : product.image_url
 
-  // ===== 字段过滤（关键）=====
-  const displayFields = Object.entries(product).filter(
-    ([key, value]) =>
-      ![
-        "id",
-        "image_url",
-        "created_at",
-        "category",
-      ].includes(key) &&
-      value !== null &&
-      value !== ""
-  )
+  const displayFields =
+    product && typeof product === "object"
+      ? Object.entries(product).filter(
+          ([key, value]) =>
+            !["id", "image_url", "created_at", "category"].includes(key) &&
+            value !== null &&
+            value !== ""
+        )
+      : []
 
   return (
     <div className="max-w-6xl mx-auto p-8 grid md:grid-cols-2 gap-10">
@@ -77,7 +72,6 @@ export default async function ProductPage({
       {/* 右侧信息 */}
       <div className="space-y-6">
 
-        {/* 标题区 */}
         <div>
           <div className="text-sm text-gray-400 uppercase">
             {product.category?.[0]?.name}
@@ -94,14 +88,12 @@ export default async function ProductPage({
           )}
         </div>
 
-        {/* 描述（保留原始） */}
         {product.description && (
           <div className="text-gray-600 whitespace-pre-line text-sm border-t pt-4">
             {product.description}
           </div>
         )}
 
-        {/* 字段列表（核心） */}
         <div className="border-t pt-4">
           <h2 className="text-sm font-semibold mb-3 text-gray-600">
             Product Details
