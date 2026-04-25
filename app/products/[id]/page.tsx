@@ -45,7 +45,7 @@ console.log("data =", data)
 
         {/* 缩略图列表 */}
         <div className="flex gap-3 mt-4 flex-wrap">
-          {images.map((img) => (
+          {images.map((img:any) => (
             <img
               key={img.image_url}
               src={img.image_url}
