@@ -1,5 +1,4 @@
 import { supabase } from "@/lib/supabase"
-import ProductImages from "@/components/ProductImages"
 
 export default async function ProductPage({
   params,
@@ -94,9 +93,9 @@ export default async function ProductPage({
 
       {/* 左：图片 */}
       <div>
-<div>
-  <ProductImages images={sortedImages} />
-</div>
+        <div className="bg-gray-100 rounded-xl flex items-center justify-center p-6">
+          < img src={mainImage} className="max-h-[400px] object-contain" />
+        </div>
 
         {sortedImages.length > 1 && (
           <div className="flex gap-3 mt-4 flex-wrap">
