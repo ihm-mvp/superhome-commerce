@@ -7,8 +7,8 @@ export default async function ProductPage({
 }) {
   const { id } = await params
 
-  // ✅ 1️⃣ 查询产品（不带 images）
-  const { data: product, error: productError } = await supabase
+  // ✅ 产品
+  const { data: product } = await supabase
     .from("products")
     .select(`
       *,
@@ -17,40 +17,36 @@ export default async function ProductPage({
     .eq("id", id)
     .single()
 
-  console.log("product =", product)
-  console.log("productError =", productError)
-
   if (!product) {
     return <div className="p-10">Not found</div>
   }
 
-  // ✅ 2️⃣ 查询图片（关键）
-  const { data: images, error: imageError } = await supabase
+  // ✅ 图片
+  const { data: images } = await supabase
     .from("product_images")
     .select("image_url, sort_order")
     .eq("product_id", id)
 
-  console.log("images =", images)
-  console.log("imageError =", imageError)
-
-  // ✅ 3️⃣ 排序（防御写法）
   const sortedImages = (images || []).sort(
     (a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0)
   )
 
-  // ✅ 4️⃣ 主图兜底（非常关键）
   const mainImage =
     sortedImages.length > 0
       ? sortedImages[0].image_url
       : product.image_url
+
+  // ✅ various（通用查法，不假设字段）
+  const { data: various } = await supabase
+    .from("various")
+    .select("*")
+    .eq("product_id", id)
 
   return (
     <div className="max-w-6xl mx-auto p-8 grid md:grid-cols-2 gap-10">
 
       {/* 左侧图片 */}
       <div>
-
-        {/* 主图 */}
         <div className="bg-gray-100 rounded-xl flex items-center justify-center p-6">
           <img
             src={mainImage}
@@ -58,7 +54,6 @@ export default async function ProductPage({
           />
         </div>
 
-        {/* 缩略图（有才显示） */}
         {sortedImages.length > 1 && (
           <div className="flex gap-3 mt-4 flex-wrap">
             {sortedImages.map((img: any) => (
@@ -70,26 +65,54 @@ export default async function ProductPage({
             ))}
           </div>
         )}
-
       </div>
 
       {/* 右侧信息 */}
-      <div className="space-y-4">
+      <div className="space-y-6">
 
-        <div className="text-sm text-gray-400 uppercase">
-          {product.category?.[0]?.name}
+        {/* 基础信息 */}
+        <div>
+          <div className="text-sm text-gray-400 uppercase">
+            {product.category?.[0]?.name}
+          </div>
+
+          <h1 className="text-2xl font-semibold">
+            {product.sku_code}
+          </h1>
         </div>
 
-        <h1 className="text-2xl font-semibold">
-          {product.sku_code}
-        </h1>
+        {/* 描述 */}
+        {product.description && (
+          <div className="text-gray-600 whitespace-pre-line text-sm">
+            {product.description}
+          </div>
+        )}
 
-        <div className="text-gray-500 text-sm whitespace-pre-line">
-          {product.description}
+        {/* ===== 产品所有字段（调试用，关键）===== */}
+        <div className="border-t pt-4">
+          <h2 className="text-sm font-semibold mb-2">
+            Product Raw Data
+          </h2>
+
+          <pre className="text-xs bg-gray-100 p-3 rounded overflow-auto">
+            {JSON.stringify(product, null, 2)}
+          </pre>
         </div>
+
+        {/* ===== various 表（如果有）===== */}
+        {various && various.length > 0 && (
+          <div className="border-t pt-4">
+            <h2 className="text-sm font-semibold mb-2">
+              Various Data
+            </h2>
+
+            <pre className="text-xs bg-gray-100 p-3 rounded overflow-auto">
+              {JSON.stringify(various, null, 2)}
+            </pre>
+          </div>
+        )}
 
       </div>
-
     </div>
   )
 }
