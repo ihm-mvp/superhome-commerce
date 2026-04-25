@@ -19,6 +19,7 @@ export default async function ProductPage({
 
 console.log("data =", data)
     console.log("images =", data?.images)
+    console.log("DATA FULL =", JSON.stringify(data))
 
   if (!data) {
     return <div className="p-10">Not found</div>
