@@ -23,7 +23,6 @@ export default async function Page() {
 
   products?.forEach((p: any) => {
     const cat = p.categories
-
     if (!cat) return
 
     const key = cat.slug
@@ -65,6 +64,22 @@ export default async function Page() {
         <p className="text-gray-500 mt-2">
           Curated furniture designed for real home layouts and complete your living spaces.
         </p >
+
+        {/* ===== 分类导航（新增）===== */}
+        <div className="flex flex-wrap gap-3 mt-6">
+          {categories.map((slug) => {
+            const meta = categoryMeta[slug]
+
+            return (
+              <a
+                key={slug}
+                href= "px-4 py-2 text-sm border rounded-lg hover:bg-gray-100 transition"
+              >
+                {meta.display_name}
+              </a >
+            )
+          })}
+        </div>
       </div>
 
       {/* ===== CATEGORY PREVIEW ===== */}
@@ -73,10 +88,10 @@ export default async function Page() {
         {categories.map((slug) => {
           const meta = categoryMeta[slug]
           const sorted = sortProducts(grouped[slug])
-          const preview = sorted.slice(0, 4) // 👈 每类只展示4个
+          const preview = sorted.slice(0, 4)
 
           return (
-            <div key={slug} className="space-y-4">
+            <div key={slug} id={slug} className="space-y-4">
 
               {/* 分类标题 */}
               <div className="flex justify-between items-center">
