@@ -3,7 +3,7 @@ import Link from "next/link"
 const layouts = [
   {
     id: "earlsbrook",
-    name: "Lot 18 Earlsbrook Showhome",
+    name: "Lot 18 Earlsbrook",
     location: "Lincoln, Christchurch",
     beds: 4,
     baths: 2,
