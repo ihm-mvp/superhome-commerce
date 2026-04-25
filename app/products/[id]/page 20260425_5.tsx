@@ -33,7 +33,7 @@ export default async function ProductPage({
       ? sortedImages[0].image_url
       : product.image_url
 
-  // ===== 外键 =====
+  // ===== 外键：supplier / category =====
   const { data: supplier } = await supabase
     .from("suppliers")
     .select("name")
@@ -52,16 +52,11 @@ export default async function ProductPage({
     .select("*")
     .eq("product_id", id)
 
-  // ===== hiddenFields（核心）=====
-  const hiddenFields = {
-    product: ["id", "image_url", "created_at", "category_id", "supplier_id", "level"],
-    variant: ["id", "product_id", "price", "created_at"]
-  }
-
-  // ===== 字段映射 =====
+  // ===== 字段映射（核心策略）=====
   const fieldMap: Record<string, string> = {
     sku_code: "SKU",
     name: "Name",
+    level: "Level",
     usage_type: "Usage",
   }
 
@@ -70,22 +65,28 @@ export default async function ProductPage({
   const displayFields = Object.entries(safeProduct)
     .filter(
       ([key, value]) =>
-        !hiddenFields.product.includes(key) &&
+        fieldMap[key] &&
         value !== null &&
         value !== ""
     )
     .map(([key, value]) => ({
-      label: fieldMap[key] || key.replace(/_/g, " "),
+      label: fieldMap[key],
       value: String(value),
     }))
 
-  // 👉 插入品牌 & 分类
+  // 👉 手动补充“转译字段”
   if (supplier?.name) {
-    displayFields.unshift({ label: "Brand", value: supplier.name })
+    displayFields.unshift({
+      label: "Brand",
+      value: supplier.name,
+    })
   }
 
   if (category?.name) {
-    displayFields.unshift({ label: "Category", value: category.name })
+    displayFields.unshift({
+      label: "Category",
+      value: category.name,
+    })
   }
 
   return (
@@ -142,7 +143,9 @@ export default async function ProductPage({
           <div className="space-y-2">
             {displayFields.map((item, idx) => (
               <div key={idx} className="flex justify-between text-sm border-b pb-1">
-                <span className="text-gray-500">{item.label}</span>
+                <span className="text-gray-500">
+                  {item.label}
+                </span>
                 <span className="text-gray-800 text-right max-w-[60%]">
                   {item.value}
                 </span>
@@ -164,17 +167,21 @@ export default async function ProductPage({
                   key={v.id}
                   className="border p-3 rounded text-sm"
                 >
-                  {Object.entries(v as Record<string, any>).map(([k, val]) => (
-                    val &&
-                    !hiddenFields.variant.includes(k) && (
-                      <div key={k} className="flex justify-between">
-                        <span className="text-gray-400">
-                          {k.replace(/_/g, " ")}
-                        </span>
-                        <span>{String(val)}</span>
-                      </div>
-                    )
-                  ))}
+ {variants.map((v: any) => (
+  <div
+    key={v.id}
+    className="border p-3 rounded text-sm"
+  >
+    {Object.entries(v as Record<string, any>).map(([k, val]) => (
+      val && k !== "product_id" && k !== "id" && (
+        <div key={k} className="flex justify-between">
+          <span className="text-gray-400">{k}</span>
+          <span>{String(val)}</span>
+        </div>
+      )
+    ))}
+  </div>
+))}
                 </div>
               ))}
             </div>
