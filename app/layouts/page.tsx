@@ -9,7 +9,7 @@ const layouts = [
     baths: 2,
     garage: 2,
     size: "500m² land",
-    image: "/layouts/Lot 18 Earlsbrook ELEVATION PLAN.jpg", // 👉 先放public目录占位图
+    image: "/layouts/earlsbrook-elevation.jpg", // 👉 先放public目录占位图
     tags: ["Family Living", "Office", "Open Plan"],
     description:
       "Spacious family home with open-plan kitchen, dining and living, plus a dedicated office space.",
@@ -22,7 +22,7 @@ const layouts = [
     baths: 2,
     garage: 2,
     size: "379m² land",
-    image: "/layouts/Lot 2 Hampton Grove ELEVATION PLAN.jpg",
+    image: "/layouts/hampton-elevation.jpg",
     tags: ["Designer Home", "Internal Garden", "Skylights"],
     description:
       "Architectural showhome featuring internal garden, skylights, and high-spec living spaces.",
