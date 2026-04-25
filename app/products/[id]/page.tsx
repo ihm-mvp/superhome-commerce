@@ -5,9 +5,8 @@ export default async function ProductPage({
 }: {
   params: Promise<{ id: string }>
 }) {
-  const { id } = await params
+  const { id } = await params   // ✅ 保持这个
 
-  // ✅ 产品
   const { data: product } = await supabase
     .from("products")
     .select(`
@@ -21,7 +20,6 @@ export default async function ProductPage({
     return <div className="p-10">Not found</div>
   }
 
-  // ✅ 图片
   const { data: images } = await supabase
     .from("product_images")
     .select("image_url, sort_order")
@@ -36,22 +34,22 @@ export default async function ProductPage({
       ? sortedImages[0].image_url
       : product.image_url
 
-  // ✅ various（通用查法，不假设字段）
-  const { data: various } = await supabase
-    .from("various")
-    .select("*")
-    .eq("product_id", id)
+  // ✅ 安全版本（不会炸）
+  const safeProduct = product as Record<string, any>
+
+  const displayFields = Object.entries(safeProduct).filter(
+    ([key, value]) =>
+      !["id", "image_url", "created_at", "category"].includes(key) &&
+      value !== null &&
+      value !== ""
+  )
 
   return (
     <div className="max-w-6xl mx-auto p-8 grid md:grid-cols-2 gap-10">
 
-      {/* 左侧图片 */}
       <div>
         <div className="bg-gray-100 rounded-xl flex items-center justify-center p-6">
-          <img
-            src={mainImage}
-            className="max-h-[400px] object-contain"
-          />
+          < img src={mainImage} className="max-h-[400px] object-contain" />
         </div>
 
         {sortedImages.length > 1 && (
@@ -67,52 +65,51 @@ export default async function ProductPage({
         )}
       </div>
 
-      {/* 右侧信息 */}
       <div className="space-y-6">
 
-        {/* 基础信息 */}
         <div>
           <div className="text-sm text-gray-400 uppercase">
             {product.category?.[0]?.name}
           </div>
 
-          <h1 className="text-2xl font-semibold">
+          <h1 className="text-3xl font-semibold mt-1">
             {product.sku_code}
           </h1>
+
+          {product.name && (
+            <div className="text-gray-500 text-sm mt-1">
+              {product.name}
+            </div>
+          )}
         </div>
 
-        {/* 描述 */}
         {product.description && (
-          <div className="text-gray-600 whitespace-pre-line text-sm">
+          <div className="text-gray-600 whitespace-pre-line text-sm border-t pt-4">
             {product.description}
           </div>
         )}
 
-        {/* ===== 产品所有字段（调试用，关键）===== */}
         <div className="border-t pt-4">
-          <h2 className="text-sm font-semibold mb-2">
-            Product Raw Data
+          <h2 className="text-sm font-semibold mb-3 text-gray-600">
+            Product Details
           </h2>
 
-          <pre className="text-xs bg-gray-100 p-3 rounded overflow-auto">
-            {JSON.stringify(product, null, 2)}
-          </pre>
+          <div className="space-y-2">
+            {displayFields.map(([key, value]) => (
+              <div key={key} className="flex justify-between text-sm border-b pb-1">
+                <span className="text-gray-500 capitalize">
+                  {key.replace(/_/g, " ")}
+                </span>
+                <span className="text-gray-800 text-right max-w-[60%]">
+                  {String(value)}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* ===== various 表（如果有）===== */}
-        {various && various.length > 0 && (
-          <div className="border-t pt-4">
-            <h2 className="text-sm font-semibold mb-2">
-              Various Data
-            </h2>
-
-            <pre className="text-xs bg-gray-100 p-3 rounded overflow-auto">
-              {JSON.stringify(various, null, 2)}
-            </pre>
-          </div>
-        )}
-
       </div>
+
     </div>
   )
 }
