@@ -62,7 +62,7 @@ export default function HomePage() {
         {/* Hero Image */}
         <div className="bg-gray-100 rounded-xl overflow-hidden">
           <img
-            src="/layouts/hampton-elevation.jpg"
+            src="/images/hero-image.png"
             className="w-full h-full object-cover"
           />
         </div>
