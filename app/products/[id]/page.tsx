@@ -7,42 +7,47 @@ export default async function ProductPage({
 }) {
   const { id } = await params
 
-  const { data } = await supabase
+  // ✅ 1️⃣ 查询产品（不带 images）
+  const { data: product, error: productError } = await supabase
     .from("products")
     .select(`
       *,
-      category:categories(name),
-      images:product_images(image_url, sort_order)
+      category:categories(name)
     `)
     .eq("id", id)
     .single()
 
-  // ===== DEBUG LOG（看终端，不是浏览器）=====
-  console.log("==== PRODUCT DEBUG START ====")
-  console.log("product id =", id)
-  console.log("data =", data)
-  console.log("images raw =", data?.images)
-  console.log("==== PRODUCT DEBUG END ====")
+  console.log("product =", product)
+  console.log("productError =", productError)
 
-  if (!data) {
+  if (!product) {
     return <div className="p-10">Not found</div>
   }
 
-  // 👉 排序（即使为空也安全）
-  const images = (data.images || []).sort(
-    (a: any, b: any) => a.sort_order - b.sort_order
+  // ✅ 2️⃣ 查询图片（关键）
+  const { data: images, error: imageError } = await supabase
+    .from("product_images")
+    .select("image_url, sort_order")
+    .eq("product_id", id)
+
+  console.log("images =", images)
+  console.log("imageError =", imageError)
+
+  // ✅ 3️⃣ 排序（防御写法）
+  const sortedImages = (images || []).sort(
+    (a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0)
   )
 
-  // 👉 主图兜底（关键修复点）
+  // ✅ 4️⃣ 主图兜底（非常关键）
   const mainImage =
-    images.length > 0
-      ? images[0].image_url
-      : data.image_url
+    sortedImages.length > 0
+      ? sortedImages[0].image_url
+      : product.image_url
 
   return (
     <div className="max-w-6xl mx-auto p-8 grid md:grid-cols-2 gap-10">
 
-      {/* 左侧：主图 + 缩略图 */}
+      {/* 左侧图片 */}
       <div>
 
         {/* 主图 */}
@@ -53,10 +58,10 @@ export default async function ProductPage({
           />
         </div>
 
-        {/* 缩略图（只有有数据才显示） */}
-        {images.length > 0 && (
+        {/* 缩略图（有才显示） */}
+        {sortedImages.length > 1 && (
           <div className="flex gap-3 mt-4 flex-wrap">
-            {images.map((img: any) => (
+            {sortedImages.map((img: any) => (
               <img
                 key={img.image_url}
                 src={img.image_url}
@@ -68,16 +73,20 @@ export default async function ProductPage({
 
       </div>
 
-      {/* 右侧：产品信息 */}
+      {/* 右侧信息 */}
       <div className="space-y-4">
 
         <div className="text-sm text-gray-400 uppercase">
-          {data.category?.[0]?.name}
+          {product.category?.[0]?.name}
         </div>
 
         <h1 className="text-2xl font-semibold">
-          {data.sku_code}
+          {product.sku_code}
         </h1>
+
+        <div className="text-gray-500 text-sm whitespace-pre-line">
+          {product.description}
+        </div>
 
       </div>
 
