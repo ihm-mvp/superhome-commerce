@@ -5,9 +5,9 @@ import { notFound } from "next/navigation"
 export default async function CategoryPage({
   params,
 }: {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }) {
-  const { slug } = params
+  const { slug } = await params  // ✅ 关键修复
 
   // ===== 找分类 =====
   const { data: category } = await supabase
@@ -16,9 +16,11 @@ export default async function CategoryPage({
     .eq("slug", slug)
     .single()
 
-  if (!category) return notFound()
+  if (!category) {
+    return notFound()
+  }
 
-  // ===== 查产品（用 category_id，最稳）=====
+  // ===== 查产品 =====
   const { data: products } = await supabase
     .from("products")
     .select("id, sku_code, level, image_url")
@@ -50,7 +52,10 @@ export default async function CategoryPage({
             className="block bg-white rounded-xl shadow-sm hover:shadow-md transition overflow-hidden"
           >
             <div className="h-48 flex items-center justify-center bg-gray-100">
-              < img src={p.image_url} className="max-h-full object-contain" />
+              <img
+                src={p.image_url}
+                className="max-h-full object-contain"
+              />
             </div>
 
             <div className="p-3">
@@ -62,6 +67,13 @@ export default async function CategoryPage({
         ))}
 
       </div>
+
+      {sortedProducts.length === 0 && (
+        <div className="text-gray-400 text-sm">
+          No products found in this category.
+        </div>
+      )}
+
     </div>
   )
 }
