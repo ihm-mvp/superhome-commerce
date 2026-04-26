@@ -1,79 +1,32 @@
+import { supabase } from "@/lib/supabase"
 import { notFound } from "next/navigation"
-
-const layouts: any = {
-  earlsbrook: {
-    name: "Lot 18 Earlsbrook",
-    location: "Lincoln, Christchurch",
-    beds: 4,
-    baths: 2,
-    garage: 2,
-    size: "500m² land",
-
-    elevation: "/layouts/earlsbrook-elevation.jpg",
-    floor: "/layouts/earlsbrook-floor.jpg",
-
-    video: "", // 👉 后面可放你建e全景链接
-
-    features: [
-      "Open-plan kitchen, dining & living",
-      "Dedicated office space",
-      "Walk-in wardrobe & ensuite",
-      "Double garage",
-      "Attic storage ladder",
-    ],
-
-    description:
-      "A spacious family home designed for modern living, combining open-plan comfort with practical private spaces.",
-
-    downloads: [
-      { name: "Building Consent (BC)", url: "#" },
-      { name: "Floor Plan PDF", url: "#" },
-      { name: "DWG File", url: "#" },
-    ],
-  },
-
-  hampton: {
-    name: "Lot 2 Hampton Grove",
-    location: "Prebbleton, Christchurch",
-    beds: 4,
-    baths: 2,
-    garage: 2,
-    size: "379m² land",
-
-    elevation: "/layouts/hampton-elevation.jpg",
-    floor: "/layouts/hampton-floor.jpg",
-
-    video: "",
-
-    features: [
-      "Architectural internal garden",
-      "Skylights throughout living areas",
-      "Hydronic underfloor heating",
-      "Double basin bathrooms",
-      "Designer open-plan living",
-    ],
-
-    description:
-      "A high-spec architectural home featuring internal garden and skylights, designed for premium lifestyle living.",
-
-    downloads: [
-      { name: "Building Consent (BC)", url: "#" },
-      { name: "Floor Plan PDF", url: "#" },
-      { name: "DWG File", url: "#" },
-    ],
-  },
-}
 
 export default async function LayoutDetail({
   params,
 }: {
-  params: Promise<{ id: string }>
+  params: Promise<{ slug: string }>
 }) {
-  const { id } = await params
+  const { slug } = await params
 
-  const layout = layouts[id]
+  // ===== 1️⃣ 获取 layout =====
+  const { data: layout, error } = await supabase
+    .from("layouts")
+    .select("*")
+    .eq("slug", slug)
+    .single()
 
-  if (!layout) return notFound()
+  if (error || !layout) {
+    return notFound()
+  }
+
+  // ===== 2️⃣ 获取文件（BC / PDF / DWG）=====
+  const { data: files } = await supabase
+    .from("layout_files")
+    .select("*")
+    .eq("layout_id", layout.id)
+
+  // 👉 分类文件（简单处理）
+  const downloads = files || []
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-10 space-y-10">
@@ -89,46 +42,50 @@ export default async function LayoutDetail({
         </div>
 
         <div className="mt-3 text-sm text-gray-600">
-          {layout.beds} Bed · {layout.baths} Bath · {layout.garage} Garage
+          {layout.bedrooms} Bed · {layout.bathrooms} Bath · {layout.garage} Garage
         </div>
       </div>
 
       {/* ===== Main Grid ===== */}
       <div className="grid md:grid-cols-2 gap-10">
 
-        {/* LEFT: Visual */}
+        {/* LEFT */}
         <div className="space-y-6">
 
           {/* Elevation */}
-          <div>
-            <div className="text-sm text-gray-400 mb-2">
-              Exterior
+          {layout.elevation_image && (
+            <div>
+              <div className="text-sm text-gray-400 mb-2">
+                Exterior
+              </div>
+              <img
+                src={layout.elevation_image}
+                className="rounded-xl border"
+              />
             </div>
-            <img
-              src={layout.elevation}
-              className="rounded-xl border"
-            />
-          </div>
+          )}
 
           {/* Floor Plan */}
-          <div>
-            <div className="text-sm text-gray-400 mb-2">
-              Floor Plan
+          {layout.floorplan_image && (
+            <div>
+              <div className="text-sm text-gray-400 mb-2">
+                Floor Plan
+              </div>
+              <img
+                src={layout.floorplan_image}
+                className="rounded-xl border"
+              />
             </div>
-            <img
-              src={layout.floor}
-              className="rounded-xl border"
-            />
-          </div>
+          )}
 
           {/* Video */}
-          {layout.video && (
+          {layout.video_url && (
             <div>
               <div className="text-sm text-gray-400 mb-2">
                 Walkthrough
               </div>
               <iframe
-                src={layout.video}
+                src={layout.video_url}
                 className="w-full h-64 rounded-xl"
               />
             </div>
@@ -136,28 +93,17 @@ export default async function LayoutDetail({
 
         </div>
 
-        {/* RIGHT: Info */}
+        {/* RIGHT */}
         <div className="space-y-6">
 
           {/* Description */}
-          <div className="text-gray-600">
-            {layout.description}
-          </div>
+          {layout.description && (
+            <div className="text-gray-600">
+              {layout.description}
+            </div>
+          )}
 
-          {/* Features */}
-          <div>
-            <h2 className="text-sm font-semibold mb-2">
-              Key Features
-            </h2>
-
-            <ul className="text-sm text-gray-600 space-y-1">
-              {layout.features.map((f: string) => (
-                <li key={f}>• {f}</li>
-              ))}
-            </ul>
-          </div>
-
-          {/* ===== Packages（核心）===== */}
+          {/* ===== Packages（占位，后面接数据库）===== */}
           <div className="border-t pt-4">
             <h2 className="text-sm font-semibold mb-3">
               Furniture Packages
@@ -192,26 +138,29 @@ export default async function LayoutDetail({
             </div>
           </div>
 
-          {/* ===== Downloads ===== */}
- <div className="border-t pt-4">
-            <h2 className="text-sm font-semibold mb-3">
-              Documents
-            </h2>
+          {/* ===== Documents ===== */}
+          {downloads.length > 0 && (
+            <div className="border-t pt-4">
+              <h2 className="text-sm font-semibold mb-3">
+                Documents
+              </h2>
 
-            <div className="space-y-2">
-              {layout.downloads.map((doc: any) => (
-                <a
-                  key={doc.name}
-                  href= "block text-sm text-gray-600 hover:underline"
-                >
-                  {doc.name}
-                </a >
-              ))}
+              <div className="space-y-2">
+                {downloads.map((doc: any) => (
+                  <a
+                    key={doc.id}
+                    href= "_blank"
+                    className="block text-sm text-gray-600 hover:underline"
+                  >
+                    {doc.name}
+                  </a >
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
         </div>
       </div>
     </div>
   )
-} 
+}
