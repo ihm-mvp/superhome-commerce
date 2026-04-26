@@ -2,21 +2,29 @@ import { supabase } from "@/lib/supabase"
 import Link from "next/link"
 
 export default async function LayoutsPage() {
-  const { data: layouts } = await supabase
+  const { data: layouts, error } = await supabase
     .from("layouts")
-    .select(`
-      id,
-      name,
-      slug,
-      location,
-      bedrooms,
-      bathrooms,
-      garage,
-      land_size,
-      elevation_image,
-      description
-    `)
-    .order("created_at", { ascending: false })
+    .select("*")
+
+  // 👉 强制调试（关键）
+  console.log("layouts =", layouts)
+  console.log("error =", error)
+
+  if (error) {
+    return (
+      <div className="p-10 text-red-500">
+        Error: {error.message}
+      </div>
+    )
+  }
+
+  if (!layouts || layouts.length === 0) {
+    return (
+      <div className="p-10 text-gray-400">
+        No layouts found
+      </div>
+    )
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-12">
@@ -36,25 +44,22 @@ export default async function LayoutsPage() {
       {/* ===== Grid ===== */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
 
-        {layouts?.map((layout: any) => (
+        {layouts.map((layout: any) => (
           <Link
             key={layout.id}
             href={`/layouts/${layout.slug}`}
             className="group border rounded-xl overflow-hidden hover:shadow-lg transition"
           >
 
-            {/* Image */}
-            <div className="bg-gray-100 h-56 flex items-center justify-center overflow-hidden">
+            <div className="bg-gray-100 h-56 overflow-hidden">
               <img
                 src={layout.elevation_image}
-                className="object-cover w-full h-full group-hover:scale-105 transition"
+                className="object-cover w-full h-full"
               />
             </div>
 
-            {/* Content */}
             <div className="p-4 space-y-3">
 
-              {/* Title */}
               <div>
                 <h2 className="text-lg font-semibold">
                   {layout.name}
@@ -64,7 +69,6 @@ export default async function LayoutsPage() {
                 </div>
               </div>
 
-              {/* Specs */}
               <div className="text-sm text-gray-600">
                 {layout.bedrooms} Bed · {layout.bathrooms} Bath · {layout.garage} Garage
               </div>
@@ -73,14 +77,8 @@ export default async function LayoutsPage() {
                 {layout.land_size}
               </div>
 
-              {/* Description */}
-              <div className="text-sm text-gray-500 line-clamp-2">
+              <div className="text-sm text-gray-500">
                 {layout.description}
-              </div>
-
-              {/* CTA */}
-              <div className="pt-2 text-sm font-medium text-black">
-                View Layout →
               </div>
 
             </div>
