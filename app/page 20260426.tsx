@@ -1,27 +1,35 @@
 import Link from "next/link"
-import { supabase } from "@/lib/supabase"
 
-export default async function HomePage() {
-  const { data: layouts } = await supabase
-    .from("layouts")
-    .select(`
-      id,
-      name,
-      slug,
-      location,
-      bedrooms,
-      bathrooms,
-      garage,
-      land_size,
-      elevation_image
-    `)
-    .order("created_at", { ascending: false })
-    .limit(3)   // 👉 首页只展示3个（关键）
+const layouts = [
+  {
+    id: "earlsbrook",
+    name: "Lot 18 Earlsbrook",
+    location: "Lincoln, Christchurch",
+    beds: 4,
+    baths: 2,
+    garage: 2,
+    size: "500m² land",
+    image: "/layouts/earlsbrook-elevation.jpg",
+    tags: ["Family Living", "Office", "Open Plan"],
+  },
+  {
+    id: "hampton",
+    name: "Lot 2 Hampton Grove",
+    location: "Prebbleton, Christchurch",
+    beds: 4,
+    baths: 2,
+    garage: 2,
+    size: "379m² land",
+    image: "/layouts/hampton-elevation.jpg",
+    tags: ["Designer", "Internal Garden", "Skylight"],
+  },
+]
 
+export default function HomePage() {
   return (
     <div className="max-w-7xl mx-auto px-6 py-10 space-y-16">
 
-      {/* ===== HERO ===== */}
+      {/* ===== HERO（定义你是谁）===== */}
       <div className="grid md:grid-cols-2 gap-10 items-center">
 
         <div className="space-y-6">
@@ -51,6 +59,7 @@ export default async function HomePage() {
           </div>
         </div>
 
+        {/* Hero Image */}
         <div className="bg-gray-100 rounded-xl overflow-hidden">
           <img
             src="/images/hero-image.png"
@@ -60,7 +69,7 @@ export default async function HomePage() {
 
       </div>
 
-      {/* ===== LAYOUT SECTION ===== */}
+      {/* ===== LAYOUT SECTION（70%权重）===== */}
       <div className="space-y-6">
 
         <div className="flex justify-between items-end">
@@ -75,16 +84,16 @@ export default async function HomePage() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
 
-          {layouts?.map((layout: any) => (
+          {layouts.map((layout) => (
             <Link
               key={layout.id}
-              href={`/layouts/${layout.slug}`}
+              href={`/layouts/${layout.id}`}
               className="group border rounded-xl overflow-hidden hover:shadow-lg transition"
             >
 
               <div className="h-52 bg-gray-100 overflow-hidden">
                 <img
-                  src={layout.elevation_image}
+                  src={layout.image}
                   className="w-full h-full object-cover group-hover:scale-105 transition"
                 />
               </div>
@@ -101,11 +110,22 @@ export default async function HomePage() {
                 </div>
 
                 <div className="text-sm text-gray-600">
-                  {layout.bedrooms} Bed · {layout.bathrooms} Bath · {layout.garage} Garage
+                  {layout.beds} Bed · {layout.baths} Bath · {layout.garage} Garage
                 </div>
 
                 <div className="text-xs text-gray-400">
-                  {layout.land_size}
+                  {layout.size}
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {layout.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="text-xs bg-gray-100 px-2 py-1 rounded"
+                    >
+                      {tag}
+                    </span>
+                  ))}
                 </div>
 
               </div>
@@ -116,7 +136,7 @@ export default async function HomePage() {
         </div>
       </div>
 
-      {/* ===== PACKAGE SECTION（保持不动）===== */}
+      {/* ===== PACKAGE SECTION（20%权重）===== */}
       <div className="space-y-6 border-t pt-10">
 
         <h2 className="text-2xl font-semibold">
@@ -158,7 +178,7 @@ export default async function HomePage() {
                 {pkg.price}
               </div>
 
-              <div className="mt-4 text-sm">
+                 <div className="mt-4 text-sm">
                 View Package →
               </div>
             </div>
@@ -167,7 +187,7 @@ export default async function HomePage() {
         </div>
       </div>
 
-      {/* ===== PRODUCT SECTION ===== */}
+      {/* ===== PRODUCT SECTION（10%权重）===== */}
       <div className="border-t pt-10 flex justify-between items-center">
 
         <div>
@@ -182,7 +202,7 @@ export default async function HomePage() {
 
         <Link
           href="/products"
-              className="px-4 py-2 border rounded-lg text-sm"
+          className="px-4 py-2 border rounded-lg text-sm"
         >
           View Products →
         </Link>
