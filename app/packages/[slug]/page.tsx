@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase"
 import { notFound } from "next/navigation"
+import Link from "next/link"
 
 export default async function PackagePage({
   params,
@@ -8,35 +9,36 @@ export default async function PackagePage({
 }) {
   const { slug } = params
 
-  // ===== Package =====
-  const { data: pkg } = await supabase
+  // ===== 1️⃣ Package =====
+  const { data: pkg, error } = await supabase
     .from("packages")
     .select("*")
     .eq("slug", slug)
     .single()
 
-  if (!pkg) return notFound()
+  if (error || !pkg) return notFound()
 
-  // ===== Rooms =====
+  // ===== 2️⃣ Rooms =====
   const { data: rooms } = await supabase
     .from("package_rooms")
     .select("*")
     .eq("package_id", pkg.id)
     .order("sort_order", { ascending: true })
 
-  // ===== Items + Products =====
+  // ===== 3️⃣ Items + Products + Variants =====
   const { data: items } = await supabase
     .from("package_items")
     .select(`
       id,
       package_room_id,
-      quantity,
       item_type:item_types(name),
       products:package_item_products(
         quantity,
         product:products(
+          id,
           sku_code,
-          name
+          name,
+          image_url
         ),
         variant:variants(
           size_label,
@@ -46,14 +48,14 @@ export default async function PackagePage({
     `)
     .in("package_room_id", rooms?.map(r => r.id) || [])
 
-  // ===== 分组 =====
+  // ===== 4️⃣ 分组（按 room）=====
   const grouped: Record<string, any[]> = {}
 
   items?.forEach((item: any) => {
-    const roomId = item.package_room_id
-
-    if (!grouped[roomId]) grouped[roomId] = []
-    grouped[roomId].push(item)
+    if (!grouped[item.package_room_id]) {
+      grouped[item.package_room_id] = []
+    }
+    grouped[item.package_room_id].push(item)
   })
 
   return (
@@ -84,7 +86,7 @@ export default async function PackagePage({
             </h2>
 
             {/* Items */}
-            <div className="space-y-3">
+            <div className="space-y-4">
 
               {grouped[room.id]?.map((item: any) => (
                 <div
@@ -93,32 +95,55 @@ export default async function PackagePage({
                 >
 
                   {/* Item Type */}
-                  <div className="font-medium text-sm text-gray-500">
+                  <div className="text-sm text-gray-500">
                     {item.item_type?.name}
                   </div>
 
-                  {/* Products */}
-                  <div className="mt-2 space-y-1">
+                  {/* Product List */}
+                  <div className="mt-3 space-y-2">
 
                     {item.products?.map((p: any, idx: number) => (
                       <div
                         key={idx}
-                        className="flex justify-between text-sm"
+                        className="flex items-center justify-between gap-4 text-sm"
                       >
-                        <div>
-                          {p.product?.sku_code}
 
-                          {/* Variant */}
-                          {(p.variant?.size_label || p.variant?.config) && (
-                            <span className="text-gray-400 ml-2">
-                              ({p.variant?.size_label || ""} {p.variant?.config || ""})
-                            </span>
+                        {/* LEFT */}
+                        <div className="flex items-center gap-3">
+
+                          {/* Image */}
+                          {p.product?.image_url && (
+                            <img
+                              src={p.product.image_url}
+                              className="w-12 h-12 object-contain border rounded"
+                            />
                           )}
+
+                          {/* Info */}
+                          <div>
+                            <Link
+                              href={`/products/${p.product?.id}`}
+                              className="font-medium hover:underline"
+                            >
+                              {p.product?.sku_code}
+                            </Link>
+
+                            {/* Variant */}
+                            {(p.variant?.size_label || p.variant?.config) && (
+                              <div className="text-xs text-gray-400">
+                                {p.variant?.size_label || ""}{" "}
+                                {p.variant?.config || ""}
+                              </div>
+                            )}
+                          </div>
+
                         </div>
 
+                        {/* RIGHT */}
                         <div className="text-gray-500">
                           x{p.quantity}
                         </div>
+
                       </div>
                     ))}
 
