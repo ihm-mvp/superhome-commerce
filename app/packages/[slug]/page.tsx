@@ -5,7 +5,7 @@ import Link from "next/link"
 export default async function PackagePage({
   params,
 }: {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }) {
   const { slug } = params
 
