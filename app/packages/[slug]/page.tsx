@@ -5,9 +5,9 @@ import Link from "next/link"
 export default async function PackagePage({
   params,
 }: {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }) {
-  const slug = params.slug
+  const { slug } = await params
 
   // ===== Package =====
   const { data: pkg } = await supabase
