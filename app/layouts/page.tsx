@@ -3,20 +3,14 @@ import Link from "next/link"
 
 export default async function LayoutsPage() {
 
-  // ===== layouts =====
-  const { data: layouts, error } = await supabase
+  const { data: layouts } = await supabase
     .from("layouts")
     .select("*")
-
-  if (error) {
-    return <div className="p-10 text-red-500">Error: {error.message}</div>
-  }
 
   if (!layouts || layouts.length === 0) {
     return <div className="p-10 text-gray-400">No layouts found</div>
   }
 
-  // ===== 获取每个layout最低package价格 =====
   const { data: packages } = await supabase
     .from("packages")
     .select("layout_id, display_price")
@@ -37,32 +31,41 @@ export default async function LayoutsPage() {
   })
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-12 space-y-16">
+    <div className="max-w-7xl mx-auto px-6 py-10 space-y-16">
 
-      {/* ===== HERO（升级）===== */}
-      <div className="grid md:grid-cols-2 gap-10 items-center">
+      {/* ===== HERO（重做结构）===== */}
+      <div className="relative rounded-xl overflow-hidden">
 
-        <div className="space-y-6">
-          <h1 className="text-4xl font-semibold leading-tight">
-            Find Your Home <br />
-            Fully Furnished
-          </h1>
+        {/* 图片 */}
+        <img
+          src="/layouts/layouts-hero.jpg"   // 👉 用你刚生成的图
+          className="w-full h-[420px] object-cover"
+        />
 
-          <p className="text-gray-500 max-w-md">
-            Browse real New Zealand home layouts and instantly match them with complete furniture packages.
-          </p >
+        {/* 遮罩层 */}
+        <div className="absolute inset-0 bg-black/30" />
 
-          <Link
-            href="#grid"
-            className="inline-block px-5 py-3 bg-black text-white rounded-lg text-sm"
-          >
-            Explore Layouts
-          </Link>
-        </div>
+        {/* 文案层（关键） */}
+        <div className="absolute inset-0 flex items-center">
+          <div className="px-10 max-w-lg text-white space-y-4">
 
-        {/* 👉 可替换为你后面生成的整图 */}
-        <div className="bg-gray-100 rounded-xl h-72 flex items-center justify-center text-gray-400">
-          Hero Image
+            <h1 className="text-4xl font-semibold leading-tight">
+              Find Your Home <br />
+              Fully Furnished
+            </h1>
+
+            <p className="text-white/80">
+              Explore real New Zealand home layouts and match them with complete furniture packages.
+            </p >
+
+            <Link
+              href="#grid"
+              className="inline-block px-5 py-3 bg-white text-black rounded-lg text-sm"
+            >
+              Explore Layouts
+            </Link>
+
+          </div>
         </div>
 
       </div>
@@ -92,7 +95,6 @@ export default async function LayoutsPage() {
                 className="group border rounded-xl overflow-hidden hover:shadow-lg transition"
               >
 
-                {/* 图片 */}
                 <div className="bg-gray-100 h-56 overflow-hidden">
                   <img
                     src={layout.elevation_image}
@@ -100,10 +102,8 @@ export default async function LayoutsPage() {
                   />
                 </div>
 
-                {/* 内容 */}
                 <div className="p-4 space-y-3">
 
-                  {/* 标题 */}
                   <div>
                     <h2 className="text-lg font-semibold">
                       {layout.name}
@@ -114,26 +114,22 @@ export default async function LayoutsPage() {
                     </div>
                   </div>
 
-                  {/* 规格 */}
                   <div className="text-sm text-gray-600">
                     {layout.bedrooms} Bed · {layout.bathrooms} Bath · {layout.garage} Garage
                   </div>
 
-                  {/* 面积 */}
                   {layout.land_size && (
                     <div className="text-xs text-gray-400">
                       {layout.land_size}
                     </div>
                   )}
 
-                  {/* 🔥 价格锚点（关键） */}
                   {minPrice && (
                     <div className="text-sm font-medium text-black">
                       Fully furnished from ${minPrice}+
                     </div>
                   )}
 
-                  {/* CTA */}
                   <div className="pt-2 text-sm font-medium text-black">
                     View Layout →
                   </div>
