@@ -7,7 +7,7 @@ export default async function PackagePage({
 }: {
   params: Promise<{ slug: string }>
 }) {
-  const { slug } = params
+  const { slug } = await params
 
   // ===== 1️⃣ Package =====
   const { data: pkg, error } = await supabase
