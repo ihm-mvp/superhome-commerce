@@ -5,9 +5,9 @@ import Link from "next/link"
 export default async function LayoutDetail({
   params,
 }: {
-  params: { slug: string }   // ✅ 用这个
+  params: Promise<{ slug: string }>
 }) {
-  const slug = params.slug   // ✅ 对应使用
+  const { slug } = await params
 
   // ===== 1️⃣ 获取 layout =====
   const { data: layout, error } = await supabase
