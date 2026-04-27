@@ -28,7 +28,7 @@ export default async function HomePage() {
       <div className="relative rounded-xl overflow-hidden">
 
         <img
-          src="/images/home-hero.jpg"
+          src="/images/hero-image.png"
           className="w-full h-[480px] object-cover"
         />
 
