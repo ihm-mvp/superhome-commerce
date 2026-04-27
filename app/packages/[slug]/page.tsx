@@ -5,27 +5,33 @@ import Link from "next/link"
 export default async function PackagePage({
   params,
 }: {
-  params: Promise<{ slug: string }>
+  params: { slug: string }
 }) {
-  const { slug } = await params
+  const slug = params.slug
 
-  // ===== 1️⃣ Package =====
-  const { data: pkg, error } = await supabase
+  // ===== Package =====
+  const { data: pkg } = await supabase
     .from("packages")
-    .select("*")
+    .select("*, layout:layouts(id, slug, name)")
     .eq("slug", slug)
     .single()
 
-  if (error || !pkg) return notFound()
+  if (!pkg) return notFound()
 
-  // ===== 2️⃣ Rooms =====
+  // ===== 同layout下所有packages（用于切换）=====
+  const { data: allPackages } = await supabase
+    .from("packages")
+    .select("name, slug")
+    .eq("layout_id", pkg.layout_id)
+
+  // ===== Rooms =====
   const { data: rooms } = await supabase
     .from("package_rooms")
     .select("*")
     .eq("package_id", pkg.id)
-    .order("sort_order", { ascending: true })
+    .order("sort_order")
 
-  // ===== 3️⃣ Items + Products + Variants =====
+  // ===== Items =====
   const { data: items } = await supabase
     .from("package_items")
     .select(`
@@ -34,120 +40,106 @@ export default async function PackagePage({
       item_type:item_types(name),
       products:package_item_products(
         quantity,
-        product:products(
-          id,
-          sku_code,
-          name,
-          image_url
-        ),
-        variant:variants(
-          size_label,
-          config
-        )
+        product:products(id, sku_code, image_url),
+        variant:variants(size_label, config)
       )
     `)
     .in("package_room_id", rooms?.map(r => r.id) || [])
 
-  // ===== 4️⃣ 分组（按 room）=====
   const grouped: Record<string, any[]> = {}
-
-  items?.forEach((item: any) => {
-    if (!grouped[item.package_room_id]) {
-      grouped[item.package_room_id] = []
-    }
-    grouped[item.package_room_id].push(item)
+  items?.forEach((i: any) => {
+    if (!grouped[i.package_room_id]) grouped[i.package_room_id] = []
+    grouped[i.package_room_id].push(i)
   })
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10 space-y-10">
 
-      {/* ===== Header ===== */}
-      <div>
+      {/* ===== Header（销售感）===== */}
+      <div className="space-y-3">
         <h1 className="text-3xl font-semibold">
           {pkg.name} Package
         </h1>
 
         {pkg.display_price && (
-          <div className="text-xl text-gray-600 mt-2">
-            ${pkg.display_price}
+          <div className="text-xl text-gray-600">
+            ${pkg.display_price}+
           </div>
         )}
+
+        <div className="text-gray-500">
+          Designed to perfectly match {pkg.layout?.name}
+        </div>
       </div>
 
-      {/* ===== Rooms ===== */}
-      <div className="space-y-10">
+      {/* ===== Package切换 ===== */}
+      <div className="flex gap-3">
+        {allPackages?.map((p: any) => (
+          <Link
+            key={p.slug}
+            href={`/packages/${p.slug}`}
+            className={`px-4 py-2 border rounded-lg text-sm ${
+              p.slug === slug ? "bg-black text-white" : ""
+            }`}
+          >
+            {p.name}
+          </Link>
+        ))}
+      </div>
+
+      {/* ===== Rooms（视觉块）===== */}
+      <div className="space-y-12">
 
         {rooms?.map((room: any) => (
           <div key={room.id} className="space-y-4">
 
-            {/* Room Title */}
             <h2 className="text-xl font-semibold">
               {room.name}
             </h2>
 
-            {/* Items */}
-            <div className="space-y-4">
+            <div className="grid md:grid-cols-2 gap-4">
 
               {grouped[room.id]?.map((item: any) => (
                 <div
                   key={item.id}
-                  className="border rounded-lg p-4"
+                  className="border rounded-xl p-4 space-y-3"
                 >
 
-                  {/* Item Type */}
                   <div className="text-sm text-gray-500">
                     {item.item_type?.name}
                   </div>
 
-                  {/* Product List */}
-                  <div className="mt-3 space-y-2">
+                  {item.products?.map((p: any, idx: number) => (
+                    <div
+                      key={idx}
+                      className="flex items-center gap-3"
+                    >
 
-                    {item.products?.map((p: any, idx: number) => (
-                      <div
-                        key={idx}
-                        className="flex items-center justify-between gap-4 text-sm"
-                      >
+                      {p.product?.image_url && (
+                        <img
+                          src={p.product.image_url}
+                          className="w-16 h-16 object-contain"
+                        />
+                      )}
 
-                        {/* LEFT */}
-                        <div className="flex items-center gap-3">
+                      <div className="text-sm">
+                        <div className="font-medium">
+                          {p.product?.sku_code}
+                        </div>
 
-                          {/* Image */}
-                          {p.product?.image_url && (
-                            <img
-                              src={p.product.image_url}
-                              className="w-12 h-12 object-contain border rounded"
-                            />
-                          )}
-
-                          {/* Info */}
-                          <div>
-                            <Link
-                              href={`/products/${p.product?.id}`}
-                              className="font-medium hover:underline"
-                            >
-                              {p.product?.sku_code}
-                            </Link>
-
-                            {/* Variant */}
-                            {(p.variant?.size_label || p.variant?.config) && (
-                              <div className="text-xs text-gray-400">
-                                {p.variant?.size_label || ""}{" "}
-                                {p.variant?.config || ""}
-                              </div>
-                            )}
+                        {(p.variant?.size_label || p.variant?.config) && (
+                          <div className="text-gray-400 text-xs">
+                            {p.variant?.size_label} {p.variant?.config}
                           </div>
-
-                        </div>
-
-                        {/* RIGHT */}
-                        <div className="text-gray-500">
-                          x{p.quantity}
-                        </div>
-
+                        )}
                       </div>
-                    ))}
 
-                  </div>
+                      <div className="ml-auto text-sm text-gray-500">
+                        x{p.quantity}
+                      </div>
+
+                    </div>
+                  ))}
 
                 </div>
               ))}
@@ -157,6 +149,13 @@ export default async function PackagePage({
           </div>
         ))}
 
+      </div>
+
+      {/* ===== CTA（未来）===== */}
+      <div className="border-t pt-6">
+        <button className="px-6 py-3 bg-black text-white rounded-lg">
+          Enquire This Package
+        </button>
       </div>
 
     </div>
