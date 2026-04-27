@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase"
 import { notFound } from "next/navigation"
+import Link from "next/link"
 
 export default async function LayoutDetail({
   params,
@@ -19,13 +20,19 @@ export default async function LayoutDetail({
     return notFound()
   }
 
-  // ===== 2️⃣ 获取文件（BC / PDF / DWG）=====
+  // ===== 2️⃣ 获取 packages =====
+  const { data: packages } = await supabase
+    .from("packages")
+    .select("id, name, slug, display_price")
+    .eq("layout_id", layout.id)
+    .order("name")
+
+  // ===== 3️⃣ 获取文件 =====
   const { data: files } = await supabase
     .from("layout_files")
     .select("*")
     .eq("layout_id", layout.id)
 
-  // 👉 分类文件（简单处理）
   const downloads = files || []
 
   return (
@@ -49,7 +56,7 @@ export default async function LayoutDetail({
       {/* ===== Main Grid ===== */}
       <div className="grid md:grid-cols-2 gap-10">
 
-        {/* LEFT */}
+        {/* ===== LEFT ===== */}
         <div className="space-y-6">
 
           {/* Elevation */}
@@ -93,7 +100,7 @@ export default async function LayoutDetail({
 
         </div>
 
-        {/* RIGHT */}
+        {/* ===== RIGHT ===== */}
         <div className="space-y-6">
 
           {/* Description */}
@@ -103,40 +110,42 @@ export default async function LayoutDetail({
             </div>
           )}
 
-          {/* ===== Packages（占位，后面接数据库）===== */}
-          <div className="border-t pt-4">
-            <h2 className="text-sm font-semibold mb-3">
-              Furniture Packages
-            </h2>
+          {/* ===== Packages（核心）===== */}
+          {packages && packages.length > 0 && (
+            <div className="border-t pt-4">
+              <h2 className="text-sm font-semibold mb-3">
+                Furniture Packages
+              </h2>
 
-            <div className="grid grid-cols-1 gap-3">
+              <div className="grid grid-cols-1 gap-3">
 
-              {[
-                { name: "Basic", price: "$15,000+" },
-                { name: "Standard", price: "$25,000+" },
-                { name: "Premium", price: "$40,000+" },
-              ].map((pkg) => (
-                <div
-                  key={pkg.name}
-                  className="border rounded-lg p-4 flex justify-between items-center hover:shadow"
-                >
-                  <div>
-                    <div className="font-medium">
-                      {pkg.name} Package
+                {packages.map((pkg: any) => (
+                  <Link
+                    key={pkg.id}
+                    href={`/packages/${pkg.slug}`}
+                    className="border rounded-lg p-4 flex justify-between items-center hover:shadow transition"
+                  >
+                    <div>
+                      <div className="font-medium">
+                        {pkg.name} Package
+                      </div>
+
+                      {pkg.display_price && (
+                        <div className="text-sm text-gray-400">
+                          ${pkg.display_price}
+                        </div>
+                      )}
                     </div>
-                    <div className="text-sm text-gray-400">
-                      {pkg.price}
+
+                    <div className="text-sm">
+                      View →
                     </div>
-                  </div>
+                  </Link>
+                ))}
 
-                  <div className="text-sm">
-                    View →
-                  </div>
-                </div>
-              ))}
-
+              </div>
             </div>
-          </div>
+          )}
 
           {/* ===== Documents ===== */}
           {downloads.length > 0 && (
@@ -160,6 +169,7 @@ export default async function LayoutDetail({
           )}
 
         </div>
+
       </div>
     </div>
   )
