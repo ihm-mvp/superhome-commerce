@@ -18,10 +18,7 @@ export default async function PackagePage({
 
   if (!pkg) return notFound()
 
-  const layoutSlug = pkg.layout?.slug
-  const packageType = pkg.name?.toLowerCase() // standard / basic / premium
-
-  // ===== 同layout packages =====
+  // ===== 同layout下所有packages（用于切换）=====
   const { data: allPackages } = await supabase
     .from("packages")
     .select("name, slug")
@@ -55,16 +52,10 @@ export default async function PackagePage({
     grouped[i.package_room_id].push(i)
   })
 
-  // ===== Room图片映射 =====
-  const getRoomImage = (roomName: string) => {
-    const key = roomName.toLowerCase().replace(" ", "")
-    return `/packages/${layoutSlug}_${packageType}_${key}.jpg`
-  }
-
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10 space-y-12">
+    <div className="max-w-6xl mx-auto px-6 py-10 space-y-10">
 
-      {/* ===== Header ===== */}
+      {/* ===== Header（销售感）===== */}
       <div className="space-y-3">
         <h1 className="text-3xl font-semibold">
           {pkg.name} Package
@@ -76,9 +67,8 @@ export default async function PackagePage({
           </div>
         )}
 
-        <div className="text-gray-500 max-w-xl">
-          A complete furniture solution designed to match {pkg.layout?.name}, 
-          balancing comfort, functionality and modern aesthetics.
+        <div className="text-gray-500">
+          Designed to perfectly match {pkg.layout?.name}
         </div>
       </div>
 
@@ -97,42 +87,16 @@ export default async function PackagePage({
         ))}
       </div>
 
-      {/* ===== 🔥 整体空间图（最重要）===== */}
-      <div className="space-y-3">
-        <img
-          src={`/packages/${layoutSlug}_${packageType}_overview.jpg`}
-          className="w-full rounded-xl border"
-        />
-
-        <div className="text-xs text-gray-400">
-          Illustration only – actual products are listed below
-        </div>
-      </div>
-
-      {/* ===== Rooms ===== */}
-      <div className="space-y-14">
+      {/* ===== Rooms（视觉块）===== */}
+      <div className="space-y-12">
 
         {rooms?.map((room: any) => (
-          <div key={room.id} className="space-y-5">
+          <div key={room.id} className="space-y-4">
 
-            {/* 标题 */}
             <h2 className="text-xl font-semibold">
               {room.name}
             </h2>
 
-            {/* 🔥 空间图 */}
-            <div className="space-y-2">
-              <img
-                src={getRoomImage(room.name)}
-                className="w-full rounded-xl border"
-              />
-
-              <div className="text-xs text-gray-400">
-                Example setup – actual products listed below
-              </div>
-            </div>
-
-                        {/* 产品 */}
             <div className="grid md:grid-cols-2 gap-4">
 
               {grouped[room.id]?.map((item: any) => (
@@ -146,10 +110,9 @@ export default async function PackagePage({
                   </div>
 
                   {item.products?.map((p: any, idx: number) => (
-                    <Link
+                    <div
                       key={idx}
-                      href={`/products/${p.product?.id}`}
-                      className="flex items-center gap-3 hover:bg-gray-50 p-2 rounded-lg transition"
+                      className="flex items-center gap-3"
                     >
 
                       {p.product?.image_url && (
@@ -159,7 +122,7 @@ export default async function PackagePage({
                         />
                       )}
 
-                      <div className="text-sm flex-1">
+                      <div className="text-sm">
                         <div className="font-medium">
                           {p.product?.sku_code}
                         </div>
@@ -171,11 +134,11 @@ export default async function PackagePage({
                         )}
                       </div>
 
-                      <div className="text-sm text-gray-500">
+                      <div className="ml-auto text-sm text-gray-500">
                         x{p.quantity}
                       </div>
 
-                    </Link>
+                    </div>
                   ))}
 
                 </div>
@@ -188,9 +151,9 @@ export default async function PackagePage({
 
       </div>
 
-      {/* ===== CTA ===== */}
-      <div className="border-t pt-6 text-center">
-        <button className="px-8 py-3 bg-black text-white rounded-lg">
+      {/* ===== CTA（未来）===== */}
+      <div className="border-t pt-6">
+        <button className="px-6 py-3 bg-black text-white rounded-lg">
           Enquire This Package
         </button>
       </div>
