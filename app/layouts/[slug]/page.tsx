@@ -9,25 +9,23 @@ export default async function LayoutDetail({
 }) {
   const { slug } = await params
 
-  // ===== 1️⃣ 获取 layout =====
-  const { data: layout, error } = await supabase
+  // ===== Layout =====
+  const { data: layout } = await supabase
     .from("layouts")
     .select("*")
     .eq("slug", slug)
     .single()
 
-  if (error || !layout) {
-    return notFound()
-  }
+  if (!layout) return notFound()
 
-  // ===== 2️⃣ 获取 packages =====
+  // ===== Packages =====
   const { data: packages } = await supabase
     .from("packages")
     .select("id, name, slug, display_price")
     .eq("layout_id", layout.id)
     .order("name")
 
-  // ===== 3️⃣ 获取文件 =====
+  // ===== Files =====
   const { data: files } = await supabase
     .from("layout_files")
     .select("*")
@@ -36,141 +34,156 @@ export default async function LayoutDetail({
   const downloads = files || []
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-10 space-y-10">
+    <div className="max-w-7xl mx-auto px-6 py-10 space-y-14">
 
-      {/* ===== Header ===== */}
-      <div>
-        <h1 className="text-3xl font-semibold">
-          {layout.name}
-        </h1>
+      {/* ===== HERO（视觉入口）===== */}
+      {layout.elevation_image && (
+        <div className="space-y-4">
+          <img
+            src={layout.elevation_image}
+            className="w-full rounded-xl object-cover"
+          />
 
-        <div className="text-gray-500 mt-1">
-          {layout.location}
+          <div>
+            <h1 className="text-3xl font-semibold">
+              {layout.name}
+            </h1>
+
+            <div className="text-gray-500 mt-1">
+              {layout.location}
+            </div>
+
+            <div className="mt-2 text-sm text-gray-600">
+              {layout.bedrooms} Bed · {layout.bathrooms} Bath · {layout.garage} Garage
+            </div>
+          </div>
         </div>
+      )}
 
-        <div className="mt-3 text-sm text-gray-600">
-          {layout.bedrooms} Bed · {layout.bathrooms} Bath · {layout.garage} Garage
+      {/* ===== DESCRIPTION ===== */}
+      {layout.description && (
+        <div className="max-w-2xl text-gray-600">
+          {layout.description}
         </div>
-      </div>
+      )}
 
-      {/* ===== Main Grid ===== */}
-      <div className="grid md:grid-cols-2 gap-10">
-
-        {/* ===== LEFT ===== */}
+      {/* ===== 🔥 PACKAGES（核心转化）===== */}
+      {packages && packages.length > 0 && (
         <div className="space-y-6">
 
-          {/* Elevation */}
-          {layout.elevation_image && (
-            <div>
-              <div className="text-sm text-gray-400 mb-2">
-                Exterior
-              </div>
-              <img
-                src={layout.elevation_image}
-                className="rounded-xl border"
-              />
+          <div className="flex justify-between items-end">
+            <h2 className="text-2xl font-semibold">
+              Furniture Packages
+            </h2>
+
+            <div className="text-sm text-gray-400">
+              Designed for this layout
             </div>
-          )}
+          </div>
 
-          {/* Floor Plan */}
-          {layout.floorplan_image && (
-            <div>
-              <div className="text-sm text-gray-400 mb-2">
-                Floor Plan
-              </div>
-              <img
-                src={layout.floorplan_image}
-                className="rounded-xl border"
-              />
-            </div>
-          )}
+          <div className="grid md:grid-cols-3 gap-6">
 
-          {/* Video */}
-          {layout.video_url && (
-            <div>
-              <div className="text-sm text-gray-400 mb-2">
-                Walkthrough
-              </div>
-              <iframe
-                src={layout.video_url}
-                className="w-full h-64 rounded-xl"
-              />
-            </div>
-          )}
+            {packages.map((pkg: any) => {
+              const packageType = pkg.name.toLowerCase()
 
-        </div>
+              return (
+                <Link
+                  key={pkg.id}
+                  href={`/packages/${pkg.slug}`}
+                  className="border rounded-xl overflow-hidden hover:shadow-lg transition"
+                >
 
-        {/* ===== RIGHT ===== */}
-        <div className="space-y-6">
+                  {/* 🔥 Package整图 */}
+                  <div className="bg-gray-100 h-48 overflow-hidden">
+                    <img
+                      src={`/packages/${slug}_${packageType}_overview.jpg`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
 
-          {/* Description */}
-          {layout.description && (
-            <div className="text-gray-600">
-              {layout.description}
-            </div>
-          )}
+                  {/* 内容 */}
+                  <div className="p-4 space-y-2">
 
-          {/* ===== Packages（核心）===== */}
-          {packages && packages.length > 0 && (
-            <div className="border-t pt-4">
-              <h2 className="text-sm font-semibold mb-3">
-                Furniture Packages
-              </h2>
+                    <div className="text-lg font-semibold">
+                      {pkg.name}
+                    </div>
 
-              <div className="grid grid-cols-1 gap-3">
-
-                {packages.map((pkg: any) => (
-                  <Link
-                    key={pkg.id}
-                    href={`/packages/${pkg.slug}`}
-                    className="border rounded-lg p-4 flex justify-between items-center hover:shadow transition"
-                  >
-                    <div>
-                      <div className="font-medium">
-                        {pkg.name} Package
+                    {pkg.display_price && (
+                      <div className="text-sm text-gray-500">
+                        ${pkg.display_price}+
                       </div>
+                    )}
 
-                      {pkg.display_price && (
-                        <div className="text-sm text-gray-400">
-                          ${pkg.display_price}
-                        </div>
-                      )}
+                    <div className="text-xs text-gray-400">
+                      Complete furniture solution
                     </div>
 
-                    <div className="text-sm">
-                      View →
+                    <div className="pt-2 text-sm font-medium">
+                      View Package →
                     </div>
-                  </Link>
-                ))}
 
-              </div>
-            </div>
-          )}
+                  </div>
 
-          {/* ===== Documents ===== */}
-          {downloads.length > 0 && (
-            <div className="border-t pt-4">
-              <h2 className="text-sm font-semibold mb-3">
-                Documents
-              </h2>
+                </Link>
+              )
+            })}
 
-              <div className="space-y-2">
-                {downloads.map((doc: any) => (
-                  <a
-                    key={doc.id}
-                    href= "_blank"
-                    className="block text-sm text-gray-600 hover:underline"
-                  >
-                    {doc.name}
-                  </a >
-                ))}
-              </div>
-            </div>
-          )}
-
+          </div>
         </div>
+      )}
 
-      </div>
+      {/* ===== FLOOR PLAN ===== */}
+      {layout.floorplan_image && (
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold">
+            Floor Plan
+          </h2>
+
+          <img
+            src={layout.floorplan_image}
+            className="rounded-xl border"
+          />
+        </div>
+      )}
+
+      {/* ===== VIDEO ===== */}
+      {layout.video_url && (
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold">
+            Walkthrough
+          </h2>
+
+          <iframe
+            src={layout.video_url}
+            className="w-full h-80 rounded-xl"
+          />
+        </div>
+      )}
+
+      {/* ===== DOCUMENTS ===== */}
+      {downloads.length > 0 && (
+        <div className="space-y-4 border-t pt-6">
+
+          <h2 className="text-sm font-semibold text-gray-600">
+            Documents
+          </h2>
+
+          <div className="flex flex-wrap gap-4">
+
+            {downloads.map((doc: any) => (
+              <a
+                key={doc.id}
+                href= "_blank"
+                className="text-sm border px-4 py-2 rounded-lg hover:bg-gray-100"
+              >
+                {doc.name}
+              </a >
+            ))}
+
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }
