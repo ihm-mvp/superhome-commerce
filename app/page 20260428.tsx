@@ -3,13 +3,13 @@ import { supabase } from "@/lib/supabase"
 
 export default async function HomePage() {
 
-  // ===== Layouts =====
+  // ===== Layouts（主）=====
   const { data: layouts } = await supabase
     .from("layouts")
     .select("*")
     .limit(3)
 
-  // ===== Packages（核心升级）=====
+  // ===== Packages（真实数据）=====
   const { data: packages } = await supabase
     .from("packages")
     .select(`
@@ -17,16 +17,14 @@ export default async function HomePage() {
       name,
       slug,
       display_price,
-      sort_order,
       layout:layouts(slug)
     `)
-    .order("sort_order", { ascending: true })   // ⭐ 核心排序
     .limit(3)
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-10 space-y-20">
 
-      {/* ===== HERO ===== */}
+      {/* ===== HERO（重构）===== */}
       <div className="relative rounded-xl overflow-hidden">
 
         <img
@@ -66,6 +64,7 @@ export default async function HomePage() {
 
           </div>
         </div>
+
       </div>
 
       {/* ===== TRUST BAR ===== */}
@@ -93,7 +92,7 @@ export default async function HomePage() {
 
       </div>
 
-      {/* ===== LAYOUT ===== */}
+      {/* ===== LAYOUT（核心70%）===== */}
       <div className="space-y-6">
 
         <div className="flex justify-between items-end">
@@ -146,8 +145,9 @@ export default async function HomePage() {
 
       </div>
 
- {/* ===== PACKAGES（按 sort_order 排序）===== */}
-      <div className="space-y-6">
+      {/* ===== PACKAGE（升级为真实案例）===== */}
+
+                <div className="space-y-6">
 
         <div className="flex justify-between items-end">
           <h2 className="text-2xl font-semibold">
@@ -178,7 +178,7 @@ export default async function HomePage() {
               <div className="p-4 space-y-2">
 
                 <div className="font-medium">
-                  {pkg.layout.slug.toUpperCase()} · {pkg.name}
+                  {pkg.name} Package
                 </div>
 
                 {pkg.display_price && (
@@ -200,7 +200,7 @@ export default async function HomePage() {
 
       </div>
 
-      {/* ===== PRODUCT ===== */}
+      {/* ===== PRODUCT（10%）===== */}
       <div className="border-t pt-10 flex justify-between items-center">
 
         <div>
