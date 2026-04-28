@@ -38,7 +38,7 @@ export default async function ProductPage({
 
   const { data: category } = await supabase
     .from("categories")
-    .select("name")
+    .select("display_name")   // ✅ 改这里
     .eq("id", product.category_id)
     .single()
 
@@ -48,8 +48,15 @@ export default async function ProductPage({
     .select("*")
     .eq("product_id", id)
 
-  // ===== 安全字段（白名单）=====
-  const allowedVariantFields = ["size_label", "config"]
+  // ===== 产品字段（安全过滤）=====
+  const hiddenProductFields = [
+    "id",
+    "image_url",
+    "created_at",
+    "category_id",
+    "supplier_id",
+    "level"
+  ]
 
   const fieldMap: Record<string, string> = {
     sku_code: "SKU",
@@ -62,7 +69,7 @@ export default async function ProductPage({
   const displayFields = Object.entries(safeProduct)
     .filter(
       ([key, value]) =>
-        !["id", "image_url", "created_at", "category_id", "supplier_id", "level"].includes(key) &&
+        !hiddenProductFields.includes(key) &&
         value !== null &&
         value !== ""
     )
@@ -71,12 +78,13 @@ export default async function ProductPage({
       value: String(value),
     }))
 
+  // 插入品牌 / 分类
   if (supplier?.name) {
     displayFields.unshift({ label: "Brand", value: supplier.name })
   }
 
-  if (category?.name) {
-    displayFields.unshift({ label: "Category", value: category.name })
+  if (category?.display_name) {
+    displayFields.unshift({ label: "Category", value: category.display_name })
   }
 
   return (
@@ -128,7 +136,7 @@ export default async function ProductPage({
           </div>
         </div>
 
-        {/* Variants（无价格版本） */}
+        {/* Variants（白名单 + 优化版） */}
         {variants && variants.length > 0 && (
           <div className="border-t pt-4">
             <h2 className="text-sm font-semibold mb-3 text-gray-600">
@@ -136,22 +144,42 @@ export default async function ProductPage({
             </h2>
 
             <div className="space-y-2">
-              {variants.map((v: any) => (
-                <div key={v.id} className="border p-3 rounded text-sm">
 
-                  {allowedVariantFields.map((field) => (
-                    v[field] && (
-                      <div key={field} className="flex justify-between">
-                        <span className="text-gray-400">
-                          {field.replace(/_/g, " ")}
+              {variants.map((v: any) => {
+
+                const hasSize =
+                  v.width_mm || v.length_mm || v.height_mm
+
+                const hasConfig = v.config
+
+                // 👉 避免空卡片
+                if (!hasSize && !hasConfig) return null
+
+                return (
+                  <div key={v.id} className="border p-3 rounded text-sm space-y-1">
+
+                    {/* 尺寸合并 */}
+                    {hasSize && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Size</span>
+                        <span>
+                          {v.width_mm || "-"} × {v.length_mm || "-"} × {v.height_mm || "-"} mm
                         </span>
-                        <span>{String(v[field])}</span>
                       </div>
-                    )
-                  ))}
+                    )}
 
-                </div>
-              ))}
+                    {/* 配置 */}
+                    {hasConfig && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Config</span>
+                        <span>{v.config}</span>
+                      </div>
+                    )}
+
+                  </div>
+                )
+              })}
+
             </div>
           </div>
         )}
