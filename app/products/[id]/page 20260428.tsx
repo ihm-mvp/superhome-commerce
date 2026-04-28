@@ -48,9 +48,13 @@ export default async function ProductPage({
     .select("*")
     .eq("product_id", id)
 
-  // ===== 安全字段（白名单）=====
-  const allowedVariantFields = ["size_label", "config"]
+  // ===== hiddenFields =====
+  const hiddenFields = {
+    product: ["id", "image_url", "created_at", "category_id", "supplier_id", "level"],
+    variant: ["id", "product_id", "price", "created_at"]
+  }
 
+  // ===== 字段映射 =====
   const fieldMap: Record<string, string> = {
     sku_code: "SKU",
     name: "Name",
@@ -62,7 +66,7 @@ export default async function ProductPage({
   const displayFields = Object.entries(safeProduct)
     .filter(
       ([key, value]) =>
-        !["id", "image_url", "created_at", "category_id", "supplier_id", "level"].includes(key) &&
+        !hiddenFields.product.includes(key) &&
         value !== null &&
         value !== ""
     )
@@ -71,6 +75,7 @@ export default async function ProductPage({
       value: String(value),
     }))
 
+  // 插入品牌 / 分类
   if (supplier?.name) {
     displayFields.unshift({ label: "Brand", value: supplier.name })
   }
@@ -82,7 +87,7 @@ export default async function ProductPage({
   return (
     <div className="max-w-6xl mx-auto p-8 grid md:grid-cols-2 gap-10">
 
-      {/* 左：图片 */}
+      {/* 左：图片（唯一入口） */}
       <div>
         <ProductImages images={sortedImages} />
       </div>
@@ -128,28 +133,30 @@ export default async function ProductPage({
           </div>
         </div>
 
-        {/* Variants（无价格版本） */}
+        {/* Variants */}
         {variants && variants.length > 0 && (
           <div className="border-t pt-4">
             <h2 className="text-sm font-semibold mb-3 text-gray-600">
-              Options
+              Variants
             </h2>
 
             <div className="space-y-2">
               {variants.map((v: any) => (
-                <div key={v.id} className="border p-3 rounded text-sm">
-
-                  {allowedVariantFields.map((field) => (
-                    v[field] && (
-                      <div key={field} className="flex justify-between">
+                <div
+                  key={v.id}
+                  className="border p-3 rounded text-sm"
+                >
+                  {Object.entries(v as Record<string, any>).map(([k, val]) => (
+                    val &&
+                    !hiddenFields.variant.includes(k) && (
+                      <div key={k} className="flex justify-between">
                         <span className="text-gray-400">
-                          {field.replace(/_/g, " ")}
+                          {k.replace(/_/g, " ")}
                         </span>
-                        <span>{String(v[field])}</span>
+                        <span>{String(val)}</span>
                       </div>
                     )
                   ))}
-
                 </div>
               ))}
             </div>
