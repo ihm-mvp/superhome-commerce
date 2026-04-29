@@ -1,6 +1,5 @@
 import "./globals.css"
 import Link from "next/link"
-import EmailCapture from "@/components/EmailCapture" // ✅ 关键
 
 export const metadata = {
   title: "MoveInReady",
@@ -70,35 +69,35 @@ export default function RootLayout({
 
           <div className="max-w-7xl mx-auto px-6 py-10 grid md:grid-cols-3 gap-8 text-sm text-gray-600">
 
-            {/* Brand */}
-            <div>
-              <div className="font-semibold text-black mb-2 text-lg">
-                MoveInReady
-              </div>
+{/* Brand */}
+<div>
+  <div className="font-semibold text-black mb-2 text-lg">
+    MoveInReady
+  </div>
 
-              <div className="text-gray-600">
-                Move-in ready homes, fully furnished before you arrive.
-              </div>
+  <div className="text-gray-600">
+    Move-in ready homes, fully furnished before you arrive.
+  </div>
 
-              <div className="mt-3 text-xs text-gray-400">
-                A SuperHome platform
-              </div>
+  <div className="mt-3 text-xs text-gray-400">
+    A SuperHome platform
+  </div>
 
-              <div className="mt-4 text-xs text-gray-400 leading-relaxed">
-                Operated by SuperMilkBaba (NZ) Limited<br />
-                Christchurch, New Zealand
-              </div>
+  <div className="mt-4 text-xs text-gray-400 leading-relaxed">
+    Operated by SuperMilkBaba (NZ) Limited<br />
+    Christchurch, New Zealand
+  </div>
 
-              <div className="mt-3 text-xs">
-                Contact:{" "}
-                <a
-                  href=" " // ✅ 修复
-                  className="underline"
-                >
-                  sales@moveinready.co.nz
-                </a >
-              </div>
-            </div>
+  <div className="mt-3 text-xs">
+    Contact:{" "}
+    <a
+      href=" "
+      className="underline"
+    >
+      sales@moveinready.co.nz
+    </a >
+  </div>
+</div>
 
             {/* Links */}
             <div className="space-y-2">
@@ -113,7 +112,7 @@ export default function RootLayout({
               </div>
             </div>
 
-            {/* Email Capture（已接入API） */}
+            {/* Email Capture（下一步可接API） */}
             <div>
               <div className="font-medium mb-2">
                 Get Updates
@@ -123,8 +122,15 @@ export default function RootLayout({
                 New layouts, packages and offers
               </div>
 
-              {/* ✅ 替换旧 input */}
-              <EmailCapture source="footer" />
+              <div className="flex gap-2">
+                <input
+                  placeholder="Email address"
+                  className="border px-3 py-2 rounded w-full text-sm"
+                />
+                <button className="bg-black text-white px-4 rounded text-sm">
+                  Join
+                </button>
+              </div>
             </div>
 
           </div>
