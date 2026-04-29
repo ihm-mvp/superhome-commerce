@@ -2,9 +2,8 @@ import "./globals.css"
 import Link from "next/link"
 
 export const metadata = {
-  title: "MoveInReady",
-  description:
-    "Move-in ready homes in New Zealand. Fully furnished before you arrive.",
+  title: "SuperHome",
+  description: "Real Homes. Move in Ready.",
 }
 
 export default function RootLayout({
@@ -22,13 +21,8 @@ export default function RootLayout({
           <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
             {/* Logo */}
-            <Link href="/" className="flex flex-col leading-tight">
-              <span className="font-semibold text-lg">
-                MoveInReady
-              </span>
-              <span className="text-xs text-gray-400">
-                by SuperHome
-              </span>
+            <Link href="/" className="font-semibold text-lg">
+              SuperHome
             </Link>
 
             {/* Nav */}
@@ -53,7 +47,7 @@ export default function RootLayout({
               href="/packages"
               className="text-sm px-4 py-2 bg-black text-white rounded-lg"
             >
-              View Packages
+              Get Package
             </Link>
 
           </div>
@@ -71,55 +65,36 @@ export default function RootLayout({
 
             {/* Brand */}
             <div>
-              <div className="font-semibold text-black mb-2 text-lg">
-                MoveInReady
+              <div className="font-semibold text-black mb-2">
+                SuperHome
               </div>
-
-              <div className="text-gray-600">
-                Move-in ready homes, fully furnished before you arrive.
-              </div>
-
-              <div className="mt-3 text-xs text-gray-400">
-                A SuperHome platform
-              </div>
-
-              <div className="mt-3 text-xs">
-                Contact:{" "}
-                <a
-                  href=" "
-                  className="underline"
-                >
-                  sales@moveinready.co.nz
-                </a >
+              <div>
+                Real homes. Fully furnished. Move in ready.
               </div>
             </div>
 
             {/* Links */}
             <div className="space-y-2">
               <div>
-                <Link href="/layouts">Explore Layouts</Link>
+                <Link href="/layouts">Layouts</Link>
               </div>
               <div>
-                <Link href="/packages">Furniture Packages</Link>
+                <Link href="/packages">Packages</Link>
               </div>
               <div>
-                <Link href="/products">Browse Products</Link>
+                <Link href="/products">Products</Link>
               </div>
             </div>
 
-            {/* Email Capture（下一步可接API） */}
+            {/* Future Email Capture */}
             <div>
               <div className="font-medium mb-2">
-                Get Updates
-              </div>
-
-              <div className="text-xs text-gray-400 mb-2">
-                New layouts, packages and offers
+                Stay Updated
               </div>
 
               <div className="flex gap-2">
                 <input
-                  placeholder="Email address"
+                  placeholder="Email"
                   className="border px-3 py-2 rounded w-full text-sm"
                 />
                 <button className="bg-black text-white px-4 rounded text-sm">
