@@ -69,35 +69,30 @@ export default function RootLayout({
 
           <div className="max-w-7xl mx-auto px-6 py-10 grid md:grid-cols-3 gap-8 text-sm text-gray-600">
 
-{/* Brand */}
-<div>
-  <div className="font-semibold text-black mb-2 text-lg">
-    MoveInReady
-  </div>
+            {/* Brand */}
+            <div>
+              <div className="font-semibold text-black mb-2 text-lg">
+                MoveInReady
+              </div>
 
-  <div className="text-gray-600">
-    Move-in ready homes, fully furnished before you arrive.
-  </div>
+              <div className="text-gray-600">
+                Move-in ready homes, fully furnished before you arrive.
+              </div>
 
-  <div className="mt-3 text-xs text-gray-400">
-    A SuperHome platform
-  </div>
+              <div className="mt-3 text-xs text-gray-400">
+                A SuperHome platform
+              </div>
 
-  <div className="mt-4 text-xs text-gray-400 leading-relaxed">
-    Operated by SuperMilkBaba (NZ) Limited<br />
-    Christchurch, New Zealand
-  </div>
-
-  <div className="mt-3 text-xs">
-    Contact:{" "}
-    <a
-      href=" "
-      className="underline"
-    >
-      sales@moveinready.co.nz
-    </a >
-  </div>
-</div>
+              <div className="mt-3 text-xs">
+                Contact:{" "}
+                <a
+                  href=" "
+                  className="underline"
+                >
+                  sales@moveinready.co.nz
+                </a >
+              </div>
+            </div>
 
             {/* Links */}
             <div className="space-y-2">
