@@ -1,6 +1,6 @@
 import "./globals.css"
 import Link from "next/link"
-import EmailCapture from "@/components/EmailCapture 20260430" // ✅ 关键
+import EmailCapture from "@/components/EmailCapture" // ✅ 修复
 
 export const metadata = {
   title: "MoveInReady",
@@ -19,7 +19,6 @@ export default function RootLayout({
 
         {/* ===== HEADER ===== */}
         <header className="border-b bg-white sticky top-0 z-50">
-
           <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
             {/* Logo */}
@@ -34,19 +33,15 @@ export default function RootLayout({
 
             {/* Nav */}
             <nav className="hidden md:flex gap-6 text-sm text-gray-600">
-
               <Link href="/layouts" className="hover:text-black">
                 Layouts
               </Link>
-
               <Link href="/packages" className="hover:text-black">
                 Packages
               </Link>
-
               <Link href="/products" className="hover:text-black">
                 Products
               </Link>
-
             </nav>
 
             {/* CTA */}
@@ -61,13 +56,10 @@ export default function RootLayout({
         </header>
 
         {/* ===== MAIN ===== */}
-        <main>
-          {children}
-        </main>
+        <main>{children}</main>
 
         {/* ===== FOOTER ===== */}
         <footer className="border-t mt-20">
-
           <div className="max-w-7xl mx-auto px-6 py-10 grid md:grid-cols-3 gap-8 text-sm text-gray-600">
 
             {/* Brand */}
@@ -113,7 +105,7 @@ export default function RootLayout({
               </div>
             </div>
 
-            {/* Email Capture（已接入API） */}
+            {/* Email Capture */}
             <div>
               <div className="font-medium mb-2">
                 Get Updates
@@ -123,12 +115,10 @@ export default function RootLayout({
                 New layouts, packages and offers
               </div>
 
-              {/* ✅ 替换旧 input */}
               <EmailCapture source="footer" />
             </div>
 
           </div>
-
         </footer>
 
       </body>
