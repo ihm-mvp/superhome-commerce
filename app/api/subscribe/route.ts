@@ -3,7 +3,7 @@ export const runtime = "nodejs"
 import { NextResponse } from "next/server"
 import { supabase } from "@/lib/supabase"
 import { Resend } from "resend"
-import WelcomeEmail from "@/app/emails/WelcomeEmail" // ✅ 新增
+import WelcomeEmail from "@/app/emails/WelcomeEmail 20260430" // ✅ 新增
 
 export async function POST(req: Request) {
   try {

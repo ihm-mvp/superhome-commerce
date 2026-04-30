@@ -1,23 +1,19 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 
 export default function EmailCapture({ source = "unknown" }) {
   const [email, setEmail] = useState("")
   const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
   const [error, setError] = useState("")
 
-  const router = useRouter()
-
   const handleSubmit = async () => {
-    if (loading) return // ✅ 防止重复点击
-
     setError("")
 
     // ===== 基础校验 =====
     if (!email || !email.includes("@")) {
-      setError("Please enter a valid email address")
+      setError("Please enter a valid email")
       return
     }
 
@@ -41,17 +37,11 @@ export default function EmailCapture({ source = "unknown" }) {
         throw new Error(data.error || "Something went wrong")
       }
 
-      // ===== 成功 → 跳转页面 =====
-      router.push("/subscribe/success")
+      setSuccess(true)
+      setEmail("")
 
     } catch (err: any) {
-      console.error("Subscribe error:", err)
-
-      setError(
-        err.message === "Failed to fetch"
-          ? "Network error. Please try again."
-          : err.message || "Something went wrong"
-      )
+      setError(err.message || "Failed to subscribe")
     } finally {
       setLoading(false)
     }
@@ -66,12 +56,7 @@ export default function EmailCapture({ source = "unknown" }) {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleSubmit() // ✅ 支持回车提交
-            }
-          }}
-          placeholder="Enter your email"
+          placeholder="Email address"
           className="border px-3 py-2 rounded w-full text-sm focus:outline-none focus:ring-1 focus:ring-black"
         />
 
@@ -80,9 +65,16 @@ export default function EmailCapture({ source = "unknown" }) {
           disabled={loading}
           className="bg-black text-white px-4 rounded text-sm disabled:opacity-50"
         >
-          {loading ? "Joining..." : "Join"}
+          {loading ? "..." : "Join"}
         </button>
       </div>
+
+      {/* Success */}
+      {success && (
+        <div className="text-xs text-green-600">
+          ✓ You're subscribed
+        </div>
+      )}
 
       {/* Error */}
       {error && (

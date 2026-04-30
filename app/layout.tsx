@@ -1,6 +1,6 @@
 import "./globals.css"
 import Link from "next/link"
-import EmailCapture from "@/components/EmailCapture" // ✅ 关键
+import EmailCapture from "@/components/EmailCapture 20260430" // ✅ 关键
 
 export const metadata = {
   title: "MoveInReady",
