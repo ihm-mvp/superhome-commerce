@@ -1,6 +1,6 @@
 import "./globals.css"
 import Link from "next/link"
-import EmailCapture from "@/components/EmailCapture"
+import EmailCapture from "@/components/EmailCapture" // ✅ 修复
 
 export const metadata = {
   title: "MoveInReady",
@@ -41,9 +41,6 @@ export default function RootLayout({
               </Link>
               <Link href="/products" className="hover:text-black">
                 Products
-              </Link>
-              <Link href="/about" className="hover:text-black">
-                About
               </Link>
             </nav>
 
@@ -87,7 +84,7 @@ export default function RootLayout({
               <div className="mt-3 text-xs">
                 Contact:{" "}
                 <a
-                  href=" "  // ✅ 修复
+                  href=" " // ✅ 修复
                   className="underline"
                 >
                   sales@moveinready.co.nz
@@ -105,9 +102,6 @@ export default function RootLayout({
               </div>
               <div>
                 <Link href="/products">Browse Products</Link>
-              </div>
-              <div>
-                <Link href="/about">About MoveInReady</Link>
               </div>
             </div>
 
