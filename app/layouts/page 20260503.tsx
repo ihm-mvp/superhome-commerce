@@ -1,12 +1,6 @@
 import { supabase } from "@/lib/supabase"
 import Link from "next/link"
 
-export const metadata = {
-  title: "Home Layouts NZ | Move-in Ready Furnished Homes",
-  description:
-    "Explore real New Zealand home layouts and discover fully furnished furniture packages. Plan your move-in ready home with confidence.",
-}
-
 export default async function LayoutsPage() {
 
   const { data: layouts } = await supabase
@@ -39,26 +33,29 @@ export default async function LayoutsPage() {
   return (
     <div className="max-w-7xl mx-auto px-6 py-10 space-y-16">
 
-      {/* ===== HERO ===== */}
+      {/* ===== HERO（重做结构）===== */}
       <div className="relative rounded-xl overflow-hidden">
 
+        {/* 图片 */}
         <img
-          src="/layouts/layouts-hero.jpg"
+          src="/layouts/layouts-hero.jpg"   // 👉 用你刚生成的图
           className="w-full h-[420px] object-cover"
         />
 
+        {/* 遮罩层 */}
         <div className="absolute inset-0 bg-black/30" />
 
+        {/* 文案层（关键） */}
         <div className="absolute inset-0 flex items-center">
           <div className="px-10 max-w-lg text-white space-y-4">
 
             <h1 className="text-4xl font-semibold leading-tight">
-              Explore New Zealand <br />
-              Home Layouts
+              Find Your Home <br />
+              Fully Furnished
             </h1>
 
             <p className="text-white/80">
-              Browse real home layouts and discover move-in ready furniture packages designed for modern living in New Zealand.
+              Explore real New Zealand home layouts and match them with complete furniture packages.
             </p >
 
             <Link
@@ -78,11 +75,11 @@ export default async function LayoutsPage() {
 
         <div className="flex justify-between items-end">
           <h2 className="text-2xl font-semibold">
-            Available Home Layouts
+            Available Layouts
           </h2>
 
           <div className="text-sm text-gray-400">
-            Real layouts · Designed for living
+            Designed for real living
           </div>
         </div>
 
@@ -142,22 +139,6 @@ export default async function LayoutsPage() {
             )
           })}
 
-        </div>
-
-      </div>
-
-      {/* ===== TRUST / SUPPLY SECTION ===== */}
-      <div className="pt-10 border-t space-y-4 text-center">
-
-        <div className="text-xs text-gray-400 uppercase tracking-wide">
-          Supply supported by selected manufacturing partners
-        </div>
-
-        <div className="flex justify-center">
-          <img
-            src="/images/brand_logo.jpg"
-            className="h-10 object-contain opacity-70"
-          />
         </div>
 
       </div>
