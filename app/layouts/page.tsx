@@ -155,7 +155,7 @@ export default async function LayoutsPage() {
 
         <div className="flex justify-center">
           <img
-            src="/images/brand_logo.jpg"
+            src="/images/RoyalShow LOGO.png"
             className="h-10 object-contain opacity-70"
           />
         </div>
