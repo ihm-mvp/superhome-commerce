@@ -12,14 +12,14 @@ export default function PackageEditor() {
     setData(json)
   }
 
-  const handleChange = (pipId: string, field: string, value: string) => {
+  const handleChange = (pipId: string, field: string, value: any) => {
     setData((prev) =>
       prev.map((room) => ({
         ...room,
         items: room.items.map((item: any) => ({
           ...item,
           pips: item.pips.map((p: any) =>
-            p.id === pipId ? { ...p, [field]: value } : p
+            p.id === pipId ? { ...p, ...value } : p
           ),
         })),
       }))
@@ -35,11 +35,11 @@ export default function PackageEditor() {
   }
 
   return (
-    <div className="p-10 space-y-6">
+    <div className="p-10 space-y-6 max-w-5xl">
 
       <input
         placeholder="package_id"
-        className="border p-2"
+        className="border p-2 w-full"
         value={packageId}
         onChange={(e) => setPackageId(e.target.value)}
       />
@@ -50,33 +50,65 @@ export default function PackageEditor() {
 
       {data.map((room: any) => (
         <div key={room.name} className="border p-4">
-          <div className="font-semibold mb-2">{room.name}</div>
+          <div className="font-semibold mb-3">{room.name}</div>
 
           {room.items.map((item: any) => (
-            <div key={item.id} className="mb-3">
+            <div key={item.id} className="mb-4">
 
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-gray-500 mb-1">
                 {item.item_type_name}
               </div>
 
               {item.pips.map((p: any) => (
-                <div key={p.id} className="flex gap-2 mt-1">
+                <div key={p.id} className="flex gap-3 items-center mb-1">
 
-                  <input
+                  {/* SKU dropdown */}
+                  <select
+                    className="border px-2 py-1 text-sm"
                     value={p.product_id}
-                    onChange={(e) =>
-                      handleChange(p.id, "product_id", e.target.value)
-                    }
-                    className="border px-2 py-1 text-xs"
-                  />
+                    onChange={(e) => {
+                      const selected = item.options.find(
+                        (o: any) => o.id === e.target.value
+                      )
+                      handleChange(p.id, "product", {
+                        product_id: selected.id,
+                        variant_id: selected.variants[0]?.id,
+                        variant_config: selected.variants[0]?.config,
+                      })
+                    }}
+                  >
+                    {item.options.map((o: any) => (
+                      <option key={o.id} value={o.id}>
+                        {o.sku_code}
+                      </option>
+                    ))}
+                  </select>
 
-                  <input
-                    value={p.variant_id}
-                    onChange={(e) =>
-                      handleChange(p.id, "variant_id", e.target.value)
-                    }
-                    className="border px-2 py-1 text-xs"
-                  />
+                  {/* Variant dropdown */}
+                  <select
+                    className="border px-2 py-1 text-sm"
+                    value={p.variant_id || ""}
+                    onChange={(e) => {
+                      const selectedSku = item.options.find(
+                        (o: any) => o.id === p.product_id
+                      )
+                      const v = selectedSku?.variants.find(
+                        (v: any) => v.id === e.target.value
+                      )
+                      handleChange(p.id, "variant", {
+                        variant_id: v.id,
+                        variant_config: v.config,
+                      })
+                    }}
+                  >
+                    {item.options
+                      .find((o: any) => o.id === p.product_id)
+                      ?.variants.map((v: any) => (
+                        <option key={v.id} value={v.id}>
+                          {v.config}
+                        </option>
+                      ))}
+                  </select>
 
                 </div>
               ))}
