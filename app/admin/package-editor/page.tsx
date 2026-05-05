@@ -63,52 +63,46 @@ export default function PackageEditor() {
                 <div key={p.id} className="flex gap-3 items-center mb-1">
 
                   {/* SKU dropdown */}
-                  <select
-                    className="border px-2 py-1 text-sm"
-                    value={p.product_id}
-                    onChange={(e) => {
-                      const selected = item.options.find(
-                        (o: any) => o.id === e.target.value
-                      )
-                      handleChange(p.id, "product", {
-                        product_id: selected.id,
-                        variant_id: selected.variants[0]?.id,
-                        variant_config: selected.variants[0]?.config,
-                      })
-                    }}
-                  >
-                    {item.options.map((o: any) => (
-                      <option key={o.id} value={o.id}>
-                        {o.sku_code}
-                      </option>
-                    ))}
-                  </select>
+<select
+  value={p.product_id}
+  onChange={(e) => {
+    const selected = p.options.find((o: any) => o.id === e.target.value)
+    handleChange(p.id, "product", {
+      product_id: selected.id,
+      variant_id: selected.variants[0]?.id,
+    })
+  }}
+>
+  {p.options.map((o: any) => (
+    <option key={o.id} value={o.id}>
+      {o.sku_code}
+    </option>
+  ))}
+</select>
 
                   {/* Variant dropdown */}
-                  <select
-                    className="border px-2 py-1 text-sm"
-                    value={p.variant_id || ""}
-                    onChange={(e) => {
-                      const selectedSku = item.options.find(
-                        (o: any) => o.id === p.product_id
-                      )
-                      const v = selectedSku?.variants.find(
-                        (v: any) => v.id === e.target.value
-                      )
-                      handleChange(p.id, "variant", {
-                        variant_id: v.id,
-                        variant_config: v.config,
-                      })
-                    }}
-                  >
-                    {item.options
-                      .find((o: any) => o.id === p.product_id)
-                      ?.variants.map((v: any) => (
-                        <option key={v.id} value={v.id}>
-                          {v.config}
-                        </option>
-                      ))}
-                  </select>
+<select
+  value={p.variant_id || ""}
+  onChange={(e) => {
+    const selectedSku = p.options.find(
+      (o: any) => o.id === p.product_id
+    )
+    const v = selectedSku?.variants.find(
+      (v: any) => v.id === e.target.value
+    )
+    handleChange(p.id, "variant", {
+      variant_id: v.id,
+    })
+  }}
+>
+  {p.options
+    .find((o: any) => o.id === p.product_id)
+    ?.variants.map((v: any) => (
+      <option key={v.id} value={v.id}>
+        {v.config}
+      </option>
+    ))}
+</select>
 
                 </div>
               ))}

@@ -12,8 +12,6 @@ export async function GET(req: Request) {
       name,
       package_items (
         id,
-        item_type_id,
-        item_types (id, name, category_id),
         package_item_products (
           id,
           product_id,
@@ -23,19 +21,18 @@ export async function GET(req: Request) {
     `)
     .eq("package_id", package_id)
 
-  // 2️⃣ products（不带 variants）
+  // 2️⃣ 所有 products
   const { data: products } = await supabase
     .from("products")
     .select("id, sku_code, category_id")
 
-  // 3️⃣ variants 单独查
+  // 3️⃣ 所有 variants
   const { data: variants } = await supabase
     .from("variants")
     .select("id, product_id, config")
 
-  // 4️⃣ 手动拼 variants
+  // 4️⃣ 建 product → variants map
   const productMap: any = {}
-
   for (const p of products || []) {
     productMap[p.id] = {
       id: p.id,
@@ -54,23 +51,29 @@ export async function GET(req: Request) {
     }
   }
 
-  const productList = Object.values(productMap)
-
-  // 5️⃣ 构建返回
-  const formatted = rooms?.map((room: any) => ({
+  // 5️⃣ 输出结构（关键逻辑在这里）
+  const formatted = (rooms || []).map((room: any) => ({
     name: room.name,
-    items: room.package_items.map((i: any) => {
-      const options = productList.filter(
-        (p: any) => p.category_id === i.item_types?.category_id
-      )
+    items: (room.package_items || []).map((item: any) => ({
+      id: item.id,
+      pips: (item.package_item_products || []).map((pip: any) => {
 
-      return {
-        id: i.id,
-        item_type_name: i.item_types?.name,
-        options,
-        pips: i.package_item_products,
-      }
-    }),
+        const currentProduct = productMap[pip.product_id]
+
+        const options = currentProduct
+          ? Object.values(productMap).filter(
+              (p: any) => p.category_id === currentProduct.category_id
+            )
+          : Object.values(productMap)
+
+        return {
+          id: pip.id,
+          product_id: pip.product_id,
+          variant_id: pip.variant_id,
+          options,                // 👈 每个 pip 自带 options
+        }
+      }),
+    })),
   }))
 
   return Response.json(formatted)
