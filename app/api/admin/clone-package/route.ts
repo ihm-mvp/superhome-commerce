@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     .select("*")
     .eq("package_id", source_package_id)
 
-  for (const room of rooms) {
+  for (const room of rooms || []) {
     const { data: newRoom } = await supabase
       .from("package_rooms")
       .insert({
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
       .select("*")
       .eq("package_room_id", room.id)
 
-    for (const item of items) {
+    for (const item of items || []) {
       const { data: newItem } = await supabase
         .from("package_items")
         .insert({
@@ -58,7 +58,7 @@ export async function POST(req: Request) {
         .select("*")
         .eq("package_item_id", item.id)
 
-      for (const pip of pips) {
+      for (const pip of pips || []) {
         await supabase
           .from("package_item_products")
           .insert({
