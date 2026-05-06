@@ -1,6 +1,37 @@
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 
+export const metadata = {
+  title:
+    'Furniture Collection NZ | Modern Home Furniture | MoveInReady',
+
+  description:
+    'Browse curated furniture collections designed for modern New Zealand homes. Explore sofas, dining tables, beds and more matched to real home layouts.',
+
+  keywords: [
+    'furniture NZ',
+    'modern furniture NZ',
+    'home furniture collection',
+    'living room furniture',
+    'bedroom furniture NZ',
+    'dining furniture NZ',
+    'move in ready furniture',
+    'Christchurch furniture',
+  ],
+
+  openGraph: {
+    title:
+      'Furniture Collection | MoveInReady',
+
+    description:
+      'Curated furniture designed for modern New Zealand homes.',
+
+    images: [
+      '/images/hero-image.png',
+    ],
+  },
+}
+
 export default async function Page() {
 
   // ✅ 仅增加 limit，其他逻辑完全不动
@@ -142,6 +173,33 @@ export default async function Page() {
         })}
 
       </div>
+
+      {/* ===== SEO Content ===== */}
+      <div className="border-t pt-10">
+
+        <div className="max-w-4xl space-y-4 text-gray-600 leading-relaxed">
+
+          <h2 className="text-2xl font-semibold text-black">
+            Modern Furniture Collections in New Zealand
+          </h2>
+
+          <p>
+            MoveInReady curates furniture collections designed
+            for real New Zealand home layouts. Explore sofas,
+            dining furniture, beds and storage solutions matched
+            to modern homes and move-in ready living.
+          </p >
+
+          <p>
+            Our furniture collections help homeowners visualise,
+            compare and select furniture more efficiently across
+            living, dining and bedroom spaces.
+          </p >
+
+        </div>
+
+      </div>
+
     </div>
   )
 }
