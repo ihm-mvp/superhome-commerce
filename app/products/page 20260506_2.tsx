@@ -34,7 +34,7 @@ export const metadata = {
 
 export default async function Page() {
 
-  // ✅ 限量读取
+  // ✅ 限量读取（避免一次加载整个 products 表）
   const { data: products } = await supabase
     .from('products')
     .select(`
@@ -56,7 +56,6 @@ export default async function Page() {
   const categoryMeta: Record<string, any> = {}
 
   products?.forEach((p: any) => {
-
     const cat = p.categories
 
     if (!cat) return
@@ -119,17 +118,16 @@ export default async function Page() {
           beds and storage solutions matched to real home layouts.
         </p >
 
-        {/* ===== 分类按钮导航 ===== */}
+        {/* ===== 分类导航 ===== */}
         <div className="flex flex-wrap gap-3 pt-2">
 
           {categories.map((slug) => {
-
             const meta = categoryMeta[slug]
 
             return (
               <a
                 key={slug}
-                href= "px-4 py-2 border rounded-lg text-sm hover:bg-gray-100 transition"
+                href= "px-4 py-2 text-sm border rounded-lg hover:bg-gray-100 transition"
               >
                 {meta.display_name}
               </a >
@@ -149,13 +147,14 @@ export default async function Page() {
 
           const sorted = sortProducts(grouped[slug])
 
+          // ✅ 首页只显示4个
           const preview = sorted.slice(0, 4)
 
           return (
             <div
               key={slug}
               id={slug}
-              className="space-y-5 scroll-mt-24"
+              className="space-y-5"
             >
 
               {/* 分类标题 */}
@@ -173,15 +172,17 @@ export default async function Page() {
 
                 </div>
 
-                {/* ⚠️ 暂时取消 category 页面链接 */}
-                <div className="text-sm text-gray-400">
-                  Preview Collection
-                </div>
+                <Link
+                  href={`/products/category/${meta.slug}`}
+                  className="text-sm text-gray-500 hover:text-black transition"
+                >
+                  View all →
+                </Link>
 
               </div>
 
 
-              {/* ===== 产品预览 ===== */}
+              {/* 产品预览 */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
 
                 {preview.map((p) => (
