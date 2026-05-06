@@ -2,6 +2,8 @@ import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 
 export default async function Page() {
+
+  // ✅ 仅增加 limit，其他逻辑完全不动
   const { data: products } = await supabase
     .from('products')
     .select(`
@@ -16,6 +18,7 @@ export default async function Page() {
         sort_order
       )
     `)
+    .limit(120)
 
   // ===== 分组 =====
   const grouped: Record<string, any[]> = {}
@@ -73,8 +76,8 @@ export default async function Page() {
             return (
               <a
                 key={slug}
-                href={`#${slug}`} 
-                className= "px-4 py-2 text-sm border rounded-lg hover:bg-gray-100 transition"
+                href={`#${slug}`}
+                className="px-4 py-2 text-sm border rounded-lg hover:bg-gray-100 transition"
               >
                 {meta.display_name}
               </a >
