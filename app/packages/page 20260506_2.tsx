@@ -44,15 +44,10 @@ export default async function PackagesPage() {
       display_price,
       sort_order,
       layout_id,
-      layout:layouts!packages_layout_id_fkey(
+      layout:layouts(
         id,
         name,
-        slug,
-        location,
-        bedrooms,
-        bathrooms,
-        garage,
-        land_size
+        slug
       )
     `)
     .order("sort_order", { ascending: true })
@@ -61,10 +56,6 @@ export default async function PackagesPage() {
   const grouped: Record<string, any> = {}
 
   packages?.forEach((pkg: any) => {
-
-    // 防止 relation 异常
-    if (!pkg.layout) return
-
     const key = pkg.layout.id
 
     if (!grouped[key]) {
@@ -112,31 +103,14 @@ export default async function PackagesPage() {
             {/* Layout 标题 */}
             <div className="flex justify-between items-end">
 
-              <div className="space-y-2">
-
+              <div className="space-y-1">
                 <h2 className="text-2xl font-semibold">
                   {group.layout.name}
                 </h2>
 
-                {/* 地址 */}
-                <div className="text-gray-400">
-                  {group.layout.location}
+                <div className="text-sm text-gray-400">
+                  Furniture packages matched to this home layout
                 </div>
-
-                {/* 房屋信息 */}
-                <div className="text-sm text-gray-600">
-                  {group.layout.bedrooms} Bed ·{" "}
-                  {group.layout.bathrooms} Bath ·{" "}
-                  {group.layout.garage} Garage
-                </div>
-
-                {/* 占地面积 */}
-                {group.layout.land_size && (
-                  <div className="text-sm text-gray-400">
-                    {group.layout.land_size}
-                  </div>
-                )}
-
               </div>
 
               <Link
@@ -168,7 +142,7 @@ export default async function PackagesPage() {
 
                   </div>
 
-                 {/* 信息 */}
+                  {/* 信息 */}
                   <div className="p-5 space-y-3">
 
                     <div className="space-y-1">
@@ -204,6 +178,7 @@ export default async function PackagesPage() {
         ))}
 
       </div>
+
 
       {/* ===== SEO Content ===== */}
       <div className="border-t pt-12">
