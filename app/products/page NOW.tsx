@@ -1,7 +1,40 @@
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 
+export const metadata = {
+  title:
+    'Furniture Collection NZ | Modern Home Furniture | MoveInReady',
+
+  description:
+    'Browse curated furniture collections designed for modern New Zealand homes. Explore sofas, dining tables, beds and more matched to real home layouts.',
+
+  keywords: [
+    'furniture NZ',
+    'modern furniture NZ',
+    'home furniture collection',
+    'living room furniture',
+    'bedroom furniture NZ',
+    'dining furniture NZ',
+    'move in ready furniture',
+    'Christchurch furniture',
+  ],
+
+  openGraph: {
+    title:
+      'Furniture Collection | MoveInReady',
+
+    description:
+      'Curated furniture designed for modern New Zealand homes.',
+
+    images: [
+      '/images/hero-image.png',
+    ],
+  },
+}
+
 export default async function Page() {
+
+  // ✅ 限量读取（避免一次拉全 products）
   const { data: products } = await supabase
     .from('products')
     .select(`
@@ -16,6 +49,7 @@ export default async function Page() {
         sort_order
       )
     `)
+    .limit(120)
 
   // ===== 分组 =====
   const grouped: Record<string, any[]> = {}
@@ -23,6 +57,7 @@ export default async function Page() {
 
   products?.forEach((p: any) => {
     const cat = p.categories
+
     if (!cat) return
 
     const key = cat.slug
@@ -49,7 +84,10 @@ export default async function Page() {
 
   // ===== 分类排序（sort_order）=====
   const categories = Object.keys(grouped).sort((a, b) => {
-    return (categoryMeta[a].sort_order || 99) - (categoryMeta[b].sort_order || 99)
+    return (
+      (categoryMeta[a].sort_order || 99) -
+      (categoryMeta[b].sort_order || 99)
+    )
   })
 
   return (
@@ -57,6 +95,11 @@ export default async function Page() {
 
       {/* ===== HERO ===== */}
       <div className="max-w-xl">
+
+        <div className="text-sm uppercase tracking-wide text-gray-400 mb-2">
+          Furniture Collection
+        </div>
+
         <h1 className="text-3xl font-semibold">
           Furniture Collection
         </h1>
@@ -65,30 +108,36 @@ export default async function Page() {
           Curated furniture designed for real home layouts and complete your living spaces.
         </p >
 
-        {/* ===== 分类导航（新增）===== */}
+        {/* ===== 分类导航 ===== */}
         <div className="flex flex-wrap gap-3 mt-6">
+
           {categories.map((slug) => {
             const meta = categoryMeta[slug]
 
             return (
               <a
                 key={slug}
-                href={`#${slug}`} 
-                className= "px-4 py-2 text-sm border rounded-lg hover:bg-gray-100 transition"
+                href= "px-4 py-2 text-sm border rounded-lg hover:bg-gray-100 transition"
               >
                 {meta.display_name}
               </a >
             )
           })}
+
         </div>
+
       </div>
 
       {/* ===== CATEGORY PREVIEW ===== */}
       <div className="space-y-12">
 
         {categories.map((slug) => {
+
           const meta = categoryMeta[slug]
+
           const sorted = sortProducts(grouped[slug])
+
+          // ✅ 仍然只显示4个
           const preview = sorted.slice(0, 4)
 
           return (
@@ -96,6 +145,7 @@ export default async function Page() {
 
               {/* 分类标题 */}
               <div className="flex justify-between items-center">
+
                 <h2 className="text-xl font-semibold">
                   {meta.display_name}
                 </h2>
@@ -106,6 +156,7 @@ export default async function Page() {
                 >
                   View all →
                 </Link>
+
               </div>
 
               {/* 产品预览 */}
@@ -117,18 +168,25 @@ export default async function Page() {
                     href={`/products/${p.id}`}
                     className="block bg-white rounded-xl shadow-sm hover:shadow-md transition overflow-hidden"
                   >
+
                     <div className="h-48 flex items-center justify-center bg-gray-100">
+
                       <img
                         src={p.image_url}
+                        loading="lazy"
                         className="max-h-full object-contain"
                       />
+
                     </div>
 
                     <div className="p-3">
+
                       <div className="text-sm font-medium">
                         {p.sku_code}
                       </div>
+
                     </div>
+
                   </Link>
                 ))}
 
@@ -139,6 +197,33 @@ export default async function Page() {
         })}
 
       </div>
+
+      {/* ===== SEO Content ===== */}
+      <div className="border-t pt-10">
+
+        <div className="max-w-4xl space-y-4 text-gray-600 leading-relaxed">
+
+          <h2 className="text-2xl font-semibold text-black">
+            Modern Furniture Collections in New Zealand
+          </h2>
+
+          <p>
+            MoveInReady curates furniture collections designed
+            for real New Zealand home layouts. Explore sofas,
+            dining furniture, beds and storage solutions matched
+            to modern homes and move-in ready living.
+          </p >
+
+          <p>
+            Our furniture collections help homeowners visualise,
+            compare and select furniture more efficiently across
+            living, dining and bedroom spaces.
+          </p >
+
+        </div>
+
+      </div>
+
     </div>
   )
 }
