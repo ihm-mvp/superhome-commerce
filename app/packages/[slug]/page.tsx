@@ -9,14 +9,10 @@ export async function generateMetadata({
 }) {
   const { slug } = await params
 
+  // ⚠️ 与页面主体保持完全一致的数据结构
   const { data: pkg } = await supabase
     .from("packages")
-    .select(`
-      name,
-      slug,
-      display_price,
-      layout:layouts(name, slug)
-    `)
+    .select("*, layout:layouts(id, slug, name)")
     .eq("slug", slug)
     .single()
 
@@ -26,10 +22,15 @@ export async function generateMetadata({
     }
   }
 
-  const layoutName = pkg.layout?.[0].name || "New Zealand Home"
+  const layoutName =
+    pkg.layout?.name || "New Zealand Home"
+
+  const packageType =
+    pkg.name?.toLowerCase() || "package"
 
   return {
     title: `${pkg.name} Furniture Package | ${layoutName} | MoveInReady`,
+
     description:
       `${pkg.name} furniture package designed for ${layoutName}. ` +
       `Explore move-in ready furniture solutions for modern New Zealand homes.`,
@@ -47,11 +48,13 @@ export async function generateMetadata({
 
     openGraph: {
       title: `${pkg.name} Package | ${layoutName}`,
+
       description:
         `Complete furniture package for ${layoutName}. ` +
         `Designed for modern move-in ready living.`,
+
       images: [
-        `/packages/${pkg.layout?.[0].slug}_${pkg.name?.toLowerCase()}_overview.jpg`,
+        `/packages/${pkg.layout?.slug}_${packageType}_overview.jpg`,
       ],
     },
   }
@@ -182,8 +185,7 @@ export default async function PackagePage({
         {rooms?.map((room: any) => (
           <div key={room.id} className="space-y-5">
 
-
-            {/* Room Title */}
+           {/* Room Title */}
             <div className="border-b pb-2">
               <h2 className="text-2xl font-semibold">
                 {room.name}
