@@ -160,6 +160,13 @@ export default async function LayoutsPage() {
           />
         </div>
 
+                <div className="flex justify-center">
+          <img
+            src="/images/AoshenHome-LOGO.jpg"
+            className="h-10 object-contain opacity-70"
+          />
+        </div>
+
       </div>
 
     </div>
