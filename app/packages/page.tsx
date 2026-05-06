@@ -1,6 +1,37 @@
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
 
+export const metadata = {
+  title:
+    "Furniture Packages NZ | Move-In Ready Home Packages | MoveInReady",
+
+  description:
+    "Explore complete furniture packages designed for real New Zealand home layouts. Move-in ready furniture solutions for modern homes in Christchurch and across New Zealand.",
+
+  keywords: [
+    "furniture packages NZ",
+    "move in ready furniture",
+    "new home furniture package",
+    "fully furnished home NZ",
+    "Christchurch furniture package",
+    "New Zealand furniture package",
+    "home furnishing packages",
+    "modern furniture NZ",
+  ],
+
+  openGraph: {
+    title:
+      "Furniture Packages NZ | MoveInReady",
+
+    description:
+      "Explore curated furniture packages designed for real New Zealand homes.",
+
+    images: [
+      "/layouts/layouts-hero.jpg",
+    ],
+  },
+}
+
 export default async function PackagesPage() {
 
   // ===== 获取所有 packages + layout =====
@@ -41,34 +72,54 @@ export default async function PackagesPage() {
     <div className="max-w-7xl mx-auto px-6 py-12 space-y-12">
 
       {/* ===== Hero ===== */}
-      <div className="space-y-3">
-        <h1 className="text-3xl font-semibold">
-          Furniture Packages
+      <div className="space-y-4 max-w-3xl">
+
+        <div className="text-sm uppercase tracking-wide text-gray-400">
+          Move-In Ready Furniture Packages
+        </div>
+
+        <h1 className="text-3xl md:text-4xl font-semibold leading-tight">
+          Furniture Packages for Modern New Zealand Homes
         </h1>
-        <p className="text-gray-500">
-          Choose a complete furniture solution tailored to your home layout.
+
+        <p className="text-gray-500 leading-relaxed">
+          Explore complete furniture solutions tailored to real
+          New Zealand home layouts. Compare Basic, Standard and
+          Premium packages designed for move-in ready living.
         </p >
+
       </div>
 
       {/* ===== Layout 分组 ===== */}
-      <div className="space-y-10">
+      <div className="space-y-14">
 
         {Object.values(grouped).map((group: any) => (
 
-          <div key={group.layout.id} className="space-y-4">
+          <div
+            key={group.layout.id}
+            className="space-y-5"
+          >
 
             {/* Layout 标题 */}
             <div className="flex justify-between items-end">
-              <h2 className="text-xl font-semibold">
-                {group.layout.name}
-              </h2>
+
+              <div className="space-y-1">
+                <h2 className="text-2xl font-semibold">
+                  {group.layout.name}
+                </h2>
+
+                <div className="text-sm text-gray-400">
+                  Furniture packages matched to this home layout
+                </div>
+              </div>
 
               <Link
                 href={`/layouts/${group.layout.slug}`}
-                className="text-sm text-gray-400"
+                className="text-sm text-gray-400 hover:text-black transition"
               >
                 View Layout →
               </Link>
+
             </div>
 
             {/* Packages 列表 */}
@@ -78,32 +129,42 @@ export default async function PackagesPage() {
                 <Link
                   key={pkg.id}
                   href={`/packages/${pkg.slug}`}
-                  className="border rounded-xl overflow-hidden hover:shadow-lg transition"
+                  className="border rounded-2xl overflow-hidden hover:shadow-lg transition bg-white"
                 >
 
                   {/* 图片 */}
-                  <div className="h-40 bg-gray-100">
+                  <div className="h-48 bg-gray-100 overflow-hidden">
+
                     <img
                       src={`/packages/${pkg.layout.slug}_${pkg.name.toLowerCase()}_overview.jpg`}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover hover:scale-[1.02] transition"
                     />
+
                   </div>
 
                   {/* 信息 */}
-                  <div className="p-4 space-y-2">
+                  <div className="p-5 space-y-3">
 
-                    <div className="font-medium">
-                      {pkg.name}
+                    <div className="space-y-1">
+
+                      <div className="font-medium text-lg">
+                        {pkg.name}
+                      </div>
+
+                      <div className="text-sm text-gray-400">
+                        {group.layout.name}
+                      </div>
+
                     </div>
 
                     {pkg.display_price && (
-                      <div className="text-sm text-gray-500">
-                        ${pkg.display_price}+
+                      <div className="text-sm text-gray-600">
+                        From ${pkg.display_price} NZD
                       </div>
                     )}
 
                     <div className="text-sm text-gray-400">
-                      View →
+                      View Package →
                     </div>
 
                   </div>
@@ -115,6 +176,35 @@ export default async function PackagesPage() {
 
           </div>
         ))}
+
+      </div>
+
+
+      {/* ===== SEO Content ===== */}
+      <div className="border-t pt-12">
+
+        <div className="max-w-4xl space-y-4 text-gray-600 leading-relaxed">
+
+          <h2 className="text-2xl font-semibold text-black">
+            Move-In Ready Furniture Packages in New Zealand
+          </h2>
+
+          <p>
+            MoveInReady provides complete furniture packages
+            designed around real New Zealand home layouts.
+            Each package is curated to simplify furnishing and
+            help homeowners move into a fully prepared space
+            faster and more efficiently.
+          </p >
+
+          <p>
+            Our furniture packages combine living room,
+            dining room and bedroom furniture selections into
+            coordinated solutions tailored for modern
+            New Zealand homes and townhouses.
+          </p >
+
+        </div>
 
       </div>
 
