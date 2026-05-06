@@ -26,7 +26,7 @@ export async function generateMetadata({
     }
   }
 
-  const layoutName = pkg.layout?.name || "New Zealand Home"
+  const layoutName = pkg.layout?.[0].name || "New Zealand Home"
 
   return {
     title: `${pkg.name} Furniture Package | ${layoutName} | MoveInReady`,
@@ -51,7 +51,7 @@ export async function generateMetadata({
         `Complete furniture package for ${layoutName}. ` +
         `Designed for modern move-in ready living.`,
       images: [
-        `/packages/${pkg.layout?.slug}_${pkg.name?.toLowerCase()}_overview.jpg`,
+        `/packages/${pkg.layout?.[0].slug}_${pkg.name?.toLowerCase()}_overview.jpg`,
       ],
     },
   }
