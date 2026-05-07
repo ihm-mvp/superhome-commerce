@@ -24,6 +24,9 @@ export default function PackagePricingCalculatorPage() {
   const [localCost, setLocalCost] = useState(3500)
   const [marginPercent, setMarginPercent] = useState(35)
 
+  // ===== 中国出口成本系数 =====
+  const exportFactor = 1.2
+
   // ===== GST =====
   const gstRate = 15
 
@@ -95,13 +98,26 @@ export default function PackagePricingCalculatorPage() {
 
   }, [rows])
 
+  // ===== 中国出口成本 =====
+  const exportCostRmb =
+    exwTotalRmb * (exportFactor - 1)
+
+  const totalChinaCostRmb =
+    exwTotalRmb + exportCostRmb
+
   // ===== NZD =====
   const exwTotalNzd =
     exwTotalRmb / fxRate
 
+  const exportCostNzd =
+    exportCostRmb / fxRate
+
+  const totalChinaCostNzd =
+    totalChinaCostRmb / fxRate
+
   // ===== landed =====
   const landedCost =
-    exwTotalNzd * shippingFactor
+    totalChinaCostNzd * shippingFactor
 
   // ===== subtotal =====
   const subtotalBeforeMargin =
@@ -156,7 +172,8 @@ export default function PackagePricingCalculatorPage() {
 
         <div className="text-gray-500">
           Calculate package pricing based on EXW cost,
-          logistics, local cost, margin and GST.
+          China export cost, logistics, local cost,
+          margin and GST.
         </div>
 
       </div>
@@ -228,7 +245,22 @@ export default function PackagePricingCalculatorPage() {
             <div className="space-y-2">
 
               <div className="text-sm text-gray-500">
-Shipping Factor
+                China Export Factor
+              </div>
+
+              <input
+                type="number"
+                value={exportFactor}
+                disabled
+                className="w-full border rounded-lg px-3 py-2 bg-gray-100"
+              />
+
+            </div>
+
+            <div className="space-y-2">
+
+              <div className="text-sm text-gray-500">
+                Shipping Factor
               </div>
 
               <input
@@ -360,37 +392,26 @@ Shipping Factor
               )
             )}
 
-            <div className="border-t pt-5 flex justify-between text-lg font-semibold">
+            <div className="border-t pt-5 space-y-3">
 
-              <div>
-                EXW Total
-              </div>
-
-              <div>
-                ¥{exwTotalRmb.toLocaleString()}
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-        {/* ===== RIGHT ===== */}
-        <div className="col-span-4">
-
-          <div className="border rounded-2xl p-6 space-y-6">
-
-            <div className="font-medium text-lg">
-              Pricing Summary
-            </div>
-
-            <div className="space-y-4 text-sm">
-
-              <div className="flex justify-between">
-                <div>EXW Total (NZD)</div>
+              <div className="flex justify-between text-sm">
+                <div>EXW Total</div>
                 <div>
-                  ${exwTotalNzd.toFixed(0)}
+                  ¥{exwTotalRmb.toLocaleString()}
+                </div>
+              </div>
+
+              <div className="flex justify-between text-sm">
+                <div>China Export Cost</div>
+                <div>
+                  ¥{exportCostRmb.toLocaleString()}
+                </div>
+              </div>
+
+              <div className="flex justify-between text-lg font-semibold border-t pt-3">
+                <div>Total China Cost</div>
+                <div>
+                  ${totalChinaCostNzd.toFixed(0)}
                 </div>
               </div>
 
