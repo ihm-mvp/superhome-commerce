@@ -9,7 +9,6 @@ type ProductRow = {
   sku_code: string
   quantity: number
   exw_price_rmb: number
-  variant_config?: string
 }
 
 export default function PackagePricingCalculatorPage() {
@@ -19,22 +18,20 @@ export default function PackagePricingCalculatorPage() {
   const [rows, setRows] = useState<ProductRow[]>([])
 
   // ===== 输入参数 =====
-  const [fxRate, setFxRate] = useState(4.5)
-  const [shippingFactor, setShippingFactor] = useState(1.1)
-  const [localCost, setLocalCost] = useState(3500)
-  const [marginPercent, setMarginPercent] = useState(35)
+  const [fxRate, setFxRate] = useState(4.0)
+  const [shippingFactor, setShippingFactor] = useState(1.2)
+  const [localCost, setLocalCost] = useState(3000)
+  const [marginPercent, setMarginPercent] = useState(30)
 
-  // ===== GST =====
-  const gstRate = 15
+  // ===== display price =====
+  const [displayPrice, setDisplayPrice] = useState(0)
 
   // ===== package list =====
   useEffect(() => {
 
     async function loadPackages() {
 
-      const res = await fetch(
-        "/api/admin/package-pricing/packages"
-      )
+      const res = await fetch("/api/admin/package-pricing/packages")
 
       const data = await res.json()
 
@@ -83,64 +80,44 @@ export default function PackagePricingCalculatorPage() {
 
   }, [rows])
 
-  // ===== EXW RMB =====
+  // ===== totals =====
   const exwTotalRmb = useMemo(() => {
 
     return rows.reduce((sum, r) => {
-      return (
-        sum +
-        (r.exw_price_rmb || 0) * r.quantity
-      )
+      return sum + (r.exw_price_rmb || 0) * r.quantity
     }, 0)
 
   }, [rows])
 
-  // ===== NZD =====
-  const exwTotalNzd =
-    exwTotalRmb / fxRate
+  const exwTotalNzd = exwTotalRmb / fxRate
 
-  // ===== landed =====
   const landedCost =
     exwTotalNzd * shippingFactor
 
-  // ===== subtotal =====
-  const subtotalBeforeMargin =
+  const subtotal =
     landedCost + localCost
 
-  // ===== margin =====
-  const beforeGstPrice =
-    subtotalBeforeMargin /
-    (1 - marginPercent / 100)
-
-  // ===== GST =====
-  const gstAmount =
-    beforeGstPrice * (gstRate / 100)
-
-  // ===== final =====
-  const finalPrice =
-    beforeGstPrice + gstAmount
+  const suggestedPrice =
+    subtotal / (1 - marginPercent / 100)
 
   const roundedPrice =
-    Math.round(finalPrice / 100) * 100
+    Math.round(suggestedPrice / 100) * 100
 
   // ===== save =====
   async function saveDisplayPrice() {
 
     if (!selectedPackageId) return
 
-    await fetch(
-      "/api/admin/package-pricing/save-display-price",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          package_id: selectedPackageId,
-          display_price: roundedPrice,
-        }),
-      }
-    )
+    await fetch("/api/admin/package-pricing/save-display-price", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        package_id: selectedPackageId,
+        display_price: roundedPrice,
+      }),
+    })
 
     alert("Display price saved.")
   }
@@ -156,7 +133,7 @@ export default function PackagePricingCalculatorPage() {
 
         <div className="text-gray-500">
           Calculate package pricing based on EXW cost,
-          logistics, local cost, margin and GST.
+          logistics, local cost and margin.
         </div>
 
       </div>
@@ -175,9 +152,7 @@ export default function PackagePricingCalculatorPage() {
             <select
               value={selectedPackageId}
               onChange={(e) =>
-                setSelectedPackageId(
-                  e.target.value
-                )
+                setSelectedPackageId(e.target.value)
               }
               className="w-full border rounded-lg px-3 py-2"
             >
@@ -216,9 +191,7 @@ export default function PackagePricingCalculatorPage() {
                 value={fxRate}
                 step="0.01"
                 onChange={(e) =>
-                  setFxRate(
-                    Number(e.target.value)
-                  )
+                  setFxRate(Number(e.target.value))
                 }
                 className="w-full border rounded-lg px-3 py-2"
               />
@@ -228,7 +201,7 @@ export default function PackagePricingCalculatorPage() {
             <div className="space-y-2">
 
               <div className="text-sm text-gray-500">
-Shipping Factor
+                Shipping Factor
               </div>
 
               <input
@@ -236,9 +209,7 @@ Shipping Factor
                 value={shippingFactor}
                 step="0.01"
                 onChange={(e) =>
-                  setShippingFactor(
-                    Number(e.target.value)
-                  )
+                  setShippingFactor(Number(e.target.value))
                 }
                 className="w-full border rounded-lg px-3 py-2"
               />
@@ -255,9 +226,7 @@ Shipping Factor
                 type="number"
                 value={localCost}
                 onChange={(e) =>
-                  setLocalCost(
-                    Number(e.target.value)
-                  )
+                  setLocalCost(Number(e.target.value))
                 }
                 className="w-full border rounded-lg px-3 py-2"
               />
@@ -274,9 +243,7 @@ Shipping Factor
                 type="number"
                 value={marginPercent}
                 onChange={(e) =>
-                  setMarginPercent(
-                    Number(e.target.value)
-                  )
+                  setMarginPercent(Number(e.target.value))
                 }
                 className="w-full border rounded-lg px-3 py-2"
               />
@@ -327,19 +294,11 @@ Shipping Factor
 
                         <div className="flex-1">
 
-                          <div>
-                            {p.sku_code}
+                          {p.sku_code}
 
-                            <span className="text-gray-400 ml-2">
-                              ×{p.quantity}
-                            </span>
-                          </div>
-
-                          {p.variant_config && (
-                            <div className="text-xs text-gray-400">
-                              {p.variant_config}
-                            </div>
-                          )}
+                          <span className="text-gray-400 ml-2">
+                            ×{p.quantity}
+                          </span>
 
                         </div>
 
@@ -412,20 +371,6 @@ Shipping Factor
                 <div>Margin</div>
                 <div>
                   {marginPercent}%
-                </div>
-              </div>
-
-              <div className="flex justify-between">
-                <div>GST</div>
-                <div>
-                  {gstRate}%
-                </div>
-              </div>
-
-              <div className="flex justify-between">
-                <div>GST Amount</div>
-                <div>
-                  ${gstAmount.toFixed(0)}
                 </div>
               </div>
 
