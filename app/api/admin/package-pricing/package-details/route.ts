@@ -33,8 +33,12 @@ export async function GET(req: Request) {
       products:package_item_products(
         quantity,
         product:products(
-          sku_code,
-          exw_price_rmb
+          sku_code
+        ),
+        variant:variants(
+          price_rmb,
+          config,
+          size_label
         )
       )
     `)
@@ -55,10 +59,23 @@ export async function GET(req: Request) {
 
       rows.push({
         room_name: room?.name || "",
-        sku_code: p.product?.sku_code || "",
-        quantity: p.quantity || 1,
+
+        sku_code:
+          p.product?.sku_code || "",
+
+        quantity:
+          p.quantity || 1,
+
         exw_price_rmb:
-          p.product?.exw_price_rmb || 0,
+          p.variant?.price_rmb || 0,
+
+        variant_config:
+          [
+            p.variant?.size_label,
+            p.variant?.config,
+          ]
+            .filter(Boolean)
+            .join(" "),
       })
     })
   })
