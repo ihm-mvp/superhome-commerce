@@ -18,10 +18,10 @@ export default function PackagePricingCalculatorPage() {
   const [rows, setRows] = useState<ProductRow[]>([])
 
   // ===== 输入参数 =====
-  const [fxRate, setFxRate] = useState(4.5)
-  const [shippingFactor, setShippingFactor] = useState(1.1)
-  const [localCost, setLocalCost] = useState(3500)
-  const [marginPercent, setMarginPercent] = useState(35)
+  const [fxRate, setFxRate] = useState(4.0)
+  const [shippingFactor, setShippingFactor] = useState(1.2)
+  const [localCost, setLocalCost] = useState(3000)
+  const [marginPercent, setMarginPercent] = useState(30)
 
   // ===== display price =====
   const [displayPrice, setDisplayPrice] = useState(0)
