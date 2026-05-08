@@ -105,7 +105,6 @@ export default async function LayoutDetail({
 
         {/* Exterior Hero */}
         <div className="rounded-2xl overflow-hidden border bg-gray-100">
-
           <img
             src={
               layout.hero_exterior_image ||
@@ -113,7 +112,6 @@ export default async function LayoutDetail({
             }
             className="w-full object-cover"
           />
-
         </div>
 
         {/* Hero Content */}
@@ -186,8 +184,6 @@ export default async function LayoutDetail({
               <div className="text-xl font-semibold">
                 Real Christchurch Showhome Project
               </div>
-
-            </div>
 
             </div>
 
@@ -385,31 +381,35 @@ export default async function LayoutDetail({
 
               </div>
 
-{layout.floorplan_highlights ? (
-  <div className="space-y-3 text-sm text-gray-600 leading-relaxed">
-    {layout.floorplan_highlights
-      .split("·")
-      .map((item: string, idx: number) => {
-        return (
-          <div
-            key={idx}
-            className="flex gap-3"
-          >
-            <div className="mt-[7px] w-1.5 h-1.5 rounded-full bg-black shrink-0" />
+              {layout.floorplan_highlights ? (
+                <div className="space-y-3 text-sm text-gray-600 leading-relaxed">
 
-            <div>
-              {item.trim()}
-            </div>
-          </div>
-        )
-      })}
-  </div>
-) : (
-  <div className="text-sm text-gray-500">
-    Open-plan living and functional room
-    arrangement designed for move-in ready furnishing.
-  </div>
-)}
+                  {layout.floorplan_highlights
+                    .split("·")
+                    .map((item: string, idx: number) => {
+                      return (
+                        <div
+                          key={idx}
+                          className="flex gap-3"
+                        >
+
+                          <div className="mt-[7px] w-1.5 h-1.5 rounded-full bg-black shrink-0" />
+
+                          <div>
+                            {item.trim()}
+                          </div>
+
+                        </div>
+                      )
+                    })}
+
+                </div>
+              ) : (
+                <div className="text-sm text-gray-500">
+                  Open-plan living and functional room
+                  arrangement designed for move-in ready furnishing.
+                </div>
+              )}
 
             </div>
 
