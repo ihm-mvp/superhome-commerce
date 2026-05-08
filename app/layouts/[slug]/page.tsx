@@ -2,6 +2,70 @@ import { supabase } from "@/lib/supabase"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}) {
+  const { slug } = await params
+
+  const { data: layout } = await supabase
+    .from("layouts")
+    .select(`
+      name,
+      slug,
+      location,
+      bedrooms,
+      bathrooms,
+      garage,
+      floor_size,
+      land_size,
+      builder_name,
+      hero_exterior_image
+    `)
+    .eq("slug", slug)
+    .single()
+
+  if (!layout) {
+    return {
+      title: "Layout Not Found | MoveInReady",
+    }
+  }
+
+  return {
+    title:
+      `${layout.name} | Move-In Ready Showhome | MoveInReady`,
+
+    description:
+      `${layout.name} is a real Christchurch showhome project featuring move-in ready furniture packages, modern New Zealand living spaces and curated furnishing solutions.`,
+
+    keywords: [
+      `${layout.name}`,
+      "Christchurch showhome",
+      "New Zealand home layout",
+      "move in ready furniture",
+      "furniture packages NZ",
+      "showhome furnishing",
+      "modern NZ home",
+      `${layout.location}`,
+      `${layout.bedrooms} bedroom home`,
+    ],
+
+    openGraph: {
+      title:
+        `${layout.name} | Move-In Ready Showhome`,
+
+      description:
+        `Explore furniture packages and layout details for ${layout.name} in ${layout.location}.`,
+
+      images: [
+        layout.hero_exterior_image ||
+        "/earlsbrook-hero-exterior-image.jpg",
+      ],
+    },
+  }
+}
+
 export default async function LayoutDetail({
   params,
 }: {
@@ -45,7 +109,7 @@ export default async function LayoutDetail({
           <img
             src={
               layout.hero_exterior_image ||
-              "/earlsbrook-hero-exterior.jpg"
+              "/earlsbrook-hero-exterior-image.jpg"
             }
             className="w-full object-cover"
           />
@@ -88,15 +152,15 @@ export default async function LayoutDetail({
                 {layout.garage} Garage
               </div>
 
-              {layout.land_size && (
+              {layout.floor_size && (
                 <div className="border rounded-lg px-4 py-2">
-                  {layout.land_size}m² Land
+                  {layout.floor_size}
                 </div>
               )}
 
-                            {layout.floor_size && (
+              {layout.land_size && (
                 <div className="border rounded-lg px-4 py-2">
-                  {layout.floor_size}
+                  {layout.land_size} Land
                 </div>
               )}
 
@@ -122,6 +186,8 @@ export default async function LayoutDetail({
               <div className="text-xl font-semibold">
                 Real Christchurch Showhome Project
               </div>
+
+            </div>
 
             </div>
 
@@ -153,6 +219,20 @@ export default async function LayoutDetail({
 
               </div>
 
+              {layout.floor_size && (
+                <div className="flex justify-between gap-4">
+
+                  <div className="text-gray-400">
+                    Floor Area
+                  </div>
+
+                  <div className="font-medium text-right">
+                    {layout.floor_size}
+                  </div>
+
+                </div>
+              )}
+
               {layout.land_size && (
                 <div className="flex justify-between gap-4">
 
@@ -162,20 +242,6 @@ export default async function LayoutDetail({
 
                   <div className="font-medium text-right">
                     {layout.land_size}
-                  </div>
-
-                </div>
-              )}
-
-                            {layout.floor_size && (
-                <div className="flex justify-between gap-4">
-
-                  <div className="text-gray-400">
-                    Floor Area
-                  </div>
-
-                  <div className="font-medium text-right">
-                    {layout.floor_size}
                   </div>
 
                 </div>
@@ -398,6 +464,33 @@ export default async function LayoutDetail({
 
         </div>
       )}
+
+      {/* ===== SEO CONTENT ===== */}
+      <div className="border-t pt-12">
+
+        <div className="max-w-4xl space-y-4 text-gray-600 leading-relaxed">
+
+          <h2 className="text-2xl font-semibold text-black">
+            Move-In Ready Showhome Living in Christchurch
+          </h2>
+
+          <p>
+            {layout.name} is a real New Zealand showhome project
+            designed to demonstrate how MoveInReady combines
+            home layouts, furniture packages and staging into
+            a complete move-in ready experience.
+          </p >
+
+          <p>
+            This Christchurch layout features curated furniture
+            packages tailored to modern New Zealand living,
+            helping homeowners visualise complete furnishing
+            solutions before moving into their homes.
+          </p >
+
+        </div>
+
+      </div>
 
     </div>
   )
