@@ -88,15 +88,15 @@ export default async function LayoutDetail({
                 {layout.garage} Garage
               </div>
 
-              {layout.floor_size && (
+              {layout.land_size && (
                 <div className="border rounded-lg px-4 py-2">
-                  {layout.floor_size}
+                  {layout.land_size}m² Land
                 </div>
               )}
 
-              {layout.land_area && (
+                            {layout.floor_size && (
                 <div className="border rounded-lg px-4 py-2">
-                  {layout.land_area}m² Land
+                  {layout.floor_size}
                 </div>
               )}
 
@@ -153,7 +153,21 @@ export default async function LayoutDetail({
 
               </div>
 
-              {layout.floor_size && (
+              {layout.land_size && (
+                <div className="flex justify-between gap-4">
+
+                  <div className="text-gray-400">
+                    Land Area
+                  </div>
+
+                  <div className="font-medium text-right">
+                    {layout.land_size}
+                  </div>
+
+                </div>
+              )}
+
+                            {layout.floor_size && (
                 <div className="flex justify-between gap-4">
 
                   <div className="text-gray-400">
