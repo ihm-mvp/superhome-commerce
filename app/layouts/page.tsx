@@ -100,7 +100,7 @@ export default async function LayoutsPage() {
 
                 <div className="bg-gray-100 h-56 overflow-hidden">
                   <img
-                    src={layout.elevation_image}
+                    src={layout.hero_exterior_image}
                     className="object-cover w-full h-full group-hover:scale-105 transition"
                   />
                 </div>
