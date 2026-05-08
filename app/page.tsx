@@ -117,7 +117,7 @@ export default async function HomePage() {
 
               <div className="h-52 bg-gray-100 overflow-hidden">
                 <img
-                  src={layout.elevation_image}
+                  src={layout.hero_exterior_image}
                   className="w-full h-full object-cover group-hover:scale-105 transition"
                 />
               </div>
