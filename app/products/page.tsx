@@ -27,7 +27,7 @@ export const metadata = {
       'Curated furniture designed for modern New Zealand homes.',
 
     images: [
-      '/images/hero-image.png',
+      '/images/hero-image.jpg',
     ],
   },
 }

@@ -3,7 +3,6 @@ import Link from "next/link"
 
 export const metadata = {
   title: "Home Layouts NZ | Move-in Ready Furnished Homes",
-
   description:
     "Explore real New Zealand home layouts and discover fully furnished furniture packages. Plan your move-in ready home with confidence.",
 }
@@ -12,52 +11,29 @@ export default async function LayoutsPage() {
 
   const { data: layouts } = await supabase
     .from("layouts")
-    .select(`
-      id,
-      slug,
-      name,
-      location,
-      bedrooms,
-      bathrooms,
-      garage,
-      land_size,
-      hero_exterior_image
-    `)
+    .select("*")
 
   if (!layouts || layouts.length === 0) {
-    return (
-      <div className="p-10 text-gray-400">
-        No layouts found
-      </div>
-    )
+    return <div className="p-10 text-gray-400">No layouts found</div>
   }
 
   const { data: packages } = await supabase
     .from("packages")
-    .select(`
-      layout_id,
-      display_price
-    `)
+    .select("layout_id, display_price")
 
   const priceMap: Record<string, number> = {}
 
   packages?.forEach((p: any) => {
-
     if (!p.display_price) return
 
     if (!priceMap[p.layout_id]) {
-
       priceMap[p.layout_id] = p.display_price
-
     } else {
-
       priceMap[p.layout_id] = Math.min(
         priceMap[p.layout_id],
         p.display_price
       )
-
     }
-
   })
 
   return (
@@ -74,7 +50,6 @@ export default async function LayoutsPage() {
         <div className="absolute inset-0 bg-black/30" />
 
         <div className="absolute inset-0 flex items-center">
-
           <div className="px-10 max-w-lg text-white space-y-4">
 
             <h1 className="text-4xl font-semibold leading-tight">
@@ -94,7 +69,6 @@ export default async function LayoutsPage() {
             </Link>
 
           </div>
-
         </div>
 
       </div>
@@ -103,7 +77,6 @@ export default async function LayoutsPage() {
       <div id="grid" className="space-y-6">
 
         <div className="flex justify-between items-end">
-
           <h2 className="text-2xl font-semibold">
             Available Home Layouts
           </h2>
@@ -111,13 +84,11 @@ export default async function LayoutsPage() {
           <div className="text-sm text-gray-400">
             Real layouts · Designed for living
           </div>
-
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
 
           {layouts.map((layout: any) => {
-
             const minPrice = priceMap[layout.id]
 
             return (
@@ -128,18 +99,15 @@ export default async function LayoutsPage() {
               >
 
                 <div className="bg-gray-100 h-56 overflow-hidden">
-
                   <img
                     src={layout.hero_exterior_image}
                     className="object-cover w-full h-full group-hover:scale-105 transition"
                   />
-
                 </div>
 
                 <div className="p-4 space-y-3">
 
                   <div>
-
                     <h2 className="text-lg font-semibold">
                       {layout.name}
                     </h2>
@@ -147,13 +115,10 @@ export default async function LayoutsPage() {
                     <div className="text-sm text-gray-400">
                       {layout.location}
                     </div>
-
                   </div>
 
                   <div className="text-sm text-gray-600">
-                    {layout.bedrooms} Bed ·{" "}
-                    {layout.bathrooms} Bath ·{" "}
-                    {layout.garage} Garage
+                    {layout.bedrooms} Bed · {layout.bathrooms} Bath · {layout.garage} Garage
                   </div>
 
                   {layout.land_size && (
@@ -173,7 +138,6 @@ export default async function LayoutsPage() {
                   </div>
 
                 </div>
-
               </Link>
             )
           })}
@@ -189,20 +153,16 @@ export default async function LayoutsPage() {
           Supply supported by selected manufacturing partners
         </div>
 
-        <div className="flex justify-center gap-6">
-
+        <div className="flex justify-center">
           <img
             src="/images/RoyalShow-LOGO.png"
             className="h-10 object-contain opacity-70"
           />
-
-          <img
+                    <img
             src="/images/AoshenHome-LOGO.jpg"
             className="h-10 object-contain opacity-70"
           />
-
         </div>
-
       </div>
 
     </div>

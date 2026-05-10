@@ -10,18 +10,11 @@ export async function generateMetadata({
   const { slug } = await params
 
   // ⚠️ 与页面主体保持完全一致的数据结构
-const { data: pkg } = await supabase
-  .from("packages")
-  .select(`
-    name,
-    slug,
-    layout:layouts(
-      slug,
-      name
-    )
-  `)
-  .eq("slug", slug)
-  .single()
+  const { data: pkg } = await supabase
+    .from("packages")
+    .select("*, layout:layouts(id, slug, name)")
+    .eq("slug", slug)
+    .single()
 
   if (!pkg) {
     return {
@@ -75,21 +68,11 @@ export default async function PackagePage({
   const { slug } = await params
 
   // ===== Package =====
-const { data: pkg } = await supabase
-  .from("packages")
-  .select(`
-    id,
-    name,
-    slug,
-    display_price,
-    layout_id,
-    layout:layouts(
-      slug,
-      name
-    )
-  `)
-  .eq("slug", slug)
-  .single()
+  const { data: pkg } = await supabase
+    .from("packages")
+    .select("*, layout:layouts(id, slug, name)")
+    .eq("slug", slug)
+    .single()
 
   if (!pkg) return notFound()
 
@@ -103,15 +86,11 @@ const { data: pkg } = await supabase
     .eq("layout_id", pkg.layout_id)
 
   // ===== Rooms =====
-const { data: rooms } = await supabase
-  .from("package_rooms")
-  .select(`
-    id,
-    name,
-    sort_order
-  `)
-  .eq("package_id", pkg.id)
-  .order("sort_order")
+  const { data: rooms } = await supabase
+    .from("package_rooms")
+    .select("*")
+    .eq("package_id", pkg.id)
+    .order("sort_order")
 
   // ===== Items =====
   const { data: items } = await supabase

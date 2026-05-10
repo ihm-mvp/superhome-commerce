@@ -74,26 +74,11 @@ export default async function LayoutDetail({
   const { slug } = await params
 
   // ===== Layout =====
-const { data: layout } = await supabase
-  .from("layouts")
-  .select(`
-    id,
-    name,
-    slug,
-    location,
-    bedrooms,
-    bathrooms,
-    garage,
-    floor_size,
-    land_size,
-    builder_name,
-    description,
-    hero_exterior_image,
-    floorplan_image,
-    floorplan_highlights
-  `)
-  .eq("slug", slug)
-  .single()
+  const { data: layout } = await supabase
+    .from("layouts")
+    .select("*")
+    .eq("slug", slug)
+    .single()
 
   if (!layout) return notFound()
 
@@ -105,14 +90,10 @@ const { data: layout } = await supabase
     .order("sort_order", { ascending: true })
 
   // ===== Files =====
-const { data: files } = await supabase
-  .from("layout_files")
-  .select(`
-    id,
-    name,
-    file_url
-  `)
-  .eq("layout_id", layout.id)
+  const { data: files } = await supabase
+    .from("layout_files")
+    .select("*")
+    .eq("layout_id", layout.id)
 
   const downloads = files || []
 
