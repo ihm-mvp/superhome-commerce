@@ -291,7 +291,7 @@ const { data: rooms } = await supabase
           </p >
 
           <p>
-            The {pkg.name} Package for {pkg.layout?.name}
+            The {pkg.name} Package for {pkg.layout?.[0]?.name}
             includes coordinated furniture selections across
             living, dining and bedroom spaces, balancing
             comfort, functionality and contemporary aesthetics.
