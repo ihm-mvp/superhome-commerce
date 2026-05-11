@@ -30,7 +30,7 @@ const { data: pkg } = await supabase
   }
 
   const layoutName =
-    pkg.layout?.name || "New Zealand Home"
+    pkg.layout?.[0]?.name || "New Zealand Home"
 
   const packageType =
     pkg.name?.toLowerCase() || "package"
@@ -61,7 +61,7 @@ const { data: pkg } = await supabase
         `Designed for modern move-in ready living.`,
 
       images: [
-        `/packages/${pkg.layout?.slug}_${packageType}_overview.jpg`,
+        `/packages/${pkg.layout?.[0]?.slug}_${packageType}_overview.jpg`,
       ],
     },
   }
@@ -160,7 +160,7 @@ const { data: rooms } = await supabase
 
         <div className="text-gray-500 max-w-2xl leading-relaxed">
           Fully furnished furniture package designed for{" "}
-          {pkg.layout?.name}. Explore a complete move-in ready
+          {pkg.layout?.[0]?.name}. Explore a complete move-in ready
           setup for modern New Zealand living, including living,
           dining and bedroom furniture selections.
         </div>
