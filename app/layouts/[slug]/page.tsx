@@ -437,21 +437,7 @@ const { data: files } = await supabase
         </div>
       )}
 
-      {/* ===== VIDEO ===== */}
-      {layout.video_url && (
-        <div className="space-y-4">
-
-          <h2 className="text-2xl font-semibold">
-            Walkthrough
-          </h2>
-
-          <iframe
-            src={layout.video_url}
-            className="w-full h-[520px] rounded-2xl border"
-          />
-
-        </div>
-      )}
+      {/* ===== VIDEO ===== 以后拓展*/}
 
       {/* ===== DOCUMENTS ===== */}
       {downloads.length > 0 && (
