@@ -93,7 +93,7 @@ const { data: pkg } = await supabase
 
   if (!pkg) return notFound()
 
-  const layoutSlug = pkg.layout?.slug
+  const layoutSlug = pkg.layout?.[0]?.slug
   const packageType = pkg.name?.toLowerCase()
 
   // ===== 同layout packages =====
