@@ -400,35 +400,35 @@ const { data: files } = await supabase
 
               </div>
 
-              {layout.floorplan_highlights ? (
-                <div className="space-y-3 text-sm text-gray-600 leading-relaxed">
+{layout.floorplan_highlights ? (
+  <div className="space-y-3 text-sm text-gray-600 leading-relaxed">
 
-                  {layout.floorplan_highlights
-                    .split("·")
-                    .map((item: string, idx: number) => {
-                      return (
-                        <div
-                          key={idx}
-                          className="flex gap-3"
-                        >
+    {layout.floorplan_highlights
+      .split("·")
+      .map((item: string, idx: number) => {
+        return (
+          <div
+            key={idx}
+            className="flex gap-3"
+          >
 
-                          <div className="mt-[7px] w-1.5 h-1.5 rounded-full bg-black shrink-0" />
+            <div className="mt-[7px] w-1.5 h-1.5 rounded-full bg-black shrink-0" />
 
-                          <div>
-                            {item.trim()}
-                          </div>
+            <div>
+              {item.trim()}
+            </div>
 
-                        </div>
-                      )
-                    })}
+          </div>
+        )
+      })}
 
-                </div>
-              ) : (
-                <div className="text-sm text-gray-500">
-                  Open-plan living and functional room
-                  arrangement designed for move-in ready furnishing.
-                </div>
-              )}
+  </div>
+) : (
+  <div className="text-sm text-gray-500">
+    Open-plan living and functional room
+    arrangement designed for move-in ready furnishing.
+  </div>
+)}
 
             </div>
 
@@ -452,7 +452,7 @@ const { data: files } = await supabase
             {downloads.map((doc: any) => (
               <a
                 key={doc.id}
-                href= "_blank"
+                target= "_blank"
                 className="text-sm border px-4 py-2 rounded-lg hover:bg-gray-100 transition"
               >
                 {doc.name}

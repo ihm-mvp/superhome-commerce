@@ -201,6 +201,11 @@ export default async function LayoutsPage() {
             className="h-10 object-contain opacity-70"
           />
 
+                    <img
+            src="/images/SETOO-LOGO.png"
+            className="h-10 object-contain opacity-70"
+          />
+
         </div>
 
       </div>
