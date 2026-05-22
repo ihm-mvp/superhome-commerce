@@ -146,6 +146,7 @@ export default async function PackagesPage() {
               <Link
                 href={`/layouts/${group.layout.slug}`}
                 className="text-sm text-gray-400 hover:text-black transition"
+                prefetch={false}
               >
                 View Layout →
               </Link>
@@ -160,6 +161,7 @@ export default async function PackagesPage() {
                   key={pkg.id}
                   href={`/packages/${pkg.slug}`}
                   className="border rounded-2xl overflow-hidden hover:shadow-lg transition bg-white"
+                  prefetch={false}
                 >
 
                   {/* 图片 */}

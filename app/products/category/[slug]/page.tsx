@@ -51,6 +51,7 @@ export default async function CategoryPage({
             key={p.id}
             href={`/products/${p.id}`}
             className="block bg-white rounded-xl shadow-sm hover:shadow-md transition overflow-hidden"
+            prefetch={false}
           >
             <div className="h-48 flex items-center justify-center bg-gray-100">
               <img

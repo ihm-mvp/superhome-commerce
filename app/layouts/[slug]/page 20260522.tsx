@@ -74,11 +74,26 @@ export default async function LayoutDetail({
   const { slug } = await params
 
   // ===== Layout =====
-  const { data: layout } = await supabase
-    .from("layouts")
-    .select("*")
-    .eq("slug", slug)
-    .single()
+const { data: layout } = await supabase
+  .from("layouts")
+  .select(`
+    id,
+    name,
+    slug,
+    location,
+    bedrooms,
+    bathrooms,
+    garage,
+    floor_size,
+    land_size,
+    builder_name,
+    description,
+    hero_exterior_image,
+    floorplan_image,
+    floorplan_highlights
+  `)
+  .eq("slug", slug)
+  .single()
 
   if (!layout) return notFound()
 
@@ -90,10 +105,14 @@ export default async function LayoutDetail({
     .order("sort_order", { ascending: true })
 
   // ===== Files =====
-  const { data: files } = await supabase
-    .from("layout_files")
-    .select("*")
-    .eq("layout_id", layout.id)
+const { data: files } = await supabase
+  .from("layout_files")
+  .select(`
+    id,
+    name,
+    file_url
+  `)
+  .eq("layout_id", layout.id)
 
   const downloads = files || []
 
@@ -381,35 +400,35 @@ export default async function LayoutDetail({
 
               </div>
 
-              {layout.floorplan_highlights ? (
-                <div className="space-y-3 text-sm text-gray-600 leading-relaxed">
+{layout.floorplan_highlights ? (
+  <div className="space-y-3 text-sm text-gray-600 leading-relaxed">
 
-                  {layout.floorplan_highlights
-                    .split("·")
-                    .map((item: string, idx: number) => {
-                      return (
-                        <div
-                          key={idx}
-                          className="flex gap-3"
-                        >
+    {layout.floorplan_highlights
+      .split("·")
+      .map((item: string, idx: number) => {
+        return (
+          <div
+            key={idx}
+            className="flex gap-3"
+          >
 
-                          <div className="mt-[7px] w-1.5 h-1.5 rounded-full bg-black shrink-0" />
+            <div className="mt-[7px] w-1.5 h-1.5 rounded-full bg-black shrink-0" />
 
-                          <div>
-                            {item.trim()}
-                          </div>
+            <div>
+              {item.trim()}
+            </div>
 
-                        </div>
-                      )
-                    })}
+          </div>
+        )
+      })}
 
-                </div>
-              ) : (
-                <div className="text-sm text-gray-500">
-                  Open-plan living and functional room
-                  arrangement designed for move-in ready furnishing.
-                </div>
-              )}
+  </div>
+) : (
+  <div className="text-sm text-gray-500">
+    Open-plan living and functional room
+    arrangement designed for move-in ready furnishing.
+  </div>
+)}
 
             </div>
 
@@ -418,21 +437,7 @@ export default async function LayoutDetail({
         </div>
       )}
 
-      {/* ===== VIDEO ===== */}
-      {layout.video_url && (
-        <div className="space-y-4">
-
-          <h2 className="text-2xl font-semibold">
-            Walkthrough
-          </h2>
-
-          <iframe
-            src={layout.video_url}
-            className="w-full h-[520px] rounded-2xl border"
-          />
-
-        </div>
-      )}
+      {/* ===== VIDEO ===== 以后拓展*/}
 
       {/* ===== DOCUMENTS ===== */}
       {downloads.length > 0 && (
@@ -447,7 +452,7 @@ export default async function LayoutDetail({
             {downloads.map((doc: any) => (
               <a
                 key={doc.id}
-                href= "_blank"
+                target= "_blank"
                 className="text-sm border px-4 py-2 rounded-lg hover:bg-gray-100 transition"
               >
                 {doc.name}

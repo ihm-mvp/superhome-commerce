@@ -179,6 +179,7 @@ const { data: rooms } = await supabase
                 ? "bg-black text-white border-black"
                 : "hover:bg-gray-50"
             }`}
+            prefetch={false}
           >
             {p.name}
           </Link>
@@ -231,6 +232,7 @@ const { data: rooms } = await supabase
                       key={idx}
                       href={`/products/${p.product?.id}`}
                       className="flex items-center gap-3 hover:bg-gray-50 p-2 rounded-lg transition"
+                      prefetch={false}
                     >
 
                       {p.product?.image_url && (

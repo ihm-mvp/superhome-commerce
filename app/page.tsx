@@ -202,6 +202,7 @@ export default async function HomePage() {
           <Link
             href="/layouts"
             className="text-sm text-gray-500"
+            prefetch={false}
           >
             View All →
           </Link>

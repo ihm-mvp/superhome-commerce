@@ -62,14 +62,18 @@ export default async function PackagesPage() {
 
   packages?.forEach((pkg: any) => {
 
-    // 防止 relation 异常
-    if (!pkg.layout) return
+    // ✅ 统一 relation 结构
+    const layout = Array.isArray(pkg.layout)
+      ? pkg.layout[0]
+      : pkg.layout
 
-    const key = pkg.layout.id
+    if (!layout) return
+
+    const key = layout.id
 
     if (!grouped[key]) {
       grouped[key] = {
-        layout: pkg.layout,
+        layout,
         packages: []
       }
     }
@@ -148,7 +152,7 @@ export default async function PackagesPage() {
 
             </div>
 
-            {/* Packages 列表 */}
+            {/* ===== Packages 列表 ===== */}
             <div className="grid md:grid-cols-3 gap-6">
 
               {group.packages.map((pkg: any) => (
@@ -162,13 +166,13 @@ export default async function PackagesPage() {
                   <div className="h-48 bg-gray-100 overflow-hidden">
 
                     <img
-                      src={`/packages/${pkg.layout.slug}_${pkg.name.toLowerCase()}_overview.jpg`}
+                      src={`/packages/${group.layout.slug}_${pkg.name.toLowerCase()}_overview.jpg`}
                       className="w-full h-full object-cover hover:scale-[1.02] transition"
                     />
 
                   </div>
 
-                 {/* 信息 */}
+                  {/* 信息 */}
                   <div className="p-5 space-y-3">
 
                     <div className="space-y-1">

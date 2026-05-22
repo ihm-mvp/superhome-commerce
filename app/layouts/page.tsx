@@ -89,6 +89,7 @@ export default async function LayoutsPage() {
             <Link
               href="#grid"
               className="inline-block px-5 py-3 bg-white text-black rounded-lg text-sm"
+              prefetch={false}
             >
               Explore Layouts
             </Link>
@@ -125,6 +126,7 @@ export default async function LayoutsPage() {
                 key={layout.id}
                 href={`/layouts/${layout.slug}`}
                 className="group border rounded-xl overflow-hidden hover:shadow-lg transition"
+                prefetch={false}
               >
 
                 <div className="bg-gray-100 h-56 overflow-hidden">

@@ -10,11 +10,18 @@ export async function generateMetadata({
   const { slug } = await params
 
   // ⚠️ 与页面主体保持完全一致的数据结构
-  const { data: pkg } = await supabase
-    .from("packages")
-    .select("*, layout:layouts(id, slug, name)")
-    .eq("slug", slug)
-    .single()
+const { data: pkg } = await supabase
+  .from("packages")
+  .select(`
+    name,
+    slug,
+    layout:layouts(
+      slug,
+      name
+    )
+  `)
+  .eq("slug", slug)
+  .single()
 
   if (!pkg) {
     return {
@@ -23,7 +30,7 @@ export async function generateMetadata({
   }
 
   const layoutName =
-    pkg.layout?.name || "New Zealand Home"
+    pkg.layout?.[0]?.name || "New Zealand Home"
 
   const packageType =
     pkg.name?.toLowerCase() || "package"
@@ -54,7 +61,7 @@ export async function generateMetadata({
         `Designed for modern move-in ready living.`,
 
       images: [
-        `/packages/${pkg.layout?.slug}_${packageType}_overview.jpg`,
+        `/packages/${pkg.layout?.[0]?.slug}_${packageType}_overview.jpg`,
       ],
     },
   }
@@ -68,15 +75,25 @@ export default async function PackagePage({
   const { slug } = await params
 
   // ===== Package =====
-  const { data: pkg } = await supabase
-    .from("packages")
-    .select("*, layout:layouts(id, slug, name)")
-    .eq("slug", slug)
-    .single()
+const { data: pkg } = await supabase
+  .from("packages")
+  .select(`
+    id,
+    name,
+    slug,
+    display_price,
+    layout_id,
+    layout:layouts(
+      slug,
+      name
+    )
+  `)
+  .eq("slug", slug)
+  .single()
 
   if (!pkg) return notFound()
 
-  const layoutSlug = pkg.layout?.slug
+  const layoutSlug = pkg.layout?.[0]?.slug
   const packageType = pkg.name?.toLowerCase()
 
   // ===== 同layout packages =====
@@ -86,11 +103,15 @@ export default async function PackagePage({
     .eq("layout_id", pkg.layout_id)
 
   // ===== Rooms =====
-  const { data: rooms } = await supabase
-    .from("package_rooms")
-    .select("*")
-    .eq("package_id", pkg.id)
-    .order("sort_order")
+const { data: rooms } = await supabase
+  .from("package_rooms")
+  .select(`
+    id,
+    name,
+    sort_order
+  `)
+  .eq("package_id", pkg.id)
+  .order("sort_order")
 
   // ===== Items =====
   const { data: items } = await supabase
@@ -139,7 +160,7 @@ export default async function PackagePage({
 
         <div className="text-gray-500 max-w-2xl leading-relaxed">
           Fully furnished furniture package designed for{" "}
-          {pkg.layout?.name}. Explore a complete move-in ready
+          {pkg.layout?.[0]?.name}. Explore a complete move-in ready
           setup for modern New Zealand living, including living,
           dining and bedroom furniture selections.
         </div>
@@ -270,7 +291,7 @@ export default async function PackagePage({
           </p >
 
           <p>
-            The {pkg.name} Package for {pkg.layout?.name}
+            The {pkg.name} Package for {pkg.layout?.[0]?.name}
             includes coordinated furniture selections across
             living, dining and bedroom spaces, balancing
             comfort, functionality and contemporary aesthetics.

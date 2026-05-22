@@ -21,6 +21,7 @@ export default function SubscribeSuccessPage() {
         <Link
           href="/layouts"
           className="px-5 py-3 border rounded-lg text-sm"
+          prefetch={false}
         >
           Browse Layouts
         </Link>
@@ -28,6 +29,7 @@ export default function SubscribeSuccessPage() {
         <Link
           href="/packages"
           className="px-5 py-3 bg-black text-white rounded-lg text-sm"
+          prefetch={false}
         >
           View Packages
         </Link>

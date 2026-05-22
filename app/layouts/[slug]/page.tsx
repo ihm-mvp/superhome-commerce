@@ -309,6 +309,7 @@ const { data: files } = await supabase
                   key={pkg.id}
                   href={`/packages/${pkg.slug}`}
                   className="border rounded-2xl overflow-hidden hover:shadow-lg transition bg-white"
+                  prefetch={false}
                 >
 
                   {/* Hero */}

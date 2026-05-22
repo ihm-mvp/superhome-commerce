@@ -137,6 +137,7 @@ export default async function Page() {
                 <Link
                   href={`/products/category/${meta.slug}`}
                   className="text-sm text-gray-500"
+                  prefetch={false}
                 >
                   View all →
                 </Link>
@@ -150,6 +151,7 @@ export default async function Page() {
                     key={p.id}
                     href={`/products/${p.id}`}
                     className="block bg-white rounded-xl shadow-sm hover:shadow-md transition overflow-hidden"
+                    prefetch={false}
                   >
                     <div className="h-48 flex items-center justify-center bg-gray-100">
                       <img

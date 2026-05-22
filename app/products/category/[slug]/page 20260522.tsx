@@ -25,6 +25,7 @@ export default async function CategoryPage({
     .from("products")
     .select("id, sku_code, level, image_url")
     .eq("category_id", category.id)
+    .limit(24)
 
   // ===== 排序 =====
   const sortedProducts = (products || []).sort((a: any, b: any) => {

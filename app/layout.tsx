@@ -22,7 +22,9 @@ export default function RootLayout({
           <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
             {/* Logo */}
-            <Link href="/" className="flex flex-col leading-tight">
+            <Link href="/" className="flex flex-col leading-tight"
+            prefetch={false}
+            >
               <span className="font-semibold text-lg">
                 MoveInReady
               </span>
@@ -33,16 +35,24 @@ export default function RootLayout({
 
             {/* Nav */}
             <nav className="hidden md:flex gap-6 text-sm text-gray-600">
-              <Link href="/layouts" className="hover:text-black">
+              <Link href="/layouts" className="hover:text-black"
+              prefetch={false}
+              >
                 Layouts
               </Link>
-              <Link href="/packages" className="hover:text-black">
+              <Link href="/packages" className="hover:text-black"
+              prefetch={false}
+              >
                 Packages
               </Link>
-              <Link href="/products" className="hover:text-black">
+              <Link href="/products" className="hover:text-black"
+              prefetch={false}
+              >
                 Products
               </Link>
-              <Link href="/about" className="hover:text-black">
+              <Link href="/about" className="hover:text-black"
+              prefetch={false}
+              >
                 About
               </Link>
             </nav>
@@ -51,6 +61,7 @@ export default function RootLayout({
             <Link
               href="/packages"
               className="text-sm px-4 py-2 bg-black text-white rounded-lg"
+              prefetch={false}
             >
               View Packages
             </Link>
@@ -98,16 +109,24 @@ export default function RootLayout({
             {/* Links */}
             <div className="space-y-2">
               <div>
-                <Link href="/layouts">Explore Layouts</Link>
+                <Link href="/layouts"
+                prefetch={false}
+                >Explore Layouts</Link>
               </div>
               <div>
-                <Link href="/packages">Furniture Packages</Link>
+                <Link href="/packages"
+                prefetch={false}
+                >Furniture Packages</Link>
               </div>
               <div>
-                <Link href="/products">Browse Products</Link>
+                <Link href="/products"
+                prefetch={false}
+                >Browse Products</Link>
               </div>
               <div>
-                <Link href="/about">About MoveInReady</Link>
+                <Link href="/about"
+                prefetch={false}
+                >About MoveInReady</Link>
               </div>
             </div>
 
