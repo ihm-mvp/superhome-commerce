@@ -49,7 +49,7 @@ export default async function Page() {
         sort_order
       )
     `)
-    .limit(24)
+    .limit(12)
 
   // ===== 分组 =====
   const grouped: Record<string, any[]> = {}
@@ -123,7 +123,7 @@ export default async function Page() {
         {categories.map((slug) => {
           const meta = categoryMeta[slug]
           const sorted = sortProducts(grouped[slug])
-          const preview = sorted.slice(0, 4)
+          const preview = sorted.slice(0, 2)
 
           return (
             <div key={slug} id={slug} className="space-y-4">
