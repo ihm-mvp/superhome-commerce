@@ -69,6 +69,7 @@ export default async function LayoutsPage() {
         <img
           src="/layouts/layouts-hero.jpg"
           className="w-full h-[420px] object-cover"
+          loading="lazy"
         />
 
         <div className="absolute inset-0 bg-black/30" />
@@ -134,6 +135,7 @@ export default async function LayoutsPage() {
                   <img
                     src={layout.hero_exterior_image}
                     className="object-cover w-full h-full group-hover:scale-105 transition"
+                    loading="lazy"
                   />
 
                 </div>
@@ -196,16 +198,19 @@ export default async function LayoutsPage() {
           <img
             src="/images/RoyalShow-LOGO.png"
             className="h-10 object-contain opacity-70"
+            loading="lazy"
           />
 
           <img
             src="/images/AoshenHome-LOGO.jpg"
             className="h-10 object-contain opacity-70"
+            loading="lazy"
           />
 
                     <img
             src="/images/SETOO-LOGO.png"
             className="h-10 object-contain opacity-70"
+            loading="lazy"
           />
 
         </div>

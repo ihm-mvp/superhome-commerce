@@ -49,7 +49,7 @@ export default async function Page() {
         sort_order
       )
     `)
-    .limit(120)
+    .limit(24)
 
   // ===== 分组 =====
   const grouped: Record<string, any[]> = {}
@@ -157,6 +157,7 @@ export default async function Page() {
                       <img
                         src={p.image_url}
                         className="max-h-full object-contain"
+                        loading="lazy"
                       />
                     </div>
 

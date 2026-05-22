@@ -76,6 +76,7 @@ export default async function HomePage() {
         <img
           src="/images/hero-image.png"
           className="w-full h-[520px] object-cover"
+          loading="lazy"
         />
 
         <div className="absolute inset-0 bg-black/35" />
@@ -224,6 +225,7 @@ export default async function HomePage() {
                 <img
                   src={layout.hero_exterior_image}
                   className="w-full h-full object-cover group-hover:scale-105 transition"
+                  loading="lazy"
                 />
 
               </div>
@@ -309,6 +311,7 @@ export default async function HomePage() {
                 <img
                   src={`/packages/${pkg.layout.slug}_${pkg.name.toLowerCase()}_overview.jpg`}
                   className="w-full h-full object-cover hover:scale-[1.02] transition"
+                  loading="lazy"
                 />
 
               </div>

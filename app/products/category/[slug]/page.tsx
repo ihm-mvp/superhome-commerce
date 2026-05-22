@@ -57,6 +57,7 @@ export default async function CategoryPage({
               <img
                 src={p.image_url}
                 className="max-h-full object-contain"
+                loading="lazy"
               />
             </div>
 

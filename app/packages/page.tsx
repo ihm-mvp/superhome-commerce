@@ -170,6 +170,7 @@ export default async function PackagesPage() {
                     <img
                       src={`/packages/${group.layout.slug}_${pkg.name.toLowerCase()}_overview.jpg`}
                       className="w-full h-full object-cover hover:scale-[1.02] transition"
+                      loading="lazy"
                     />
 
                   </div>

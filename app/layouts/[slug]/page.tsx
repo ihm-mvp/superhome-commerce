@@ -130,6 +130,7 @@ const { data: files } = await supabase
               "/earlsbrook-hero-exterior-image.jpg"
             }
             className="w-full object-cover"
+            loading="lazy"
           />
         </div>
 
@@ -318,6 +319,7 @@ const { data: files } = await supabase
                     <img
                       src={`/packages/${slug}_${packageType}_overview.jpg`}
                       className="w-full h-full object-cover hover:scale-[1.02] transition"
+                      loading="lazy"
                     />
 
                   </div>
@@ -382,6 +384,7 @@ const { data: files } = await supabase
               <img
                 src={layout.floorplan_image}
                 className="rounded-2xl border"
+                loading="lazy"
               />
 
             </div>

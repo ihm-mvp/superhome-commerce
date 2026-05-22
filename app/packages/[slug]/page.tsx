@@ -193,6 +193,7 @@ const { data: rooms } = await supabase
         <img
           src={`/packages/${layoutSlug}_${packageType}_overview.jpg`}
           className="w-full rounded-2xl border"
+          loading="lazy"
         />
 
         <div className="text-xs text-gray-400">
@@ -239,6 +240,7 @@ const { data: rooms } = await supabase
                         <img
                           src={p.product.image_url}
                           className="w-16 h-16 object-contain"
+                          loading="lazy"
                         />
                       )}
 
