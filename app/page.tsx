@@ -108,6 +108,7 @@ export default async function HomePage() {
               <Link
                 href="/layouts"
                 className="px-5 py-3 bg-white text-black rounded-lg text-sm font-medium"
+                prefetch={false}
               >
                 Browse Layouts
               </Link>
@@ -115,6 +116,7 @@ export default async function HomePage() {
               <Link
                 href="/packages"
                 className="px-5 py-3 border border-white text-white rounded-lg text-sm"
+                prefetch={false}
               >
                 View Packages
               </Link>
@@ -213,6 +215,7 @@ export default async function HomePage() {
               key={layout.id}
               href={`/layouts/${layout.slug}`}
               className="group border rounded-2xl overflow-hidden hover:shadow-lg transition bg-white"
+              prefetch={false}
             >
 
               <div className="h-56 bg-gray-100 overflow-hidden">
@@ -283,6 +286,7 @@ export default async function HomePage() {
           <Link
             href="/packages"
             className="text-sm text-gray-500"
+            prefetch={false}
           >
             View All →
           </Link>
@@ -296,6 +300,7 @@ export default async function HomePage() {
               key={pkg.id}
               href={`/packages/${pkg.slug}`}
               className="border rounded-2xl overflow-hidden hover:shadow-lg transition bg-white"
+              prefetch={false}
             >
 
               <div className="h-44 bg-gray-100 overflow-hidden">
@@ -438,6 +443,7 @@ export default async function HomePage() {
         <Link
           href="/products"
           className="px-4 py-2 border rounded-lg text-sm"
+          prefetch={false}
         >
           View Products →
         </Link>

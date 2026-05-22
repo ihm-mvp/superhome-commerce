@@ -29,7 +29,7 @@ export const metadata = {
       "Discover real Christchurch showhome layouts and curated move-in ready furniture packages.",
 
     images: [
-      "/images/hero-image.png",
+      "/images/hero-image.jpg",
     ],
   },
 }
@@ -39,7 +39,18 @@ export default async function HomePage() {
   // ===== Layouts =====
   const { data: layouts } = await supabase
     .from("layouts")
-    .select("*")
+    .select(`
+      id,
+      slug,
+      hero_exterior_image,
+      name,
+      location,
+      bedrooms,
+      bathrooms,
+      garage,
+      floor_size,
+      land_size
+    `)
     .limit(3)
 
   // ===== Packages =====
