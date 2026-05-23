@@ -309,7 +309,7 @@ export default async function HomePage() {
               <div className="h-44 bg-gray-100 overflow-hidden">
 
                 <img
-                  src={`/packages/${pkg.layout.slug}_${pkg.name.toLowerCase()}_overview.jpg`}
+                  src={`/packages/${pkg.layout?.[0]?.slug}_${pkg.name.toLowerCase()}_overview.jpg`}
                   className="w-full h-full object-cover hover:scale-[1.02] transition"
                   loading="lazy"
                 />
@@ -321,7 +321,7 @@ export default async function HomePage() {
                 <div className="space-y-1">
 
                   <div className="text-lg font-semibold">
-                    {pkg.layout.slug.toUpperCase()} · {pkg.name}
+                    {pkg.layout?.[0]?.slug.toUpperCase()} · {pkg.name}
                   </div>
 
                   <div className="text-sm text-gray-400">
