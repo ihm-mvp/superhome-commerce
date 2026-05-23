@@ -119,7 +119,7 @@ export default async function PackagesPage() {
               <div className="space-y-2">
 
                 <h2 className="text-2xl font-semibold">
-                  {group.layout?.[0]?.name}
+                  {group.layout.name}
                 </h2>
 
                 {/* 地址 */}
@@ -144,7 +144,7 @@ export default async function PackagesPage() {
               </div>
 
               <Link
-                href={`/layouts/${group.layout?.[0]?.slug}`}
+                href={`/layouts/${group.layout.slug}`}
                 className="text-sm text-gray-400 hover:text-black transition"
                 prefetch={false}
               >
@@ -168,7 +168,7 @@ export default async function PackagesPage() {
                   <div className="h-48 bg-gray-100 overflow-hidden">
 
                     <img
-                      src={`/packages/${group.layout?.[0]?.slug}_${pkg.name.toLowerCase()}_overview.jpg`}
+                      src={`/packages/${group.layout.slug}_${pkg.name.toLowerCase()}_overview.jpg`}
                       className="w-full h-full object-cover hover:scale-[1.02] transition"
                       loading="lazy"
                     />
@@ -185,7 +185,7 @@ export default async function PackagesPage() {
                       </div>
 
                       <div className="text-sm text-gray-400">
-                        {group.layout?.[0]?.name}
+                        {group.layout.name}
                       </div>
 
                     </div>
