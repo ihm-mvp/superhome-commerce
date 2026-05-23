@@ -15,8 +15,7 @@ const { data: pkg } = await supabase
   .select(`
     name,
     slug,
-    layout:layouts!
-    package_layout_id_fkey(
+    layout:layouts(
       slug,
       name
     )
@@ -84,8 +83,7 @@ const { data: pkg } = await supabase
     slug,
     display_price,
     layout_id,
-    layout:layouts!
-    package_layout_id_fkey(
+    layout:layouts(
       slug,
       name
     )
