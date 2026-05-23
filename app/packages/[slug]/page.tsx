@@ -2,6 +2,8 @@ import { supabase } from "@/lib/supabase"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 
+const { data: pkg }
+
 export async function generateMetadata({
   params,
 }: {
@@ -94,6 +96,9 @@ const { data: pkg } = await supabase
   .single()
 
   if (!pkg) return notFound()
+
+    console.log("PKG =", pkg)
+console.log("LAYOUT =", pkg.layout)
 
   const layoutSlug = pkg.layout?.[0]?.slug
   const packageType = pkg.name?.toLowerCase()
