@@ -16,7 +16,7 @@ const { data: pkg } = await supabase
     name,
     slug,
     layout:layouts!
-    package_layout_id_fkey(
+    packages_layout_id_fkey(
       slug,
       name
     )
@@ -85,7 +85,7 @@ const { data: pkg } = await supabase
     display_price,
     layout_id,
     layout:layouts!
-    package_layout_id_fkey(
+    packages_layout_id_fkey(
       slug,
       name
     )
