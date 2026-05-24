@@ -300,7 +300,15 @@ export default async function HomePage() {
 
         <div className="grid md:grid-cols-3 gap-6">
 
-          {packages?.map((pkg: any) => (
+          {packages?.map((pkg: any) => {
+
+  const layout = Array.isArray(pkg.layout)
+    ? pkg.layout[0]
+    : pkg.layout
+
+  if (!layout) return null
+
+  return (
             <Link
               key={pkg.id}
               href={`/packages/${pkg.slug}`}
@@ -311,7 +319,7 @@ export default async function HomePage() {
               <div className="h-44 bg-gray-100 overflow-hidden">
 
                 <img
-                  src={`/packages/${pkg.layout?.[0]?.slug}_${pkg.name.toLowerCase()}_overview.jpg`}
+                  src={`/packages/${layout.slug}_${pkg.name.toLowerCase()}_overview.jpg`}
                   className="w-full h-full object-cover hover:scale-[1.02] transition"
                   loading="lazy"
                 />
@@ -323,7 +331,7 @@ export default async function HomePage() {
                 <div className="space-y-1">
 
                   <div className="text-lg font-semibold">
-                    {pkg.layout?.[0]?.slug.toUpperCase()} · {pkg.name}
+                    {layout.slug.toUpperCase()} · {pkg.name}
                   </div>
 
                   <div className="text-sm text-gray-400">
