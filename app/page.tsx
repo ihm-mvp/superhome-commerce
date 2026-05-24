@@ -300,7 +300,7 @@ export default async function HomePage() {
 
         <div className="grid md:grid-cols-3 gap-6">
 
-          {packages?.map((pkg: any) => {
+{packages?.map((pkg: any) => {
 
   const layout = Array.isArray(pkg.layout)
     ? pkg.layout[0]
@@ -309,51 +309,52 @@ export default async function HomePage() {
   if (!layout) return null
 
   return (
-            <Link
-              key={pkg.id}
-              href={`/packages/${pkg.slug}`}
-              className="border rounded-2xl overflow-hidden hover:shadow-lg transition bg-white"
-              prefetch={false}
-            >
+    <Link
+      key={pkg.id}
+      href={`/packages/${pkg.slug}`}
+      className="border rounded-2xl overflow-hidden hover:shadow-lg transition bg-white"
+      prefetch={false}
+    >
 
-              <div className="h-44 bg-gray-100 overflow-hidden">
+      <div className="h-44 bg-gray-100 overflow-hidden">
 
-                <img
-                  src={`/packages/${layout.slug}_${pkg.name.toLowerCase()}_overview.jpg`}
-                  className="w-full h-full object-cover hover:scale-[1.02] transition"
-                  loading="lazy"
-                />
+        <img
+          src={`/packages/${layout.slug}_${pkg.name.toLowerCase()}_overview.jpg`}
+          className="w-full h-full object-cover hover:scale-[1.02] transition"
+          loading="lazy"
+        />
 
-              </div>
+      </div>
 
-              <div className="p-5 space-y-3">
+      <div className="p-5 space-y-3">
 
-                <div className="space-y-1">
+        <div className="space-y-1">
 
-                  <div className="text-lg font-semibold">
-                    {layout.slug.toUpperCase()} · {pkg.name}
-                  </div>
+          <div className="text-lg font-semibold">
+            {layout.slug.toUpperCase()} · {pkg.name}
+          </div>
 
-                  <div className="text-sm text-gray-400">
-                    Complete furniture package
-                  </div>
+          <div className="text-sm text-gray-400">
+            Complete furniture package
+          </div>
 
-                </div>
+        </div>
 
-                {pkg.display_price && (
-                  <div className="text-sm text-gray-600">
-                    From ${pkg.display_price} NZD
-                  </div>
-                )}
+        {pkg.display_price && (
+          <div className="text-sm text-gray-600">
+            From ${pkg.display_price} NZD
+          </div>
+        )}
 
-                <div className="pt-1 text-sm font-medium">
-                  View Package →
-                </div>
+        <div className="pt-1 text-sm font-medium">
+          View Package →
+        </div>
 
-              </div>
+      </div>
 
-            </Link>
-          ))}
+    </Link>
+  )
+})}
 
         </div>
 
