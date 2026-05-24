@@ -62,9 +62,7 @@ export default async function HomePage() {
       slug,
       display_price,
       sort_order,
-      layout:layouts!packages_layout_id_fkey(
-  slug
-)
+      layout:layouts(slug)
     `)
     .order("sort_order", { ascending: true })
     .limit(3)
