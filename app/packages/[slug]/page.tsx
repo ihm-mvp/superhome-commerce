@@ -9,20 +9,18 @@ export async function generateMetadata({
 }) {
   const { slug } = await params
 
-  // ⚠️ 与页面主体保持完全一致的数据结构
-const { data: pkg } = await supabase
-  .from("packages")
-  .select(`
-    name,
-    slug,
-    layout:layouts!
-    packages_layout_id_fkey(
+  const { data: pkg } = await supabase
+    .from("packages")
+    .select(`
+      name,
       slug,
-      name
-    )
-  `)
-  .eq("slug", slug)
-  .single()
+      layout:layouts!packages_layout_id_fkey(
+        slug,
+        name
+      )
+    `)
+    .eq("slug", slug)
+    .single()
 
   if (!pkg) {
     return {
@@ -30,8 +28,16 @@ const { data: pkg } = await supabase
     }
   }
 
+  // ===== 统一 layout 结构 =====
+  const layout = Array.isArray(pkg.layout)
+    ? pkg.layout[0]
+    : pkg.layout
+
   const layoutName =
-    pkg.layout?.[0]?.name || "New Zealand Home"
+    layout?.name || "New Zealand Home"
+
+  const layoutSlug =
+    layout?.slug || "layout"
 
   const packageType =
     pkg.name?.toLowerCase() || "package"
@@ -62,7 +68,7 @@ const { data: pkg } = await supabase
         `Designed for modern move-in ready living.`,
 
       images: [
-        `/packages/${pkg.layout?.[0]?.slug}_${packageType}_overview.jpg`,
+        `/packages/${layoutSlug}_${packageType}_overview.jpg`,
       ],
     },
   }
@@ -76,30 +82,35 @@ export default async function PackagePage({
   const { slug } = await params
 
   // ===== Package =====
-const { data: pkg } = await supabase
-  .from("packages")
-  .select(`
-    id,
-    name,
-    slug,
-    display_price,
-    layout_id,
-    layout:layouts!
-    packages_layout_id_fkey(
+  const { data: pkg } = await supabase
+    .from("packages")
+    .select(`
+      id,
+      name,
       slug,
-      name
-    )
-  `)
-  .eq("slug", slug)
-  .single()
+      display_price,
+      layout_id,
+      layout:layouts!packages_layout_id_fkey(
+        slug,
+        name
+      )
+    `)
+    .eq("slug", slug)
+    .single()
 
   if (!pkg) return notFound()
 
-    console.log("PKG =", pkg)
-console.log("LAYOUT =", pkg.layout)
+  // ===== 统一 layout 结构 =====
+  const layout = Array.isArray(pkg.layout)
+    ? pkg.layout[0]
+    : pkg.layout
 
-  const layoutSlug = pkg.layout?.[0]?.slug
-  const packageType = pkg.name?.toLowerCase()
+  if (!layout) return notFound()
+
+  const layoutSlug = layout.slug
+
+  const packageType =
+    pkg.name?.toLowerCase()
 
   // ===== 同layout packages =====
   const { data: allPackages } = await supabase
@@ -108,15 +119,15 @@ console.log("LAYOUT =", pkg.layout)
     .eq("layout_id", pkg.layout_id)
 
   // ===== Rooms =====
-const { data: rooms } = await supabase
-  .from("package_rooms")
-  .select(`
-    id,
-    name,
-    sort_order
-  `)
-  .eq("package_id", pkg.id)
-  .order("sort_order")
+  const { data: rooms } = await supabase
+    .from("package_rooms")
+    .select(`
+      id,
+      name,
+      sort_order
+    `)
+    .eq("package_id", pkg.id)
+    .order("sort_order")
 
   // ===== Items =====
   const { data: items } = await supabase
@@ -165,7 +176,7 @@ const { data: rooms } = await supabase
 
         <div className="text-gray-500 max-w-2xl leading-relaxed">
           Fully furnished furniture package designed for{" "}
-          {pkg.layout?.[0]?.name}. Explore a complete move-in ready
+          {layout.name}. Explore a complete move-in ready
           setup for modern New Zealand living, including living,
           dining and bedroom furniture selections.
         </div>
@@ -213,7 +224,7 @@ const { data: rooms } = await supabase
         {rooms?.map((room: any) => (
           <div key={room.id} className="space-y-5">
 
-           {/* Room Title */}
+            {/* Room Title */}
             <div className="border-b pb-2">
               <h2 className="text-2xl font-semibold">
                 {room.name}
@@ -300,7 +311,7 @@ const { data: rooms } = await supabase
           </p >
 
           <p>
-            The {pkg.name} Package for {pkg.layout?.[0]?.name}
+            The {pkg.name} Package for {layout.name}
             includes coordinated furniture selections across
             living, dining and bedroom spaces, balancing
             comfort, functionality and contemporary aesthetics.
