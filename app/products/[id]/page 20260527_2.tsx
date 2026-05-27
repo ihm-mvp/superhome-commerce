@@ -161,7 +161,12 @@ export default async function ProductPage({
   }
 
   // ===== Inject Supplier =====
-
+  if (supplier?.name) {
+    displayFields.push({
+      label: "Supplier",
+      value: supplier.name,
+    })
+  }
 
   return (
     <div className="max-w-6xl mx-auto p-8 grid md:grid-cols-2 gap-10">
@@ -225,79 +230,74 @@ export default async function ProductPage({
         </div>
 
         {/* ===== Variants ===== */}
+        {variants && variants.length > 0 && (
+          <div className="border-t pt-5">
 
-{variants && variants.length > 0 && (
-  <div className="border-t pt-5">
+            <h2 className="text-sm font-semibold mb-4 text-gray-600 uppercase tracking-wide">
+              Options
+            </h2>
 
-    <h2 className="text-sm font-semibold mb-4 text-gray-600 uppercase tracking-wide">
-      Options
-    </h2>
+            <div className="space-y-3">
 
-    <div className="space-y-3">
+              {variants.map((v: any) => {
 
-      {variants.map((v: any) => {
+                const hasSize =
+                  v.width_mm ||
+                  v.length_mm ||
+                  v.height_mm
 
-        const hasSize =
-          v.width_mm ||
-          v.length_mm ||
-          v.height_mm
+                const hasConfig = v.config
 
-        const hasConfig =
-          v.display_config_en || v.config
+                if (!hasSize && !hasConfig) {
+                  return null
+                }
 
-        if (!hasSize && !hasConfig) {
-          return null
-        }
+                return (
+                  <div
+                    key={v.id}
+                    className="border rounded-lg p-4 text-sm space-y-2 bg-gray-50"
+                  >
 
-        return (
-          <div
-            key={v.id}
-            className="border rounded-xl p-4 text-sm space-y-2 bg-gray-50"
-          >
+                    {/* ===== Size ===== */}
+                    {hasSize && (
+                      <div className="flex justify-between gap-4">
 
-            {/* ===== Config ===== */}
-            {hasConfig && (
-              <div className="space-y-1">
+                        <span className="text-gray-500">
+                          Size
+                        </span>
 
-                <div className="font-medium text-gray-800">
-                  {v.display_config_en || v.config}
-                </div>
+                        <span className="text-right">
+                          {v.width_mm || "-"} ×{" "}
+                          {v.length_mm || "-"} ×{" "}
+                          {v.height_mm || "-"} mm
+                        </span>
 
-                {v.display_note_en && (
-                  <div className="text-xs text-gray-500">
-                    {v.display_note_en}
+                      </div>
+                    )}
+
+                    {/* ===== Config ===== */}
+                    {hasConfig && (
+                      <div className="flex justify-between gap-4">
+
+                        <span className="text-gray-500">
+                          Config
+                        </span>
+
+                        <span className="text-right">
+                          {v.config}
+                        </span>
+
+                      </div>
+                    )}
+
                   </div>
-                )}
+                )
+              })}
 
-              </div>
-            )}
-
-            {/* ===== Size ===== */}
-            {hasSize && (
-              <div className="flex justify-between gap-4 text-sm">
-
-                <span className="text-gray-500">
-                  Size
-                </span>
-
-                <span className="text-right">
-                  {v.width_mm || "-"} ×{" "}
-                  {v.length_mm || "-"} ×{" "}
-                  {v.height_mm || "-"} mm
-                </span>
-
-              </div>
-            )}
+            </div>
 
           </div>
-        )
-      })}
-
-    </div>
-
-  </div>
-)}
-
+        )}
 
       </div>
 
