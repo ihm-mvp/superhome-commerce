@@ -42,7 +42,6 @@ export default async function Page() {
       sku_code,
       level,
       image_url,
-      display_name_en,
       categories (
         name,
         display_name,
@@ -163,15 +162,9 @@ export default async function Page() {
                     </div>
 
                     <div className="p-3">
-
-<div className="text-sm font-medium">
-  {p.display_name_en || p.sku_code}
-</div>
-
-<div className="text-xs text-gray-400 mt-1">
-  {p.sku_code}
-</div>
-
+                      <div className="text-sm font-medium">
+                        {p.sku_code}
+                      </div>
                     </div>
                   </Link>
                 ))}
