@@ -23,7 +23,7 @@ export default async function CategoryPage({
   // ===== 查产品 =====
   const { data: products } = await supabase
     .from("products")
-    .select("id, sku_code, display_name_en, level, image_url")
+    .select("id, sku_code, level, image_url")
     .eq("category_id", category.id)
     .limit(24)
 
@@ -44,39 +44,32 @@ export default async function CategoryPage({
         {category.display_name}
       </h1>
 
-<div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
 
-  {sortedProducts.map((p: any) => (
-    <Link
-      key={p.id}
-      href={`/products/${p.id}`}
-      className="block bg-white rounded-xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden"
-      prefetch={false}
-    >
-      <div className="h-48 flex items-center justify-center bg-gray-100">
-        <img
-          src={p.image_url}
-          className="max-h-full max-w-full object-contain p-4"
-          loading="lazy"
-        />
-      </div>
+        {sortedProducts.map((p: any) => (
+          <Link
+            key={p.id}
+            href={`/products/${p.id}`}
+            className="block bg-white rounded-xl shadow-sm hover:shadow-md transition overflow-hidden"
+            prefetch={false}
+          >
+            <div className="h-48 flex items-center justify-center bg-gray-100">
+              <img
+                src={p.image_url}
+                className="max-h-full object-contain"
+                loading="lazy"
+              />
+            </div>
 
-      <div className="p-3">
-
-        <div className="text-sm font-medium line-clamp-2">
-          {p.display_name_en || p.sku_code}
-        </div>
-
-        <div className="text-xs text-gray-400 mt-1">
-          {p.sku_code}
-        </div>
+            <div className="p-3">
+              <div className="text-sm font-medium">
+                {p.sku_code}
+              </div>
+            </div>
+          </Link>
+        ))}
 
       </div>
-
-    </Link>
-  ))}
-
-</div>
 
       {sortedProducts.length === 0 && (
         <div className="text-gray-400 text-sm">
