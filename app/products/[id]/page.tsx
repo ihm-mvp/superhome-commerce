@@ -1,14 +1,81 @@
 import { supabase } from "@/lib/supabase"
 import ProductImages from "@/components/ProductImages"
+import { notFound } from "next/navigation"
+
+type Props = {
+  params: Promise<{ id: string }>
+}
+
+// ===== SEO Metadata =====
+export async function generateMetadata({
+  params,
+}: Props) {
+
+  const { id } = await params
+
+  const { data: product } = await supabase
+    .from("products")
+    .select(`
+      id,
+      sku_code,
+      display_name_en,
+      display_description_en,
+      image_url,
+      category_id
+    `)
+    .eq("id", id)
+    .single()
+
+  if (!product) {
+    return {
+      title: "Product | MoveInReady",
+    }
+  }
+
+  const { data: category } = await supabase
+    .from("categories")
+    .select("display_name")
+    .eq("id", product.category_id)
+    .single()
+
+  const title =
+    `${product.display_name_en || product.sku_code} | MoveInReady`
+
+  const description =
+    product.display_description_en ||
+    `Explore curated furniture designed for modern New Zealand homes and move-in-ready living.`
+
+  return {
+    title,
+    description,
+
+    keywords: [
+      product.display_name_en || product.sku_code,
+      category?.display_name || "Furniture",
+      "Furniture NZ",
+      "Move In Ready",
+      "Christchurch furniture",
+      "Townhouse furniture",
+      "Modern furniture NZ",
+    ],
+
+    openGraph: {
+      title,
+      description,
+      images: [
+        product.image_url || "/images/hero-image.jpg",
+      ],
+    },
+  }
+}
 
 export default async function ProductPage({
   params,
-}: {
-  params: Promise<{ id: string }>
-}) {
+}: Props) {
+
   const { id } = await params
 
-  // ===== 产品 =====
+  // ===== Product =====
   const { data: product } = await supabase
     .from("products")
     .select("*")
@@ -16,51 +83,56 @@ export default async function ProductPage({
     .single()
 
   if (!product) {
-    return <div className="p-10">Not found</div>
+    return notFound()
   }
 
-  // ===== 图片 =====
+  // ===== Images =====
   const { data: images } = await supabase
     .from("product_images")
     .select("image_url, sort_order")
     .eq("product_id", id)
 
   const sortedImages = (images || []).sort(
-    (a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0)
+    (a: any, b: any) =>
+      (a.sort_order || 0) - (b.sort_order || 0)
   )
 
-  // ===== 外键 =====
+  // ===== Supplier =====
   const { data: supplier } = await supabase
     .from("suppliers")
     .select("name")
     .eq("id", product.supplier_id)
     .single()
 
+  // ===== Category =====
   const { data: category } = await supabase
     .from("categories")
-    .select("display_name")   // ✅ 改这里
+    .select("display_name")
     .eq("id", product.category_id)
     .single()
 
-  // ===== variants =====
+  // ===== Variants =====
   const { data: variants } = await supabase
     .from("variants")
     .select("*")
     .eq("product_id", id)
 
-  // ===== 产品字段（安全过滤）=====
+  // ===== Product Fields =====
   const hiddenProductFields = [
     "id",
     "image_url",
     "created_at",
     "category_id",
     "supplier_id",
-    "level"
+    "level",
+    "name",
+    "description",
+    "display_name_en",
+    "display_description_en",
   ]
 
   const fieldMap: Record<string, string> = {
     sku_code: "SKU",
-    name: "Name",
     usage_type: "Usage",
   }
 
@@ -74,105 +146,147 @@ export default async function ProductPage({
         value !== ""
     )
     .map(([key, value]) => ({
-      label: fieldMap[key] || key.replace(/_/g, " "),
+      label:
+        fieldMap[key] ||
+        key.replace(/_/g, " "),
       value: String(value),
     }))
 
-  // 插入品牌 / 分类
-  if (supplier?.name) {
-    displayFields.unshift({ label: "Brand", value: supplier.name })
+  // ===== Inject Category =====
+  if (category?.display_name) {
+    displayFields.unshift({
+      label: "Category",
+      value: category.display_name,
+    })
   }
 
-  if (category?.display_name) {
-    displayFields.unshift({ label: "Category", value: category.display_name })
+  // ===== Inject Supplier =====
+  if (supplier?.name) {
+    displayFields.push({
+      label: "Supplier",
+      value: supplier.name,
+    })
   }
 
   return (
     <div className="max-w-6xl mx-auto p-8 grid md:grid-cols-2 gap-10">
 
-      {/* 左：图片 */}
+      {/* ===== Left Images ===== */}
       <div>
         <ProductImages images={sortedImages} />
       </div>
 
-      {/* 右：信息 */}
+      {/* ===== Right Content ===== */}
       <div className="space-y-6">
 
-        {/* 标题 */}
-        <div>
-          <h1 className="text-3xl font-semibold">
-            {product.sku_code}
+        {/* ===== Title ===== */}
+        <div className="space-y-2">
+
+          <h1 className="text-3xl font-semibold leading-tight">
+            {product.display_name_en || product.sku_code}
           </h1>
 
-          {product.name && (
-            <div className="text-gray-500 text-sm mt-1">
-              {product.name}
-            </div>
-          )}
+          <div className="text-sm text-gray-400">
+            SKU: {product.sku_code}
+          </div>
+
         </div>
 
-        {/* 描述 */}
-        {product.description && (
-          <div className="text-gray-600 whitespace-pre-line text-sm border-t pt-4">
-            {product.description}
+        {/* ===== Description ===== */}
+        {product.display_description_en && (
+          <div className="text-gray-600 whitespace-pre-line leading-relaxed border-t pt-5">
+            {product.display_description_en}
           </div>
         )}
 
-        {/* Product Details */}
-        <div className="border-t pt-4">
-          <h2 className="text-sm font-semibold mb-3 text-gray-600">
+{/* ===== Product Details ===== */}
+        <div className="border-t pt-5">
+
+          <h2 className="text-sm font-semibold mb-4 text-gray-600 uppercase tracking-wide">
             Product Details
           </h2>
 
           <div className="space-y-2">
+
             {displayFields.map((item, idx) => (
-              <div key={idx} className="flex justify-between text-sm border-b pb-1">
-                <span className="text-gray-500">{item.label}</span>
-                <span className="text-gray-800 text-right max-w-[60%]">
+              <div
+                key={idx}
+                className="flex justify-between text-sm border-b pb-2 gap-4"
+              >
+
+                <span className="text-gray-500 whitespace-nowrap">
+                  {item.label}
+                </span>
+
+                <span className="text-gray-800 text-right">
                   {item.value}
                 </span>
+
               </div>
             ))}
+
           </div>
+
         </div>
 
-        {/* Variants（白名单 + 优化版） */}
+        {/* ===== Variants ===== */}
         {variants && variants.length > 0 && (
-          <div className="border-t pt-4">
-            <h2 className="text-sm font-semibold mb-3 text-gray-600">
+          <div className="border-t pt-5">
+
+            <h2 className="text-sm font-semibold mb-4 text-gray-600 uppercase tracking-wide">
               Options
             </h2>
 
-            <div className="space-y-2">
+            <div className="space-y-3">
 
               {variants.map((v: any) => {
 
                 const hasSize =
-                  v.width_mm || v.length_mm || v.height_mm
+                  v.width_mm ||
+                  v.length_mm ||
+                  v.height_mm
 
                 const hasConfig = v.config
 
-                // 👉 避免空卡片
-                if (!hasSize && !hasConfig) return null
+                if (!hasSize && !hasConfig) {
+                  return null
+                }
 
                 return (
-                  <div key={v.id} className="border p-3 rounded text-sm space-y-1">
+                  <div
+                    key={v.id}
+                    className="border rounded-lg p-4 text-sm space-y-2 bg-gray-50"
+                  >
 
-                    {/* 尺寸合并 */}
+                    {/* ===== Size ===== */}
                     {hasSize && (
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Size</span>
-                        <span>
-                          {v.width_mm || "-"} × {v.length_mm || "-"} × {v.height_mm || "-"} mm
+                      <div className="flex justify-between gap-4">
+
+                        <span className="text-gray-500">
+                          Size
                         </span>
+
+                        <span className="text-right">
+                          {v.width_mm || "-"} ×{" "}
+                          {v.length_mm || "-"} ×{" "}
+                          {v.height_mm || "-"} mm
+                        </span>
+
                       </div>
                     )}
 
-                    {/* 配置 */}
+                    {/* ===== Config ===== */}
                     {hasConfig && (
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Config</span>
-                        <span>{v.config}</span>
+                      <div className="flex justify-between gap-4">
+
+                        <span className="text-gray-500">
+                          Config
+                        </span>
+
+                        <span className="text-right">
+                          {v.config}
+                        </span>
+
                       </div>
                     )}
 
@@ -181,10 +295,12 @@ export default async function ProductPage({
               })}
 
             </div>
+
           </div>
         )}
 
       </div>
+
     </div>
   )
 }
