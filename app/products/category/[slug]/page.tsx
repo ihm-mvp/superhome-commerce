@@ -23,6 +23,52 @@ export default async function CategoryPage({
   // ===== 查产品 =====
   const { data: products } = await supabase
     .from("products")
+    .select("id, sku_code, display_name_en, level, image_url")
+    .eq("category_id", category.id)
+    .limit(24)
+
+  // ===== 排序 =====
+  const sortedProducts = (products || []).sort((a: any, b: any) => {
+    const levelA = Number(a.level?.replace("L", "") || 99)
+    const levelB = Number(b.level?.replace("L", "") || 99)
+
+    if (levelA !== levelB) return levelA - levelB
+
+    return a.sku_code.localeCompare(b.sku_code)
+  })
+
+  return (
+    <div className="max-w-7xl mx-auto px-6 py-10 space-y-10">
+
+      <h1 className="text-3xl font-semibold">
+        {category.display_name}
+      </h1>
+
+import { supabase } from "@/lib/supabase"
+import Link from "next/link"
+import { notFound } from "next/navigation"
+
+export default async function CategoryPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}) {
+  const { slug } = await params  // ✅ 关键修复
+
+  // ===== 找分类 =====
+  const { data: category } = await supabase
+    .from("categories")
+    .select("id, display_name, slug")
+    .eq("slug", slug)
+    .single()
+
+  if (!category) {
+    return notFound()
+  }
+
+  // ===== 查产品 =====
+  const { data: products } = await supabase
+    .from("products")
     .select("id, sku_code, level, image_url")
     .eq("category_id", category.id)
     .limit(24)
@@ -70,6 +116,16 @@ export default async function CategoryPage({
         ))}
 
       </div>
+
+      {sortedProducts.length === 0 && (
+        <div className="text-gray-400 text-sm">
+          No products found in this category.
+        </div>
+      )}
+
+    </div>
+  )
+}
 
       {sortedProducts.length === 0 && (
         <div className="text-gray-400 text-sm">
