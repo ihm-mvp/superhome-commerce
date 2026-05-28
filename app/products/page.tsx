@@ -50,7 +50,7 @@ export default async function Page() {
         sort_order
       )
     `)
-    .limit(120)
+    .limit(240)
 
   // ===== 分组 =====
   const grouped: Record<string, any[]> = {}
