@@ -174,22 +174,12 @@ export default async function PackagePage({
           </div>
         )}
 
-<div className="text-gray-500 max-w-2xl leading-relaxed">
-  Fully furnished furniture package designed for{" "}
-  {layout.name}. Explore a complete move-in ready
-  setup for modern New Zealand living, including living,
-  dining and bedroom furniture selections.
-</div>
-
-<div className="pt-4">
-  <Link
-    href={`/package-proposal/${pkg.slug}`}
-    className="inline-flex items-center px-6 py-3 bg-black text-white rounded-lg hover:opacity-90 transition"
-    prefetch={false}
-  >
-    Get Package Proposal
-  </Link>
-</div>
+        <div className="text-gray-500 max-w-2xl leading-relaxed">
+          Fully furnished furniture package designed for{" "}
+          {layout.name}. Explore a complete move-in ready
+          setup for modern New Zealand living, including living,
+          dining and bedroom furniture selections.
+        </div>
 
       </div>
 
@@ -331,18 +321,14 @@ export default async function PackagePage({
 
       </div>
 
-{/* ===== CTA ===== */}
-<div className="border-t pt-8 text-center">
+      {/* ===== CTA ===== */}
+      <div className="border-t pt-8 text-center">
 
-  <Link
-    href={`/package-proposal/${pkg.slug}`}
-    className="inline-flex items-center px-8 py-3 bg-black text-white rounded-lg hover:opacity-90 transition"
-    prefetch={false}
-  >
-    Get Package Proposal
-  </Link>
+        <button className="px-8 py-3 bg-black text-white rounded-lg hover:opacity-90 transition">
+          Enquire This Package
+        </button>
 
-</div>
+      </div>
 
     </div>
   )
