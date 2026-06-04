@@ -90,24 +90,17 @@ export default async function PackageProposalPage({
       package_room_id,
       item_type:item_types(name),
 
-products:package_item_products(
-  quantity,
+      products:package_item_products(
+        quantity,
 
-  product:products(
-    id,
-    sku_code,
-    image_url,
-    display_name_en,
-    display_description_en
-  ),
-
-  variant:variants(
-    size_label,
-    config,
-    display_config_en,
-    display_note_en
-  )
-)
+        product:products(
+          id,
+          sku_code,
+          image_url,
+          display_name_en,
+          display_description_en
+        )
+      )
     `)
     .in(
       "package_room_id",
@@ -165,6 +158,20 @@ products:package_item_products(
           </p >
 
         </div>
+
+      </div>
+
+      {/* ================================================= */}
+      {/* HERO IMAGE */}
+      {/* ================================================= */}
+
+      <div>
+
+        <img
+          src={`/packages/${layoutSlug}_${packageType}_overview.jpg`}
+          className="w-full rounded-2xl border"
+          loading="lazy"
+        />
 
       </div>
 
@@ -245,80 +252,26 @@ products:package_item_products(
 
                         <div>
 
-<div className="flex items-start justify-between gap-4">
+                          <h3 className="font-semibold text-lg">
 
-  <h3 className="font-semibold text-lg">
+                            {p.product?.display_name_en ||
+                              p.product?.sku_code}
 
-    {p.product?.display_name_en ||
-      p.product?.sku_code}
+                          </h3>
 
-  </h3>
+                          {p.product
+                            ?.display_description_en && (
 
-  <div className="text-sm text-gray-500 whitespace-nowrap">
+                            <p className="text-gray-600 text-sm mt-2 leading-relaxed">
 
-    Qty: {p.quantity}
+                              {
+                                p.product
+                                  .display_description_en
+                              }
 
-  </div>
+                            </p >
 
-</div>
-
-{/* ===== Variant ===== */}
-
-{(
-  p.variant?.display_config_en ||
-  p.variant?.config ||
-  p.variant?.size_label
-) && (
-
-  <div className="mt-2 space-y-1">
-
-    {(p.variant?.display_config_en ||
-      p.variant?.config) && (
-
-      <div className="text-sm font-medium text-gray-700">
-
-        {p.variant?.display_config_en ||
-          p.variant?.config}
-
-      </div>
-
-    )}
-
-    {p.variant?.size_label && (
-
-      <div className="text-sm text-gray-500">
-
-        Size: {p.variant.size_label}
-
-      </div>
-
-    )}
-
-    {p.variant?.display_note_en && (
-
-      <div className="text-xs text-gray-500">
-
-        {p.variant.display_note_en}
-
-      </div>
-
-    )}
-
-  </div>
-
-)}
-
-{/* ===== Description ===== */}
-
-{p.product?.display_description_en && (
-
-  <p className="text-gray-600 text-sm mt-3 leading-relaxed">
-
-    {p.product.display_description_en}
-
-  </p >
-
-)}
+                          )}
 
                         </div>
 
