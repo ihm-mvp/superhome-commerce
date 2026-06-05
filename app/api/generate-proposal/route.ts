@@ -23,10 +23,10 @@ export async function GET(
 
     }
 
-    const proposalUrl =
+const proposalUrl =
 
-      `${process.env.NEXT_PUBLIC_SITE_URL}` +
-      `/package-proposal/${slug}?pdf=1`
+  `${process.env.NEXT_PUBLIC_SITE_URL}` +
+  `/package-proposal-pdf/${slug}`
 
 const response = await fetch(
   `https://production-sfo.browserless.io/pdf?token=${process.env.BROWSERLESS_API_KEY}`,
