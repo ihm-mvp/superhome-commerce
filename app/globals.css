@@ -36,3 +36,13 @@ body {
   }
 
 }
+
+.break-inside-avoid {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.room-section {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}

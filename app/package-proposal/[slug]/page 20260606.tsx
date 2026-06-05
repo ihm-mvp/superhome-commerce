@@ -33,11 +33,17 @@ export async function generateMetadata({
 
 export default async function PackageProposalPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>
+  searchParams: Promise<{ pdf?: string }>
 }) {
 
   const { slug } = await params
+
+  const { pdf } = await searchParams
+
+  const isPdf = pdf === "1"
 
   // ===== Package =====
 
@@ -132,6 +138,26 @@ products:package_item_products(
   return (
 
     <div className="max-w-6xl mx-auto px-6 py-10 space-y-14">
+
+      {isPdf && (
+
+        <div className="border-b pb-6">
+
+          <div className="text-sm uppercase tracking-wide text-gray-400">
+            MoveInReady
+          </div>
+
+          <div className="text-xs text-gray-500 mt-2">
+            Package Proposal
+          </div>
+
+          <div className="text-xs text-gray-500">
+            PDF Version
+          </div>
+
+        </div>
+
+      )}
 
       {/* ================================================= */}
       {/* HERO */}
@@ -241,7 +267,7 @@ products:package_item_products(
                           <img
                             src={p.product.image_url}
                             className="w-full h-64 object-contain bg-gray-50 rounded-xl"
-                            loading="lazy"
+                            loading="eager"
                           />
 
                         )}
@@ -441,6 +467,99 @@ products:package_item_products(
         </div>
 
       </div>
+
+{!isPdf && (
+
+<>
+
+{/* ================================================= */}
+{/* REQUEST PROPOSAL */}
+{/* ================================================= */}
+
+<div className="border-t pt-12">
+
+  <div className="max-w-xl mx-auto">
+
+    <h2 className="text-2xl font-semibold mb-3">
+      Get Your Package Proposal
+    </h2>
+
+    <p className="text-gray-600 mb-6">
+      Enter your details and receive this package proposal.
+    </p >
+
+    <form
+      action="/api/package-request"
+      method="POST"
+      className="space-y-4"
+    >
+
+      <input
+        type="hidden"
+        name="package_id"
+        value={pkg.id}
+      />
+
+      <div>
+
+        <label className="block text-sm mb-2">
+          First Name *
+        </label>
+
+        <input
+          type="text"
+          name="first_name"
+          required
+          className="w-full border rounded-lg px-4 py-3"
+        />
+
+      </div>
+
+      <div>
+
+        <label className="block text-sm mb-2">
+          Email *
+        </label>
+
+        <input
+          type="email"
+          name="email"
+          required
+          className="w-full border rounded-lg px-4 py-3"
+        />
+
+      </div>
+
+      <button
+        type="submit"
+        className="w-full bg-black text-white py-3 rounded-lg hover:opacity-90 transition"
+      >
+        Send Package Proposal
+      </button>
+
+    </form>
+
+  </div>
+
+</div>
+
+</>
+
+)}
+
+      {isPdf && (
+
+        <div className="border-t pt-8 text-xs text-gray-400">
+
+          MoveInReady
+
+          <br />
+
+          Furniture + Sunshine + Styling
+
+        </div>
+
+      )}
 
     </div>
 

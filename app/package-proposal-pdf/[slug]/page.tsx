@@ -141,7 +141,7 @@ products:package_item_products(
 
       {isPdf && (
 
-        <div className="border-b pb-6">
+        <div className="border-b pb-6 break-inside-avoid">
 
           <div className="text-sm uppercase tracking-wide text-gray-400">
             MoveInReady
@@ -149,10 +149,6 @@ products:package_item_products(
 
           <div className="text-xs text-gray-500 mt-2">
             Package Proposal
-          </div>
-
-          <div className="text-xs text-gray-500">
-            PDF Version
           </div>
 
         </div>
@@ -230,7 +226,7 @@ products:package_item_products(
 
           <div
             key={room.id}
-            className="space-y-8"
+            className="space-y-8 room-section"
           >
 
             <div className="border-b pb-3">
@@ -442,6 +438,46 @@ products:package_item_products(
         )}
 
       </div>
+
+      <div className="border-t pt-12">
+
+  <h2 className="text-2xl font-semibold mb-6">
+    About MoveInReady
+  </h2>
+
+  <div className="max-w-3xl space-y-4 text-gray-700 leading-relaxed">
+
+    <p>
+      MoveInReady is a New Zealand-based
+      move-in-ready furnishing platform.
+    </p >
+
+    <p>
+      We combine furniture,
+      window furnishings,
+      styling,
+      delivery and installation
+      into one coordinated solution.
+    </p >
+
+    <p>
+      Designed for homeowners,
+      investors and developers,
+      MoveInReady helps new homes
+      be ready from day one.
+    </p >
+
+    <p>
+      www.moveinready.co.nz
+    </p >
+
+    <p>
+      sales@moveinready.co.nz
+    </p >
+
+  </div>
+
+</div>
 
 {!isPdf && (
 

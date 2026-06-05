@@ -141,7 +141,7 @@ products:package_item_products(
 
       {isPdf && (
 
-        <div className="border-b pb-6">
+        <div className="border-b pb-6 break-inside-avoid">
 
           <div className="text-sm uppercase tracking-wide text-gray-400">
             MoveInReady
@@ -149,10 +149,6 @@ products:package_item_products(
 
           <div className="text-xs text-gray-500 mt-2">
             Package Proposal
-          </div>
-
-          <div className="text-xs text-gray-500">
-            PDF Version
           </div>
 
         </div>
@@ -230,7 +226,7 @@ products:package_item_products(
 
           <div
             key={room.id}
-            className="space-y-8"
+            className="space-y-8 room-section"
           >
 
             <div className="border-b pb-3">
