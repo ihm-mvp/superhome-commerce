@@ -2,8 +2,6 @@ import "./globals.css"
 import Link from "next/link"
 import EmailCapture from "@/components/EmailCapture"
 
-import PdfMode from "@/components/PdfMode"
-
 export const metadata = {
   title: "MoveInReady",
   description:
@@ -20,8 +18,6 @@ export default function RootLayout({
       <body className="bg-white text-black">
 
         {/* ===== HEADER ===== */}
-        <PdfMode>
-
         <header className="border-b bg-white sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
@@ -73,14 +69,10 @@ export default function RootLayout({
           </div>
         </header>
 
-        </PdfMode>
-
         {/* ===== MAIN ===== */}
         <main>{children}</main>
 
         {/* ===== FOOTER ===== */}
-        <PdfMode>
-
         <footer className="border-t mt-20">
           <div className="max-w-7xl mx-auto px-6 py-10 grid md:grid-cols-3 gap-8 text-sm text-gray-600">
 
@@ -153,8 +145,6 @@ export default function RootLayout({
 
           </div>
         </footer>
-
-        </PdfMode>
 
       </body>
     </html>
