@@ -558,20 +558,6 @@ products:package_item_products(
 
 )}
 
-      {isPdf && (
-
-        <div className="border-t pt-8 text-xs text-gray-400">
-
-          MoveInReady
-
-          <br />
-
-          Furniture + Sunshine + Styling
-
-        </div>
-
-      )}
-
     </div>
 
   )
