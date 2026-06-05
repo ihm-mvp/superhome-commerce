@@ -28,46 +28,27 @@ export async function GET(
       `${process.env.NEXT_PUBLIC_SITE_URL}` +
       `/package-proposal/${slug}?pdf=1`
 
-return NextResponse.json({
-  proposalUrl,
-})
+const response = await fetch(
+  `https://production-sfo.browserless.io/pdf?token=${process.env.BROWSERLESS_API_KEY}`,
+  {
+    method: "POST",
 
-    const response = await fetch(
+    headers: {
+      "Content-Type": "application/json",
+    },
 
-      `https://production-sfo.browserless.io/pdf?token=${process.env.BROWSERLESS_API_KEY}`,
+    body: JSON.stringify({
+      url: proposalUrl,
 
-      {
-        method: "POST",
+      waitFor: "networkidle0",
 
-        headers: {
-          "Content-Type":
-            "application/json",
-        },
-
-        body: JSON.stringify({
-
-          url: proposalUrl,
-
-          options: {
-
-            format: "A4",
-
-            printBackground: true,
-
-            margin: {
-              top: "12mm",
-              right: "12mm",
-              bottom: "12mm",
-              left: "12mm",
-            },
-
-          },
-
-        }),
-
-      }
-
-    )
+      options: {
+        format: "A4",
+        printBackground: true,
+      },
+    }),
+  }
+)
 
     if (!response.ok) {
 
