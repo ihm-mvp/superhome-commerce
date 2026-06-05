@@ -105,7 +105,10 @@ products:package_item_products(
     size_label,
     config,
     display_config_en,
-    display_note_en
+    display_note_en,
+    width_mm,
+    length_mm,
+    height_mm
   )
 )
     `)
@@ -146,7 +149,7 @@ products:package_item_products(
 
         {pkg.display_price && (
           <div className="text-2xl text-gray-700">
-            Included Value NZD ${pkg.display_price}
+            Included Value ${pkg.display_price} NZD
           </div>
         )}
 
@@ -267,7 +270,10 @@ products:package_item_products(
 {(
   p.variant?.display_config_en ||
   p.variant?.config ||
-  p.variant?.size_label
+  p.variant?.size_label ||
+  p.variant?.width_mm ||
+  p.variant?.length_mm ||
+  p.variant?.height_mm
 ) && (
 
   <div className="mt-2 space-y-1">
@@ -299,6 +305,32 @@ products:package_item_products(
       <div className="text-xs text-gray-500">
 
         {p.variant.display_note_en}
+
+      </div>
+
+    )}
+
+    {(
+      p.variant?.width_mm ||
+      p.variant?.length_mm ||
+      p.variant?.height_mm
+    ) && (
+
+      <div className="text-xs text-gray-500">
+
+        Dimensions:{" "}
+
+        {p.variant?.width_mm || "-"}
+
+        ×
+
+        {p.variant?.length_mm || "-"}
+
+        ×
+
+        {p.variant?.height_mm || "-"}
+
+        mm
 
       </div>
 
@@ -377,7 +409,7 @@ products:package_item_products(
 
           <div className="mt-8 text-3xl font-semibold">
 
-            Included Value NZD ${pkg.display_price}
+            Included Value ${pkg.display_price} NZD
 
           </div>
 
