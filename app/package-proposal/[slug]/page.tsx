@@ -267,7 +267,7 @@ products:package_item_products(
                           <img
                             src={p.product.image_url}
                             className="w-full h-64 object-contain bg-gray-50 rounded-xl"
-                            loading="lazy"
+                            loading="eager"
                           />
 
                         )}
