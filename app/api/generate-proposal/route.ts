@@ -38,14 +38,24 @@ const response = await fetch(
     },
 
     body: JSON.stringify({
+
       url: proposalUrl,
 
-      waitFor: "networkidle0",
-
       options: {
+
         format: "A4",
+
         printBackground: true,
+
+        margin: {
+          top: "12mm",
+          right: "12mm",
+          bottom: "12mm",
+          left: "12mm",
+        },
+
       },
+
     }),
   }
 )
