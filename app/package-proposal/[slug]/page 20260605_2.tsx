@@ -33,17 +33,11 @@ export async function generateMetadata({
 
 export default async function PackageProposalPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ slug: string }>
-  searchParams: Promise<{ pdf?: string }>
 }) {
 
   const { slug } = await params
-
-  const { pdf } = await searchParams
-
-  const isPdf = pdf === "1"
 
   // ===== Package =====
 
@@ -138,26 +132,6 @@ products:package_item_products(
   return (
 
     <div className="max-w-6xl mx-auto px-6 py-10 space-y-14">
-
-      {isPdf && (
-
-        <div className="border-b pb-6">
-
-          <div className="text-sm uppercase tracking-wide text-gray-400">
-            MoveInReady
-          </div>
-
-          <div className="text-xs text-gray-500 mt-2">
-            Package Proposal
-          </div>
-
-          <div className="text-xs text-gray-500">
-            PDF Version
-          </div>
-
-        </div>
-
-      )}
 
       {/* ================================================= */}
       {/* HERO */}
@@ -468,10 +442,6 @@ products:package_item_products(
 
       </div>
 
-{!isPdf && (
-
-<>
-
 {/* ================================================= */}
 {/* REQUEST PROPOSAL */}
 {/* ================================================= */}
@@ -542,24 +512,6 @@ products:package_item_products(
   </div>
 
 </div>
-
-</>
-
-)}
-
-      {isPdf && (
-
-        <div className="border-t pt-8 text-xs text-gray-400">
-
-          MoveInReady
-
-          <br />
-
-          Furniture + Sunshine + Styling
-
-        </div>
-
-      )}
 
     </div>
 
