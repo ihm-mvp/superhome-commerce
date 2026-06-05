@@ -28,6 +28,10 @@ export async function GET(
       `${process.env.NEXT_PUBLIC_SITE_URL}` +
       `/package-proposal/${slug}?pdf=1`
 
+return NextResponse.json({
+  proposalUrl,
+})
+
     const response = await fetch(
 
       `https://production-sfo.browserless.io/pdf?token=${process.env.BROWSERLESS_API_KEY}`,
