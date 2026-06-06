@@ -94,7 +94,7 @@ export default async function PackageProposalPage({
     .select(`
       id,
       package_room_id,
-      item_type:item_types(name),
+      item_type:item_types(name, display_name),
 
 products:package_item_products(
   quantity,
@@ -135,26 +135,25 @@ products:package_item_products(
 
   })
 
-  const summaryMap: Record<
+const summaryMap: Record<
   string,
   number
 > = {}
 
 items?.forEach((item: any) => {
 
-  item.products?.forEach(
-    (p: any) => {
+  const displayName =
+    item.item_type?.display_name ||
+    item.item_type?.name
 
-      const name =
-        item.item_type?.name ||
-        "Item"
+  const qty = item.products?.reduce(
+    (sum: number, p: any) =>
+      sum + (p.quantity || 0),
+    0
+  ) || 0
 
-      summaryMap[name] =
-        (summaryMap[name] || 0) +
-        (p.quantity || 0)
-
-    }
-  )
+  summaryMap[displayName] =
+    (summaryMap[displayName] || 0) + qty
 
 })
 
@@ -218,29 +217,29 @@ const packageSummary =
 
   </div>
 
-  {/* ===== Package Summary ===== */}
+{/* ===== Package Summary ===== */}
 
-  <div className="border rounded-2xl p-6 bg-gray-50">
+<div className="border rounded-2xl p-6 bg-gray-50">
 
-    <h2 className="text-xl font-semibold mb-4">
-      Package Summary
-    </h2>
+  <h2 className="text-xl font-semibold mb-4">
+    Package Summary
+  </h2>
 
-    <div className="grid md:grid-cols-2 gap-3 text-gray-700">
+<div className="grid md:grid-cols-2 gap-3 text-gray-700">
 
-      {packageSummary.map(
-        ([name, qty]) => (
+  {packageSummary.map(
+    ([name, qty]) => (
 
-          <div key={name}>
-            ✓ {qty} {name}
-          </div>
+      <div key={name}>
+        ✓ {qty} × {name}
+      </div>
 
-        )
-      )}
+    )
+  )}
 
-    </div>
+</div>
 
-  </div>
+</div>
 
 </div>
 
@@ -298,7 +297,7 @@ const packageSummary =
                 >
 
                   <div className="text-sm uppercase tracking-wide text-gray-400">
-                    {item.item_type?.name}
+                    {item.item_type?.display_name}
                   </div>
 
                   {item.products?.map(

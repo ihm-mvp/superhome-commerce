@@ -297,7 +297,7 @@ const packageSummary =
                 >
 
                   <div className="text-sm uppercase tracking-wide text-gray-400">
-                    {item.item_type?.name}
+                    {item.item_type?.display_name}
                   </div>
 
                   {item.products?.map(
