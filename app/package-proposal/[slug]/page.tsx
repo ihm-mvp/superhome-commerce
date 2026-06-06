@@ -135,32 +135,19 @@ products:package_item_products(
 
   })
 
-  const summaryMap: Record<
-  string,
-  number
-> = {}
-
-items?.forEach((item: any) => {
-
-  item.products?.forEach(
-    (p: any) => {
-
-      const name =
-        item.item_type?.name ||
-        "Item"
-
-      summaryMap[name] =
-        (summaryMap[name] || 0) +
-        (p.quantity || 0)
-
-    }
-  )
-
-})
-
 const packageSummary =
-  Object.entries(summaryMap)
-    .sort((a, b) => b[1] - a[1])
+  Array.from(
+
+    new Set(
+
+      items?.map(
+        (item: any) =>
+          item.item_type?.name
+      ).filter(Boolean)
+
+    )
+
+  )
 
   return (
 
@@ -218,29 +205,29 @@ const packageSummary =
 
   </div>
 
-  {/* ===== Package Summary ===== */}
+{/* ===== Package Summary ===== */}
 
-  <div className="border rounded-2xl p-6 bg-gray-50">
+<div className="border rounded-2xl p-6 bg-gray-50">
 
-    <h2 className="text-xl font-semibold mb-4">
-      Package Summary
-    </h2>
+  <h2 className="text-xl font-semibold mb-4">
+    Package Summary
+  </h2>
 
-    <div className="grid md:grid-cols-2 gap-3 text-gray-700">
+  <div className="grid md:grid-cols-2 gap-3 text-gray-700">
 
-      {packageSummary.map(
-        ([name, qty]) => (
+    {packageSummary.map(
+      (name: string) => (
 
-          <div key={name}>
-            ✓ {qty} {name}
-          </div>
+        <div key={name}>
+          ✓ {name}
+        </div>
 
-        )
-      )}
-
-    </div>
+      )
+    )}
 
   </div>
+
+</div>
 
 </div>
 
