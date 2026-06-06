@@ -199,9 +199,15 @@ console.log(
   "Proposal Email Sent"
 )
 
-return NextResponse.json({
-  success: true,
-})
+return NextResponse.redirect(
+  new URL(
+    "/package-proposal-success",
+    request.url
+  ),
+  {
+    status: 303,
+  }
+)
 
   } catch (error) {
 
