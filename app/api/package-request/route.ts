@@ -179,10 +179,7 @@ await resend.emails.send({
 
     {
       filename:
-        `MoveInReady-${
-          pkg.slug
-            .replace(/-/g, "-")
-        }-Package-Proposal.pdf`,
+        `MoveInReady-${pkg.slug}-Package-Proposal.pdf`,
 
       content:
         pdfBuffer.toString(
@@ -194,42 +191,9 @@ await resend.emails.send({
 
 })
 
-  from:
-    `MoveInReady <${fromEmail}>`,
-
-  to: email,
-
-  subject:
-    `${pkg.slug} Package Proposal`,
-
-  html: `
-    <p>Hi ${first_name},</p >
-
-    <p>
-      Your MoveInReady package
-      proposal is attached.
-    </p >
-
-    <p>
-      Thank you for your interest.
-    </p >
-  `,
-
-  attachments: [
-
-    {
-      filename:
-        `${pkg.slug}-proposal.pdf`,
-
-      content:
-        pdfBuffer.toString(
-          "base64"
-        ),
-    },
-
-  ],
-
-})
+console.log(
+  "Proposal Email Sent"
+)
 
 console.log(
   "Proposal Email Sent"
