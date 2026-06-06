@@ -362,18 +362,6 @@ products:package_item_products(
 
 )}
 
-{/* ===== Description ===== */}
-
-{p.product?.display_description_en && (
-
-  <p className="text-gray-600 text-sm mt-3 leading-relaxed">
-
-    {p.product.display_description_en}
-
-  </p >
-
-)}
-
                         </div>
 
                       </div>
