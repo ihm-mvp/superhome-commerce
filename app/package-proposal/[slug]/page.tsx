@@ -94,7 +94,7 @@ export default async function PackageProposalPage({
     .select(`
       id,
       package_room_id,
-      item_type:item_types(name),
+      item_type:item_types(name, display_name),
 
 products:package_item_products(
   quantity,
@@ -135,19 +135,31 @@ products:package_item_products(
 
   })
 
+const summaryMap: Record<
+  string,
+  number
+> = {}
+
+items?.forEach((item: any) => {
+
+  const displayName =
+    item.item_type?.display_name ||
+    item.item_type?.name
+
+  const qty = item.products?.reduce(
+    (sum: number, p: any) =>
+      sum + (p.quantity || 0),
+    0
+  ) || 0
+
+  summaryMap[displayName] =
+    (summaryMap[displayName] || 0) + qty
+
+})
+
 const packageSummary =
-  Array.from(
-
-    new Set(
-
-      items?.map(
-        (item: any) =>
-          item.item_type?.name
-      ).filter(Boolean)
-
-    )
-
-  )
+  Object.entries(summaryMap)
+    .sort((a, b) => b[1] - a[1])
 
   return (
 
@@ -213,19 +225,19 @@ const packageSummary =
     Package Summary
   </h2>
 
-  <div className="grid md:grid-cols-2 gap-3 text-gray-700">
+<div className="grid md:grid-cols-2 gap-3 text-gray-700">
 
-    {packageSummary.map(
-      (name: string) => (
+  {packageSummary.map(
+    ([name, qty]) => (
 
-        <div key={name}>
-          ✓ {name}
-        </div>
+      <div key={name}>
+        ✓ {qty} × {name}
+      </div>
 
-      )
-    )}
+    )
+  )}
 
-  </div>
+</div>
 
 </div>
 
