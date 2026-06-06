@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { supabase } from "@/lib/supabase"
 import { Resend } from "resend"
+import ProposalEmail
+from "@/app/emails/ProposalEmail"
 
 export async function POST(
   
@@ -157,6 +159,40 @@ const resend =
   new Resend(apiKey)
 
 await resend.emails.send({
+
+  from:
+    `MoveInReady <${fromEmail}>`,
+
+  to: email,
+
+  subject:
+    `MoveInReady | ${pkg.slug
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, c => c.toUpperCase())
+    } Package Proposal`,
+
+  react: ProposalEmail({
+    firstName: first_name,
+  }),
+
+  attachments: [
+
+    {
+      filename:
+        `MoveInReady-${
+          pkg.slug
+            .replace(/-/g, "-")
+        }-Package-Proposal.pdf`,
+
+      content:
+        pdfBuffer.toString(
+          "base64"
+        ),
+    },
+
+  ],
+
+})
 
   from:
     `MoveInReady <${fromEmail}>`,
