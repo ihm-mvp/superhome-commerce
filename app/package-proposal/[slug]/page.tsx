@@ -135,6 +135,33 @@ products:package_item_products(
 
   })
 
+  const summaryMap: Record<
+  string,
+  number
+> = {}
+
+items?.forEach((item: any) => {
+
+  item.products?.forEach(
+    (p: any) => {
+
+      const name =
+        item.item_type?.name ||
+        "Item"
+
+      summaryMap[name] =
+        (summaryMap[name] || 0) +
+        (p.quantity || 0)
+
+    }
+  )
+
+})
+
+const packageSummary =
+  Object.entries(summaryMap)
+    .sort((a, b) => b[1] - a[1])
+
   return (
 
     <div className="max-w-6xl mx-auto px-6 py-10 space-y-14">
@@ -155,43 +182,67 @@ products:package_item_products(
 
       )}
 
-      {/* ================================================= */}
-      {/* HERO */}
-      {/* ================================================= */}
+{/* ================================================= */}
+{/* HERO */}
+{/* ================================================= */}
 
-      <div className="space-y-6">
+<div className="space-y-8">
 
-        <div className="text-sm uppercase tracking-wide text-gray-400">
-          MoveInReady Package Proposal
-        </div>
+  <div className="text-sm uppercase tracking-wide text-gray-400">
+    MoveInReady Package Proposal
+  </div>
 
-        <h1 className="text-4xl font-semibold">
-          {pkg.name}
-        </h1>
+  <h1 className="text-4xl font-semibold">
+    {pkg.name}
+  </h1>
 
-        {pkg.display_price && (
-          <div className="text-2xl text-gray-700">
-            Included Value ${pkg.display_price} NZD
+  {pkg.display_price && (
+    <div className="text-2xl text-gray-700">
+      Included Value ${pkg.display_price} NZD
+    </div>
+  )}
+
+  <div className="max-w-3xl text-gray-600 leading-relaxed">
+
+    <p>
+      A complete move-in-ready solution professionally
+      selected for modern townhouse living.
+    </p >
+
+    <p className="mt-3">
+      Furniture, curtains, styling, delivery and
+      installation are coordinated as one package,
+      allowing homeowners to move in with confidence
+      from day one.
+    </p >
+
+  </div>
+
+  {/* ===== Package Summary ===== */}
+
+  <div className="border rounded-2xl p-6 bg-gray-50">
+
+    <h2 className="text-xl font-semibold mb-4">
+      Package Summary
+    </h2>
+
+    <div className="grid md:grid-cols-2 gap-3 text-gray-700">
+
+      {packageSummary.map(
+        ([name, qty]) => (
+
+          <div key={name}>
+            ✓ {qty} {name}
           </div>
-        )}
 
-        <div className="max-w-3xl text-gray-600 leading-relaxed">
+        )
+      )}
 
-          <p>
-            A complete move-in-ready solution professionally
-            selected for modern townhouse living.
-          </p >
+    </div>
 
-          <p className="mt-3">
-            Furniture, curtains, styling, delivery and
-            installation are coordinated as one package,
-            allowing homeowners to move in with confidence
-            from day one.
-          </p >
+  </div>
 
-        </div>
-
-      </div>
+</div>
 
       {/* ================================================= */}
       {/* WHAT'S INCLUDED */}
@@ -362,17 +413,6 @@ products:package_item_products(
 
 )}
 
-{/* ===== Description ===== */}
-
-{p.product?.display_description_en && (
-
-  <p className="text-gray-600 text-sm mt-3 leading-relaxed">
-
-    {p.product.display_description_en}
-
-  </p >
-
-)}
 
                         </div>
 
@@ -393,51 +433,51 @@ products:package_item_products(
 
       </div>
 
-      {/* ================================================= */}
-      {/* PACKAGE VALUE */}
-      {/* ================================================= */}
+{/* ================================================= */}
+{/* PROPOSAL SUMMARY */}
+{/* ================================================= */}
 
-      <div className="border-t pt-12">
+<div className="border-t pt-12">
 
-        <h2 className="text-2xl font-semibold mb-6">
-          Package Value
-        </h2>
+  <h2 className="text-2xl font-semibold mb-6">
+    Proposal Summary
+  </h2>
 
-        <div className="space-y-3 text-gray-700">
+  <div className="space-y-3 text-gray-700">
 
-          <div>
-            ✓ Furniture Included
-          </div>
+    <div>
+      ✓ Furniture Included
+    </div>
 
-          <div>
-            ✓ Sunshine Package Included
-          </div>
+    <div>
+      ✓ Sunshine Package Included
+    </div>
 
-          <div>
-            ✓ Styling Included
-          </div>
+    <div>
+      ✓ Styling Included
+    </div>
 
-          <div>
-            ✓ Delivery Included
-          </div>
+    <div>
+      ✓ Delivery Included
+    </div>
 
-          <div>
-            ✓ Installation Included
-          </div>
+    <div>
+      ✓ Installation Included
+    </div>
 
-        </div>
+  </div>
 
-        {pkg.display_price && (
+  {pkg.display_price && (
 
-          <div className="mt-8 text-3xl font-semibold">
+    <div className="mt-8 text-3xl font-semibold">
 
-            Included Value ${pkg.display_price} NZD
+      Included Value ${pkg.display_price} NZD
 
-          </div>
+    </div>
 
-        )}
+  )}
 
-      </div>
+</div>
 
       {/* ================================================= */}
       {/* FOOTER */}
