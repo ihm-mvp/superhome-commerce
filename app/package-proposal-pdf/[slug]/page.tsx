@@ -201,37 +201,50 @@ const packageSummary =
     </div>
   )}
 
-  <div className="max-w-3xl text-gray-600 leading-relaxed">
+<div className="max-w-3xl text-gray-600 leading-relaxed">
 
-    <p>
-      A complete move-in-ready solution professionally
-      selected for modern townhouse living.
-    </p >
+  <p>
+    A complete turn-key move-in solution
+    professionally selected for modern
+    New Zealand homes.
+  </p >
 
-    <p className="mt-3">
-      Furniture, curtains, styling, delivery and
-      installation are coordinated as one package,
-      allowing homeowners to move in with confidence
-      from day one.
-    </p >
+  <p className="mt-3">
+    Furniture, window furnishings,
+    styling, delivery and installation
+    are coordinated as one package,
+    allowing homeowners to move in
+    from day one.
+  </p >
 
-  </div>
+</div>
 
 {/* ===== Package Summary ===== */}
 
 <div className="border rounded-2xl p-4 bg-gray-50">
 
   <h2 className="text-xl font-semibold mb-4">
-    Package Summary
+    Furniture Included
   </h2>
 
-<div className="grid md:grid-cols-2 gap-2 text-gray-700">
+<div className="flex flex-wrap gap-3">
 
   {packageSummary.map(
     ([name, qty]) => (
 
-      <div key={name}>
-        ✓ {qty} × {name}
+      <div
+        key={name}
+        className="
+          px-4
+          py-2
+          rounded-full
+          bg-white
+          border
+          text-sm
+          text-gray-700
+        "
+      >
+        {qty} × {name}
       </div>
 
     )
@@ -440,7 +453,7 @@ const packageSummary =
 <div className="border-t pt-12">
 
   <h2 className="text-2xl font-semibold mb-6">
-    Proposal Summary
+    Turn-Key Services Included
   </h2>
 
   <div className="space-y-3 text-gray-700">
