@@ -165,11 +165,8 @@ await resend.emails.send({
 
   to: email,
 
-  subject:
-    `MoveInReady | ${pkg.slug
-      .replace(/-/g, " ")
-      .replace(/\b\w/g, c => c.toUpperCase())
-    } Package Proposal`,
+subject:
+  `MoveInReady | ${pkg.slug} Package Proposal`,
 
   react: ProposalEmail({
     firstName: first_name,
