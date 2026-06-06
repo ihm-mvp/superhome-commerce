@@ -263,17 +263,16 @@ const packageSummary =
       <div className="border-t pt-10">
 
         <h2 className="text-2xl font-semibold mb-6">
-          What's Included
+          Turn-Key Benefits
         </h2>
 
         <div className="grid md:grid-cols-2 gap-4 text-gray-700">
 
-          <div>✓ Living Room Furniture</div>
-          <div>✓ Dining Furniture</div>
-          <div>✓ Bedroom Furniture</div>
-          <div>✓ Sunshine Package</div>
-          <div>✓ Styling Package</div>
-          <div>✓ Delivery & Installation</div>
+          <div>✓ Window Furnishings Included</div>
+          <div>✓ Professional Styling Included</div>
+          <div>✓ Delivery Included</div>
+          <div>✓ Installation Included</div>
+          <div>✓ Ready To Move In From Day One</div>
 
         </div>
 
