@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server"
 import { supabase } from "@/lib/supabase"
+import { Resend } from "resend"
 
 export async function POST(
+  
   request: Request
 ) {
 
@@ -119,12 +121,87 @@ console.log(
   pdfResponse.status
 )
 
-    return NextResponse.redirect(
-      new URL(
-        "/package-proposal-success",
-        request.url
-      )
-    )
+const pdfBuffer =
+  Buffer.from(
+    await pdfResponse.arrayBuffer()
+  )
+
+console.log(
+  "PDF Size:",
+  pdfBuffer.length
+)
+
+console.log(
+  "RESEND_API_KEY:",
+  !!process.env.RESEND_API_KEY
+)
+
+console.log(
+  "EMAIL_FROM:",
+  !!process.env.EMAIL_FROM
+)
+
+const apiKey =
+  process.env.RESEND_API_KEY
+
+const fromEmail =
+  process.env.EMAIL_FROM
+
+if (!apiKey || !fromEmail) {
+  throw new Error(
+    "Resend not configured"
+  )
+}
+
+const resend =
+  new Resend(apiKey)
+
+await resend.emails.send({
+
+  from:
+    `MoveInReady <${fromEmail}>`,
+
+  to: email,
+
+  subject:
+    `${pkg.slug} Package Proposal`,
+
+  html: `
+    <p>Hi ${first_name},</p >
+
+    <p>
+      Your MoveInReady package
+      proposal is attached.
+    </p >
+
+    <p>
+      Thank you for your interest.
+    </p >
+  `,
+
+  attachments: [
+
+    {
+      filename:
+        `${pkg.slug}-proposal.pdf`,
+
+      content:
+        pdfBuffer.toString(
+          "base64"
+        ),
+    },
+
+  ],
+
+})
+
+console.log(
+  "Proposal Email Sent"
+)
+
+return NextResponse.json({
+  success: true,
+})
 
   } catch (error) {
 
