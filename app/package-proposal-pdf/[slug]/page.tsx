@@ -185,7 +185,7 @@ const packageSummary =
 {/* HERO */}
 {/* ================================================= */}
 
-<div className="space-y-8">
+<div className="space-y-5">
 
   <div className="text-sm uppercase tracking-wide text-gray-400">
     MoveInReady Package Proposal
@@ -219,13 +219,13 @@ const packageSummary =
 
 {/* ===== Package Summary ===== */}
 
-<div className="border rounded-2xl p-6 bg-gray-50">
+<div className="border rounded-2xl p-4 bg-gray-50">
 
   <h2 className="text-xl font-semibold mb-4">
     Package Summary
   </h2>
 
-<div className="grid md:grid-cols-2 gap-3 text-gray-700">
+<div className="grid md:grid-cols-2 gap-2 text-gray-700">
 
   {packageSummary.map(
     ([name, qty]) => (
@@ -435,6 +435,8 @@ const packageSummary =
 {/* PROPOSAL SUMMARY */}
 {/* ================================================= */}
 
+<div className="page-break"></div>
+
 <div className="border-t pt-12">
 
   <h2 className="text-2xl font-semibold mb-6">
@@ -516,85 +518,6 @@ const packageSummary =
   </div>
 
 </div>
-
-{!isPdf && (
-
-<>
-
-{/* ================================================= */}
-{/* REQUEST PROPOSAL */}
-{/* ================================================= */}
-
-<div className="border-t pt-12">
-
-  <div className="max-w-xl mx-auto">
-
-    <h2 className="text-2xl font-semibold mb-3">
-      Get Your Package Proposal
-    </h2>
-
-    <p className="text-gray-600 mb-6">
-      Enter your details and receive this package proposal.
-    </p >
-
-    <form
-      action="/api/package-request"
-      method="POST"
-      className="space-y-4"
-    >
-
-      <input
-        type="hidden"
-        name="package_id"
-        value={pkg.id}
-      />
-
-      <div>
-
-        <label className="block text-sm mb-2">
-          First Name *
-        </label>
-
-        <input
-          type="text"
-          name="first_name"
-          required
-          className="w-full border rounded-lg px-4 py-3"
-        />
-
-      </div>
-
-      <div>
-
-        <label className="block text-sm mb-2">
-          Email *
-        </label>
-
-        <input
-          type="email"
-          name="email"
-          required
-          className="w-full border rounded-lg px-4 py-3"
-        />
-
-      </div>
-
-      <button
-        type="submit"
-        className="w-full bg-black text-white py-3 rounded-lg hover:opacity-90 transition"
-      >
-        Send Package Proposal
-      </button>
-
-    </form>
-
-  </div>
-
-</div>
-
-</>
-
-)}
 
     </div>
 

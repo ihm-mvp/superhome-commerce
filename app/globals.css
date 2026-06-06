@@ -46,3 +46,8 @@ body {
   break-inside: avoid;
   page-break-inside: avoid;
 }
+
+.page-break {
+  break-before: page;
+  page-break-before: always;
+}

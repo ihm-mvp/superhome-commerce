@@ -185,7 +185,7 @@ const packageSummary =
 {/* HERO */}
 {/* ================================================= */}
 
-<div className="space-y-8">
+<div className="space-y-5">
 
   <div className="text-sm uppercase tracking-wide text-gray-400">
     MoveInReady Package Proposal
@@ -219,13 +219,13 @@ const packageSummary =
 
 {/* ===== Package Summary ===== */}
 
-<div className="border rounded-2xl p-6 bg-gray-50">
+<div className="border rounded-2xl p-4 bg-gray-50">
 
   <h2 className="text-xl font-semibold mb-4">
     Package Summary
   </h2>
 
-<div className="grid md:grid-cols-2 gap-3 text-gray-700">
+<div className="grid md:grid-cols-2 gap-2 text-gray-700">
 
   {packageSummary.map(
     ([name, qty]) => (
@@ -435,6 +435,8 @@ const packageSummary =
 {/* ================================================= */}
 {/* PROPOSAL SUMMARY */}
 {/* ================================================= */}
+
+<div className="page-break"></div>
 
 <div className="border-t pt-12">
 
