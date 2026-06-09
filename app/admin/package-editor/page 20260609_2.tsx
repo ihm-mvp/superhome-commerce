@@ -272,11 +272,9 @@ console.log(
                                   o.id
                                 }
                               >
-  {o.sku_code}
-  {" | "}
-  {o.name}
-  {" | "}
-  {o.description}
+                                {
+                                  o.sku_code
+                                }
                               </option>
 
                             )

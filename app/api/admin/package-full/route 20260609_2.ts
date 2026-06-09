@@ -32,7 +32,7 @@ export async function GET(req: Request) {
     await supabase
       .from("products")
       .select(
-        "id, sku_code, name, description, category_id"
+        "id, sku_code, category_id"
       )
 
   const { data: variants } =
@@ -52,10 +52,6 @@ export async function GET(req: Request) {
 
       sku_code:
         p.sku_code,
-
-        name: p.name,
-
-        description: p.description,
 
       category_id:
         p.category_id,
