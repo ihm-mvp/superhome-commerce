@@ -17,17 +17,38 @@ export async function POST(
     }
   )
 
-  const deleteResult =
-    await supabase
-      .from(
-        "package_item_products"
-      )
-      .delete()
-      .eq(
-        "id",
-        pipId
-      )
-      .select()
+const deleteResult =
+  await supabase
+    .from(
+      "package_item_products"
+    )
+    .delete()
+    .eq(
+      "id",
+      pipId
+    )
+    .select()
+
+console.log(
+  "DELETE PIP ID",
+  pipId
+)
+
+const verify =
+  await supabase
+    .from(
+      "package_item_products"
+    )
+    .select("*")
+    .eq(
+      "id",
+      pipId
+    )
+
+console.log(
+  "VERIFY AFTER DELETE",
+  verify
+)
 
   console.log(
     "DELETE RESULT",
