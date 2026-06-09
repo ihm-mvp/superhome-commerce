@@ -72,6 +72,24 @@ console.log(
   itemId
 )
 
+      await fetch(
+        "/api/admin/delete-package-product",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+
+          body:
+            JSON.stringify({
+              pipId,
+              itemId,
+            }),
+        }
+      )
+
       setData((prev) =>
         prev.map((room) => ({
 
