@@ -9,18 +9,34 @@ export async function POST(
     itemId,
   } = await req.json()
 
-  await supabase
-    .from(
-      "package_item_products"
-    )
-    .delete()
-    .eq(
-      "id",
-      pipId
-    )
+  console.log(
+    "DELETE REQUEST",
+    {
+      pipId,
+      itemId,
+    }
+  )
+
+  const deleteResult =
+    await supabase
+      .from(
+        "package_item_products"
+      )
+      .delete()
+      .eq(
+        "id",
+        pipId
+      )
+      .select()
+
+  console.log(
+    "DELETE RESULT",
+    deleteResult
+  )
 
   const {
     data: remaining,
+    error: remainingError,
   } = await supabase
     .from(
       "package_item_products"
@@ -31,20 +47,35 @@ export async function POST(
       itemId
     )
 
+  console.log(
+    "REMAINING RESULT",
+    {
+      remaining,
+      remainingError,
+    }
+  )
+
   if (
     !remaining ||
     remaining.length === 0
   ) {
 
-    await supabase
-      .from(
-        "package_items"
-      )
-      .delete()
-      .eq(
-        "id",
-        itemId
-      )
+    const itemDeleteResult =
+      await supabase
+        .from(
+          "package_items"
+        )
+        .delete()
+        .eq(
+          "id",
+          itemId
+        )
+        .select()
+
+    console.log(
+      "ITEM DELETE RESULT",
+      itemDeleteResult
+    )
 
   }
 
