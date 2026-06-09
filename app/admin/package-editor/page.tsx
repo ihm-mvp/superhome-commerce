@@ -58,11 +58,19 @@ export default function PackageEditor() {
 
   }
 
+
+  
   const deleteProduct =
     async (
       pipId: string,
       itemId: string
     ) => {
+
+console.log(
+  "DELETE CLICKED",
+  pipId,
+  itemId
+)
 
       await fetch(
         "/api/admin/delete-package-product",
