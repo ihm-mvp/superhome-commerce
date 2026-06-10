@@ -199,12 +199,14 @@ export default function PackageRecovery() {
         {packages.map(
           (p: any) => (
 
-            <option
-              key={p.id}
-              value={p.id}
-            >
-              {p.name}
-            </option>
+<option
+  key={p.id}
+  value={p.id}
+>
+  {p.layouts?.name}
+  {" | "}
+  {p.name}
+</option>
 
           )
         )}

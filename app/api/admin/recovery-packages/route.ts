@@ -8,7 +8,10 @@ export async function GET() {
       .select(`
         id,
         name,
-        layout_id
+        layout_id,
+        layouts (
+        name
+        )
       `)
       .order("name")
 
