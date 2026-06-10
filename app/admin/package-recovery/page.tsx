@@ -125,6 +125,14 @@ export default function PackageRecovery() {
 
     }
 
+console.log({
+  roomId,
+  itemTypeId,
+  productId,
+  variantId,
+  qty,
+})
+
   const add =
     async () => {
 
