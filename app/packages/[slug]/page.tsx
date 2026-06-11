@@ -270,9 +270,19 @@ const { data: pkg } = await supabase
           loading="lazy"
         />
 
-        <div className="text-xs text-gray-400">
-          Concept illustration for the {pkg.name} package
-        </div>
+<div className="flex flex-wrap gap-2 text-xs text-gray-500">
+
+  <span>
+    {layout.name}
+  </span>
+
+  <span>•</span>
+
+  <span>
+    {pkg.name} Package
+  </span>
+
+</div>
 
       </div>
 
