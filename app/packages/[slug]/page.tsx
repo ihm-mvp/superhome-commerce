@@ -92,7 +92,13 @@ export default async function PackagePage({
       layout_id,
       layout:layouts!packages_layout_id_fkey(
         slug,
-        name
+        name,
+                location,
+        bedrooms,
+        bathrooms,
+        garage,
+        land_size,
+        floor_size
       )
     `)
     .eq("slug", slug)
@@ -187,14 +193,38 @@ export default async function PackagePage({
     Layout
   </div>
 
-  <div className="text-xl font-semibold mt-1">
+  <div className="text-2xl font-semibold mt-1">
     {layout.name}
   </div>
 
-  <div className="text-sm text-gray-500 mt-2">
-    This furniture package is configured for
-    the {layout.name} home layout.
+  {layout.location && (
+    <div className="text-gray-500 mt-2">
+      {layout.location}
+    </div>
+  )}
+
+  <div className="text-gray-500 mt-2">
+
+    {layout.bedrooms &&
+      `${layout.bedrooms} Bed`}
+
+    {layout.bathrooms &&
+      ` · ${layout.bathrooms} Bath`}
+
+    {layout.garage &&
+      ` · ${layout.garage} Garage`}
+
   </div>
+
+  {layout.floor_size && (
+    <div className="text-gray-500 mt-2">
+      {layout.floor_size} Floor
+    </div>
+      {layout.land_size && (
+    <div className="text-gray-500 mt-2">
+      ` · {layout.land_size} Land`
+    </div>
+  )}
 
 </div>
 
