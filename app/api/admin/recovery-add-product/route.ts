@@ -12,10 +12,22 @@ export async function POST(
     quantity,
   } = await req.json()
 
+  console.log(
+    "REQUEST",
+    {
+      package_room_id,
+      item_type_id,
+      product_id,
+      variant_id,
+      quantity,
+    }
+  )
+
   let packageItemId = ""
 
   const {
     data: existingItem,
+    error: existingItemError,
   } = await supabase
     .from("package_items")
     .select(`
@@ -32,22 +44,74 @@ export async function POST(
     )
     .maybeSingle()
 
+  console.log(
+    "EXISTING ITEM",
+    existingItem
+  )
+
+  console.log(
+    "EXISTING ITEM ERROR",
+    existingItemError
+  )
+
   if (existingItem) {
 
     packageItemId =
       existingItem.id
 
-    await supabase
-      .from("package_items")
-      .update({
-        quantity:
-          (existingItem.quantity || 0)
-          + quantity,
-      })
-      .eq(
-        "id",
-        existingItem.id
-      )
+    const newQuantity =
+      (existingItem.quantity || 0)
+      + quantity
+
+    console.log(
+      "CURRENT QUANTITY",
+      existingItem.quantity
+    )
+
+    console.log(
+      "ADD QUANTITY",
+      quantity
+    )
+
+    console.log(
+      "NEW QUANTITY",
+      newQuantity
+    )
+
+    const updateResult =
+      await supabase
+        .from("package_items")
+        .update({
+          quantity:
+            newQuantity,
+        })
+        .eq(
+          "id",
+          existingItem.id
+        )
+
+    console.log(
+      "UPDATE RESULT",
+      updateResult
+    )
+
+    const verifyResult =
+      await supabase
+        .from("package_items")
+        .select(`
+          id,
+          quantity
+        `)
+        .eq(
+          "id",
+          existingItem.id
+        )
+        .single()
+
+    console.log(
+      "VERIFY AFTER UPDATE",
+      verifyResult
+    )
 
   } else {
 
@@ -65,6 +129,14 @@ export async function POST(
       ])
       .select()
       .single()
+
+    console.log(
+      "INSERT ITEM RESULT",
+      {
+        item,
+        itemError,
+      }
+    )
 
     if (
       itemError ||
@@ -107,6 +179,11 @@ export async function POST(
         quantity,
       },
     ])
+
+  console.log(
+    "PIP INSERT ERROR",
+    pipError
+  )
 
   if (pipError) {
 
