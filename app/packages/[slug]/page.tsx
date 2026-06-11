@@ -276,11 +276,41 @@ const { data: pkg } = await supabase
 
       </div>
 
-      {/* ===== Rooms ===== */}
-      <div className="space-y-14">
+{/* ===== Room Navigation ===== */}
+
+<div className="flex flex-wrap gap-2">
+
+  {rooms?.map((room: any) => (
+
+    <a
+      key={room.id}
+      href={`#room-${room.id}`}
+      className="
+        px-3
+        py-2
+        border
+        rounded-lg
+        text-sm
+        hover:bg-gray-50
+      "
+    >
+      {room.name}
+    </a >
+
+  ))}
+
+</div>
+
+{/* ===== Rooms ===== */}
+
+<div className="space-y-14">
 
         {rooms?.map((room: any) => (
-          <div key={room.id} className="space-y-5">
+<div
+  id={`room-${room.id}`}
+  key={room.id}
+  className="space-y-5"
+>
 
             {/* Room Title */}
             <div className="border-b pb-2">
