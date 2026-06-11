@@ -115,7 +115,7 @@ export default async function PackagePage({
   // ===== 同layout packages =====
   const { data: allPackages } = await supabase
     .from("packages")
-    .select("name, slug")
+    .select("name, slug, display_price")
     .eq("layout_id", pkg.layout_id)
 
   // ===== Rooms =====
@@ -196,20 +196,51 @@ export default async function PackagePage({
 {/* ===== Package切换 ===== */}
 <div className="flex gap-3 flex-wrap">
 
-  {allPackages?.map((p: any) => (
-    <Link
-      key={p.slug}
-      href={`/packages/${p.slug}`}
-      className={`px-4 py-2 border rounded-lg text-sm transition ${
+{allPackages?.map((p: any) => (
+
+  <Link
+    key={p.slug}
+    href={`/packages/${p.slug}`}
+    className={`
+
+      min-w-[180px]
+
+      border
+      rounded-xl
+
+      p-4
+
+      transition
+
+      ${
         p.slug === slug
           ? "bg-black text-white border-black"
           : "hover:bg-gray-50"
-      }`}
-      prefetch={false}
-    >
-      {layout.name} · {p.name}
-    </Link>
-  ))}
+      }
+
+    `}
+    prefetch={false}
+  >
+
+    <div className="text-xs opacity-70">
+      {layout.name}
+    </div>
+
+    <div className="font-semibold mt-1">
+      {p.name}
+    </div>
+
+    {p.display_price && (
+
+      <div className="text-sm mt-2 opacity-80">
+        From ${p.display_price}
+      </div>
+
+    )}
+
+  </Link>
+
+))}
 
 </div>
 
