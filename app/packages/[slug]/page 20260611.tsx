@@ -9,19 +9,18 @@ export async function generateMetadata({
 }) {
   const { slug } = await params
 
-  // ⚠️ 与页面主体保持完全一致的数据结构
-const { data: pkg } = await supabase
-  .from("packages")
-  .select(`
-    name,
-    slug,
-    layout:layouts(
+  const { data: pkg } = await supabase
+    .from("packages")
+    .select(`
+      name,
       slug,
-      name
-    )
-  `)
-  .eq("slug", slug)
-  .single()
+      layout:layouts!packages_layout_id_fkey(
+        slug,
+        name
+      )
+    `)
+    .eq("slug", slug)
+    .single()
 
   if (!pkg) {
     return {
@@ -29,8 +28,16 @@ const { data: pkg } = await supabase
     }
   }
 
+  // ===== 统一 layout 结构 =====
+  const layout = Array.isArray(pkg.layout)
+    ? pkg.layout[0]
+    : pkg.layout
+
   const layoutName =
-    pkg.layout?.[0]?.name || "New Zealand Home"
+    layout?.name || "New Zealand Home"
+
+  const layoutSlug =
+    layout?.slug || "layout"
 
   const packageType =
     pkg.name?.toLowerCase() || "package"
@@ -61,7 +68,7 @@ const { data: pkg } = await supabase
         `Designed for modern move-in ready living.`,
 
       images: [
-        `/packages/${pkg.layout?.[0]?.slug}_${packageType}_overview.jpg`,
+        `/packages/${layoutSlug}_${packageType}_overview.jpg`,
       ],
     },
   }
@@ -75,26 +82,35 @@ export default async function PackagePage({
   const { slug } = await params
 
   // ===== Package =====
-const { data: pkg } = await supabase
-  .from("packages")
-  .select(`
-    id,
-    name,
-    slug,
-    display_price,
-    layout_id,
-    layout:layouts(
+  const { data: pkg } = await supabase
+    .from("packages")
+    .select(`
+      id,
+      name,
       slug,
-      name
-    )
-  `)
-  .eq("slug", slug)
-  .single()
+      display_price,
+      layout_id,
+      layout:layouts!packages_layout_id_fkey(
+        slug,
+        name
+      )
+    `)
+    .eq("slug", slug)
+    .single()
 
   if (!pkg) return notFound()
 
-  const layoutSlug = pkg.layout?.[0]?.slug
-  const packageType = pkg.name?.toLowerCase()
+  // ===== 统一 layout 结构 =====
+  const layout = Array.isArray(pkg.layout)
+    ? pkg.layout[0]
+    : pkg.layout
+
+  if (!layout) return notFound()
+
+  const layoutSlug = layout.slug
+
+  const packageType =
+    pkg.name?.toLowerCase()
 
   // ===== 同layout packages =====
   const { data: allPackages } = await supabase
@@ -103,15 +119,15 @@ const { data: pkg } = await supabase
     .eq("layout_id", pkg.layout_id)
 
   // ===== Rooms =====
-const { data: rooms } = await supabase
-  .from("package_rooms")
-  .select(`
-    id,
-    name,
-    sort_order
-  `)
-  .eq("package_id", pkg.id)
-  .order("sort_order")
+  const { data: rooms } = await supabase
+    .from("package_rooms")
+    .select(`
+      id,
+      name,
+      sort_order
+    `)
+    .eq("package_id", pkg.id)
+    .order("sort_order")
 
   // ===== Items =====
   const { data: items } = await supabase
@@ -158,12 +174,22 @@ const { data: rooms } = await supabase
           </div>
         )}
 
-        <div className="text-gray-500 max-w-2xl leading-relaxed">
-          Fully furnished furniture package designed for{" "}
-          {pkg.layout?.[0]?.name}. Explore a complete move-in ready
-          setup for modern New Zealand living, including living,
-          dining and bedroom furniture selections.
-        </div>
+<div className="text-gray-500 max-w-2xl leading-relaxed">
+  Fully furnished furniture package designed for{" "}
+  {layout.name}. Explore a complete move-in ready
+  setup for modern New Zealand living, including living,
+  dining and bedroom furniture selections.
+</div>
+
+<div className="pt-4">
+  <Link
+    href={`/package-proposal/${pkg.slug}`}
+    className="inline-flex items-center px-6 py-3 bg-black text-white rounded-lg hover:opacity-90 transition"
+    prefetch={false}
+  >
+    Get Package Proposal
+  </Link>
+</div>
 
       </div>
 
@@ -179,6 +205,7 @@ const { data: rooms } = await supabase
                 ? "bg-black text-white border-black"
                 : "hover:bg-gray-50"
             }`}
+            prefetch={false}
           >
             {p.name}
           </Link>
@@ -192,6 +219,7 @@ const { data: rooms } = await supabase
         <img
           src={`/packages/${layoutSlug}_${packageType}_overview.jpg`}
           className="w-full rounded-2xl border"
+          loading="lazy"
         />
 
         <div className="text-xs text-gray-400">
@@ -206,7 +234,7 @@ const { data: rooms } = await supabase
         {rooms?.map((room: any) => (
           <div key={room.id} className="space-y-5">
 
-           {/* Room Title */}
+            {/* Room Title */}
             <div className="border-b pb-2">
               <h2 className="text-2xl font-semibold">
                 {room.name}
@@ -231,12 +259,14 @@ const { data: rooms } = await supabase
                       key={idx}
                       href={`/products/${p.product?.id}`}
                       className="flex items-center gap-3 hover:bg-gray-50 p-2 rounded-lg transition"
+                      prefetch={false}
                     >
 
                       {p.product?.image_url && (
                         <img
                           src={p.product.image_url}
                           className="w-16 h-16 object-contain"
+                          loading="lazy"
                         />
                       )}
 
@@ -291,7 +321,7 @@ const { data: rooms } = await supabase
           </p >
 
           <p>
-            The {pkg.name} Package for {pkg.layout?.[0]?.name}
+            The {pkg.name} Package for {layout.name}
             includes coordinated furniture selections across
             living, dining and bedroom spaces, balancing
             comfort, functionality and contemporary aesthetics.
@@ -301,14 +331,18 @@ const { data: rooms } = await supabase
 
       </div>
 
-      {/* ===== CTA ===== */}
-      <div className="border-t pt-8 text-center">
+{/* ===== CTA ===== */}
+<div className="border-t pt-8 text-center">
 
-        <button className="px-8 py-3 bg-black text-white rounded-lg hover:opacity-90 transition">
-          Enquire This Package
-        </button>
+  <Link
+    href={`/package-proposal/${pkg.slug}`}
+    className="inline-flex items-center px-8 py-3 bg-black text-white rounded-lg hover:opacity-90 transition"
+    prefetch={false}
+  >
+    Get Package Proposal
+  </Link>
 
-      </div>
+</div>
 
     </div>
   )

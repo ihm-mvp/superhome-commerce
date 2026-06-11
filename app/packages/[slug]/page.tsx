@@ -193,25 +193,25 @@ export default async function PackagePage({
 
       </div>
 
-      {/* ===== Package切换 ===== */}
-      <div className="flex gap-3 flex-wrap">
+{/* ===== Package切换 ===== */}
+<div className="flex gap-3 flex-wrap">
 
-        {allPackages?.map((p: any) => (
-          <Link
-            key={p.slug}
-            href={`/packages/${p.slug}`}
-            className={`px-4 py-2 border rounded-lg text-sm transition ${
-              p.slug === slug
-                ? "bg-black text-white border-black"
-                : "hover:bg-gray-50"
-            }`}
-            prefetch={false}
-          >
-            {p.name}
-          </Link>
-        ))}
+  {allPackages?.map((p: any) => (
+    <Link
+      key={p.slug}
+      href={`/packages/${p.slug}`}
+      className={`px-4 py-2 border rounded-lg text-sm transition ${
+        p.slug === slug
+          ? "bg-black text-white border-black"
+          : "hover:bg-gray-50"
+      }`}
+      prefetch={false}
+    >
+      {layout.name} · {p.name}
+    </Link>
+  ))}
 
-      </div>
+</div>
 
       {/* ===== Hero Image ===== */}
       <div className="space-y-3">
