@@ -82,25 +82,24 @@ export default async function PackagePage({
   const { slug } = await params
 
   // ===== Package =====
-  const { data: pkg } = await supabase
-    .from("packages")
-    .select(`
-      id,
-      name,
+const { data: pkg } = await supabase
+  .from("packages")
+  .select(`
+    id,
+    name,
+    slug,
+    display_price,
+    layout_id,
+    layout:layouts!packages_layout_id_fkey(
       slug,
-      display_price,
-      layout_id,
-      layout:layouts!packages_layout_id_fkey(
-        slug,
-        name,
-                location,
-        bedrooms,
-        bathrooms,
-        garage,
-        land_size,
-        floor_size
-      )
-    `)
+      name,
+      location,
+      bedrooms,
+      bathrooms,
+      garage,
+      floor_size
+    )
+  `)
     .eq("slug", slug)
     .single()
 
@@ -121,7 +120,7 @@ export default async function PackagePage({
   // ===== 同layout packages =====
   const { data: allPackages } = await supabase
     .from("packages")
-    .select("name, slug, display_price")
+    .select("name, slug")
     .eq("layout_id", pkg.layout_id)
 
   // ===== Rooms =====
@@ -187,48 +186,49 @@ export default async function PackagePage({
   dining and bedroom furniture selections.
 </div>
 
-<div className="border rounded-xl p-5 bg-gray-50 max-w-3xl">
+<div className="space-y-4 pt-2">
 
-  <div className="text-xs uppercase tracking-wide text-gray-400">
-    Layout
+  <div className="border rounded-2xl p-5 bg-gray-50 max-w-3xl">
+
+    <div className="text-xs uppercase tracking-wide text-gray-400">
+      Layout
+    </div>
+
+    <div className="text-2xl font-semibold mt-1">
+      {layout.name}
+    </div>
+
+    {layout.location && (
+      <div className="text-gray-500 mt-2">
+        {layout.location}
+      </div>
+    )}
+
+    <div className="text-gray-500 mt-2">
+
+      {layout.bedrooms}
+      {" Bed"}
+
+      {" · "}
+
+      {layout.bathrooms}
+      {" Bath"}
+
+      {" · "}
+
+      {layout.garage}
+      {" Garage"}
+
+    </div>
+
+    {layout.floor_size && (
+      <div className="text-gray-500 mt-2">
+        {layout.floor_size}
+      </div>
+    )}
+
   </div>
 
-  <div className="text-2xl font-semibold mt-1">
-    {layout.name}
-  </div>
-
-  {layout.location && (
-    <div className="text-gray-500 mt-2">
-      {layout.location}
-    </div>
-  )}
-
-  <div className="text-gray-500 mt-2">
-
-    {layout.bedrooms &&
-      `${layout.bedrooms} Bed`}
-
-    {layout.bathrooms &&
-      ` · ${layout.bathrooms} Bath`}
-
-    {layout.garage &&
-      ` · ${layout.garage} Garage`}
-
-  </div>
-
-  {layout.floor_size && (
-    <div className="text-gray-500 mt-2">
-      {layout.floor_size} Floor
-    </div>
-      {layout.land_size && (
-    <div className="text-gray-500 mt-2">
-      ` · {layout.land_size} Land`
-    </div>
-  )}
-
-</div>
-
-<div className="pt-4">
   <Link
     href={`/package-proposal/${pkg.slug}`}
     className="inline-flex items-center px-6 py-3 bg-black text-white rounded-lg hover:opacity-90 transition"
@@ -236,29 +236,30 @@ export default async function PackagePage({
   >
     Get Package Proposal
   </Link>
+
 </div>
 
       </div>
 
-{/* ===== Package切换 ===== */}
-<div className="flex gap-3 flex-wrap">
+      {/* ===== Package切换 ===== */}
+      <div className="flex gap-3 flex-wrap">
 
-{allPackages?.map((p: any) => (
-  <Link
-    key={p.slug}
-    href={`/packages/${p.slug}`}
-    className={`px-4 py-2 border rounded-lg text-sm transition ${
-      p.slug === slug
-        ? "bg-black text-white border-black"
-        : "hover:bg-gray-50"
-    }`}
-    prefetch={false}
-  >
-    {p.name}
-  </Link>
-))}
+        {allPackages?.map((p: any) => (
+          <Link
+            key={p.slug}
+            href={`/packages/${p.slug}`}
+            className={`px-4 py-2 border rounded-lg text-sm transition ${
+              p.slug === slug
+                ? "bg-black text-white border-black"
+                : "hover:bg-gray-50"
+            }`}
+            prefetch={false}
+          >
+            {p.name}
+          </Link>
+        ))}
 
-</div>
+      </div>
 
       {/* ===== Hero Image ===== */}
       <div className="space-y-3">
