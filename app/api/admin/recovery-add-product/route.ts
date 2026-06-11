@@ -12,36 +12,80 @@ export async function POST(
     quantity,
   } = await req.json()
 
+  let packageItemId = ""
+
   const {
-    data: item,
-    error: itemError,
+    data: existingItem,
   } = await supabase
     .from("package_items")
-    .insert([
-      {
-        package_room_id,
-        item_type_id,
-        quantity,
-      },
-    ])
-    .select()
-    .single()
-
-  if (
-    itemError ||
-    !item
-  ) {
-
-    return Response.json(
-      {
-        error:
-          itemError?.message ||
-          "package_items insert failed",
-      },
-      {
-        status: 500,
-      }
+    .select(`
+      id,
+      quantity
+    `)
+    .eq(
+      "package_room_id",
+      package_room_id
     )
+    .eq(
+      "item_type_id",
+      item_type_id
+    )
+    .maybeSingle()
+
+  if (existingItem) {
+
+    packageItemId =
+      existingItem.id
+
+    await supabase
+      .from("package_items")
+      .update({
+        quantity:
+          (existingItem.quantity || 0)
+          + quantity,
+      })
+      .eq(
+        "id",
+        existingItem.id
+      )
+
+  } else {
+
+    const {
+      data: item,
+      error: itemError,
+    } = await supabase
+      .from("package_items")
+      .insert([
+        {
+          package_room_id,
+          item_type_id,
+          quantity,
+        },
+      ])
+      .select()
+      .single()
+
+    if (
+      itemError ||
+      !item
+    ) {
+
+      return Response.json(
+        {
+          error:
+            itemError?.message ||
+            "package_items insert failed",
+        },
+        {
+          status: 500,
+        }
+      )
+
+    }
+
+    packageItemId =
+      item.id
 
   }
 
@@ -54,7 +98,7 @@ export async function POST(
     .insert([
       {
         package_item_id:
-          item.id,
+          packageItemId,
 
         product_id,
 
