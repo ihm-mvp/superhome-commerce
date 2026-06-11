@@ -15,7 +15,8 @@ export async function GET(
       .from("variants")
       .select(`
         id,
-        config
+        config,
+        size_label
       `)
       .eq(
         "product_id",

@@ -327,6 +327,8 @@ console.log({
               key={v.id}
               value={v.id}
             >
+              {v.size_label}
+               {" | "}
               {v.config}
             </option>
 
