@@ -181,6 +181,23 @@ export default async function PackagePage({
   dining and bedroom furniture selections.
 </div>
 
+<div className="border rounded-xl p-5 bg-gray-50 max-w-3xl">
+
+  <div className="text-xs uppercase tracking-wide text-gray-400">
+    Layout
+  </div>
+
+  <div className="text-xl font-semibold mt-1">
+    {layout.name}
+  </div>
+
+  <div className="text-sm text-gray-500 mt-2">
+    This furniture package is configured for
+    the {layout.name} home layout.
+  </div>
+
+</div>
+
 <div className="pt-4">
   <Link
     href={`/package-proposal/${pkg.slug}`}
@@ -197,49 +214,18 @@ export default async function PackagePage({
 <div className="flex gap-3 flex-wrap">
 
 {allPackages?.map((p: any) => (
-
   <Link
     key={p.slug}
     href={`/packages/${p.slug}`}
-    className={`
-
-      min-w-[180px]
-
-      border
-      rounded-xl
-
-      p-4
-
-      transition
-
-      ${
-        p.slug === slug
-          ? "bg-black text-white border-black"
-          : "hover:bg-gray-50"
-      }
-
-    `}
+    className={`px-4 py-2 border rounded-lg text-sm transition ${
+      p.slug === slug
+        ? "bg-black text-white border-black"
+        : "hover:bg-gray-50"
+    }`}
     prefetch={false}
   >
-
-    <div className="text-xs opacity-70">
-      {layout.name}
-    </div>
-
-    <div className="font-semibold mt-1">
-      {p.name}
-    </div>
-
-    {p.display_price && (
-
-      <div className="text-sm mt-2 opacity-80">
-        From ${p.display_price}
-      </div>
-
-    )}
-
+    {p.name}
   </Link>
-
 ))}
 
 </div>
