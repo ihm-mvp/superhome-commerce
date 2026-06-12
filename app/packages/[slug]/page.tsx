@@ -228,6 +228,61 @@ const { data: pkg } = await supabase
     )}
 
   </div>
+<div className="flex flex-wrap gap-2">
+
+  <div
+    className="
+      px-3
+      py-1
+      rounded-full
+      bg-gray-100
+      text-sm
+    "
+  >
+    {rooms?.length || 0}
+    {" Rooms"}
+  </div>
+
+  <div
+    className="
+      px-3
+      py-1
+      rounded-full
+      bg-gray-100
+      text-sm
+    "
+  >
+    {items?.length || 0}
+    {" Item Types"}
+  </div>
+
+  <div
+    className="
+      px-3
+      py-1
+      rounded-full
+      bg-gray-100
+      text-sm
+    "
+  >
+    {
+      items?.reduce(
+        (
+          total: number,
+          item: any
+        ) =>
+          total +
+          (
+            item.products?.length ||
+            0
+          ),
+        0
+      ) || 0
+    }
+    {" Products"}
+  </div>
+
+</div>
 
   <Link
     href={`/package-proposal/${pkg.slug}`}
