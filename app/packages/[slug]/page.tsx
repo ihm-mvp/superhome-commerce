@@ -467,7 +467,7 @@ const { data: pkg } = await supabase
                           {p.product?.display_name_en}
                         </div>
 
-                        {p.product?.description && (
+                        {p.product?.display_description_en && (
 
   <div
     className="
