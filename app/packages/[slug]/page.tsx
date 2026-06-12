@@ -441,9 +441,33 @@ const { data: pkg } = await supabase
                   className="border rounded-2xl p-4 space-y-3 hover:shadow-sm transition"
                 >
 
-                  <div className="text-sm text-gray-500">
-                    {item.item_type?.name}
-                  </div>
+<div className="flex justify-between items-center">
+
+  <div className="text-sm text-gray-500">
+    {item.item_type?.name}
+  </div>
+
+  <div className="text-xs text-gray-400">
+
+    Qty: {
+
+      item.products?.reduce(
+        (
+          total: number,
+          p: any
+        ) =>
+          total +
+          (
+            p.quantity || 0
+          ),
+        0
+      )
+
+    }
+
+  </div>
+
+</div>
 
                   {item.products?.map((p: any, idx: number) => (
                     <Link
