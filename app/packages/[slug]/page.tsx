@@ -228,61 +228,6 @@ const { data: pkg } = await supabase
     )}
 
   </div>
-<div className="flex flex-wrap gap-2">
-
-  <div
-    className="
-      px-3
-      py-1
-      rounded-full
-      bg-gray-100
-      text-sm
-    "
-  >
-    {rooms?.length || 0}
-    {" Rooms"}
-  </div>
-
-  <div
-    className="
-      px-3
-      py-1
-      rounded-full
-      bg-gray-100
-      text-sm
-    "
-  >
-    {items?.length || 0}
-    {" Item Types"}
-  </div>
-
-  <div
-    className="
-      px-3
-      py-1
-      rounded-full
-      bg-gray-100
-      text-sm
-    "
-  >
-    {
-      items?.reduce(
-        (
-          total: number,
-          item: any
-        ) =>
-          total +
-          (
-            item.products?.length ||
-            0
-          ),
-        0
-      ) || 0
-    }
-    {" Products"}
-  </div>
-
-</div>
 
   <Link
     href={`/package-proposal/${pkg.slug}`}
@@ -295,6 +240,109 @@ const { data: pkg } = await supabase
 </div>
 
       </div>
+
+{/* ===== Furniture Summary ===== */}
+
+{(() => {
+
+  const summary: Record<
+    string,
+    number
+  > = {}
+
+  items?.forEach(
+    (item: any) => {
+
+      const itemName =
+        item.item_type?.name
+
+      if (!itemName) return
+
+      const qty =
+        item.products?.reduce(
+          (
+            total: number,
+            p: any
+          ) =>
+            total +
+            (
+              p.quantity ||
+              0
+            ),
+          0
+        ) || 0
+
+      summary[itemName] =
+        (
+          summary[
+            itemName
+          ] || 0
+        ) + qty
+
+    }
+  )
+
+  return (
+
+    <div
+      className="
+        border
+        rounded-2xl
+        p-5
+        max-w-4xl
+      "
+    >
+
+      <div
+        className="
+          font-semibold
+          text-lg
+          mb-4
+        "
+      >
+        Furniture Included
+      </div>
+
+      <div
+        className="
+          flex
+          flex-wrap
+          gap-3
+        "
+      >
+
+        {Object.entries(
+          summary
+        ).map(
+          (
+            [name, qty]
+          ) => (
+
+            <div
+              key={name}
+              className="
+                px-4
+                py-2
+                border
+                rounded-full
+                text-sm
+              "
+            >
+              {qty}
+              {" × "}
+              {name}
+            </div>
+
+          )
+        )}
+
+      </div>
+
+    </div>
+
+  )
+
+})()}
 
       {/* ===== Package切换 ===== */}
       <div className="flex gap-3 flex-wrap">
