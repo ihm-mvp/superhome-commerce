@@ -481,11 +481,9 @@ const { data: pkg } = await supabase
 
 )}
 
-                        {(p.variant?.size_label ||
-                          p.variant?.config) && (
+                        {(p.variant?.size_label) && (
                           <div className="text-gray-400 text-xs">
-                            {p.variant?.size_label}{" "}
-                            {p.variant?.config}
+                            {p.variant?.size_label}
                           </div>
                         )}
 
