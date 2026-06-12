@@ -143,7 +143,7 @@ const { data: pkg } = await supabase
       item_type:item_types(name),
       products:package_item_products(
         quantity,
-        product:products(id, sku_code, image_url),
+        product:products(id, sku_code, display_name_en, display_description_en, image_url),
         variant:variants(size_label, config)
       )
     `)
@@ -464,8 +464,22 @@ const { data: pkg } = await supabase
                       <div className="text-sm flex-1">
 
                         <div className="font-medium">
-                          {p.product?.sku_code}
+                          {p.product?.display_name_en}
                         </div>
+
+                        {p.product?.description && (
+
+  <div
+    className="
+      text-xs
+      text-gray-400
+      line-clamp-2
+    "
+  >
+    {p.product.display_description_en}
+  </div>
+
+)}
 
                         {(p.variant?.size_label ||
                           p.variant?.config) && (
