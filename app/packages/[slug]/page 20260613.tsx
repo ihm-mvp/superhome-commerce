@@ -82,19 +82,24 @@ export default async function PackagePage({
   const { slug } = await params
 
   // ===== Package =====
-  const { data: pkg } = await supabase
-    .from("packages")
-    .select(`
-      id,
-      name,
+const { data: pkg } = await supabase
+  .from("packages")
+  .select(`
+    id,
+    name,
+    slug,
+    display_price,
+    layout_id,
+    layout:layouts!packages_layout_id_fkey(
       slug,
-      display_price,
-      layout_id,
-      layout:layouts!packages_layout_id_fkey(
-        slug,
-        name
-      )
-    `)
+      name,
+      location,
+      bedrooms,
+      bathrooms,
+      garage,
+      floor_size
+    )
+  `)
     .eq("slug", slug)
     .single()
 
@@ -138,7 +143,7 @@ export default async function PackagePage({
       item_type:item_types(name),
       products:package_item_products(
         quantity,
-        product:products(id, sku_code, image_url),
+        product:products(id, sku_code, display_name_en, display_description_en, image_url),
         variant:variants(size_label, config)
       )
     `)
@@ -174,14 +179,170 @@ export default async function PackagePage({
           </div>
         )}
 
-        <div className="text-gray-500 max-w-2xl leading-relaxed">
-          Fully furnished furniture package designed for{" "}
-          {layout.name}. Explore a complete move-in ready
-          setup for modern New Zealand living, including living,
-          dining and bedroom furniture selections.
-        </div>
+<div className="text-gray-500 max-w-2xl leading-relaxed">
+  Fully furnished furniture package designed for{" "}
+  {layout.name}. Explore a complete move-in ready
+  setup for modern New Zealand living, including living,
+  dining and bedroom furniture selections.
+</div>
+
+<div className="space-y-4 pt-2">
+
+  <div className="border rounded-2xl p-5 bg-gray-50 max-w-3xl">
+
+    <div className="text-xs uppercase tracking-wide text-gray-400">
+      Layout
+    </div>
+
+    <div className="text-2xl font-semibold mt-1">
+      {layout.name}
+    </div>
+
+    {layout.location && (
+      <div className="text-gray-500 mt-2">
+        {layout.location}
+      </div>
+    )}
+
+    <div className="text-gray-500 mt-2">
+
+      {layout.bedrooms}
+      {" Bed"}
+
+      {" · "}
+
+      {layout.bathrooms}
+      {" Bath"}
+
+      {" · "}
+
+      {layout.garage}
+      {" Garage"}
+
+    </div>
+
+    {layout.floor_size && (
+      <div className="text-gray-500 mt-2">
+        {layout.floor_size}
+      </div>
+    )}
+
+  </div>
+
+  <Link
+    href={`/package-proposal/${pkg.slug}`}
+    className="inline-flex items-center px-6 py-3 bg-black text-white rounded-lg hover:opacity-90 transition"
+    prefetch={false}
+  >
+    Get Package Proposal
+  </Link>
+
+</div>
 
       </div>
+
+{/* ===== Furniture Summary ===== */}
+
+{(() => {
+
+  const summary: Record<
+    string,
+    number
+  > = {}
+
+  items?.forEach(
+    (item: any) => {
+
+      const itemName =
+        item.item_type?.name
+
+      if (!itemName) return
+
+      const qty =
+        item.products?.reduce(
+          (
+            total: number,
+            p: any
+          ) =>
+            total +
+            (
+              p.quantity ||
+              0
+            ),
+          0
+        ) || 0
+
+      summary[itemName] =
+        (
+          summary[
+            itemName
+          ] || 0
+        ) + qty
+
+    }
+  )
+
+  return (
+
+    <div
+      className="
+        border
+        rounded-2xl
+        p-5
+        max-w-4xl
+      "
+    >
+
+      <div
+        className="
+          font-semibold
+          text-lg
+          mb-4
+        "
+      >
+        Furniture Included
+      </div>
+
+      <div
+        className="
+          flex
+          flex-wrap
+          gap-3
+        "
+      >
+
+        {Object.entries(
+          summary
+        ).map(
+          (
+            [name, qty]
+          ) => (
+
+            <div
+              key={name}
+              className="
+                px-4
+                py-2
+                border
+                rounded-full
+                text-sm
+              "
+            >
+              {qty}
+              {" × "}
+              {name}
+            </div>
+
+          )
+        )}
+
+      </div>
+
+    </div>
+
+  )
+
+})()}
 
       {/* ===== Package切换 ===== */}
       <div className="flex gap-3 flex-wrap">
@@ -212,17 +373,57 @@ export default async function PackagePage({
           loading="lazy"
         />
 
-        <div className="text-xs text-gray-400">
-          Concept illustration for the {pkg.name} package
-        </div>
+<div className="flex flex-wrap gap-2 text-xs text-gray-500">
+
+  <span>
+    {layout.name}
+  </span>
+
+  <span>•</span>
+
+  <span>
+    {pkg.name} Package
+  </span>
+
+</div>
 
       </div>
 
-      {/* ===== Rooms ===== */}
-      <div className="space-y-14">
+{/* ===== Room Navigation ===== */}
+
+<div className="flex flex-wrap gap-2">
+
+  {rooms?.map((room: any) => (
+
+    <a
+      key={room.id}
+      href={`#room-${room.id}`}
+      className="
+        px-3
+        py-2
+        border
+        rounded-lg
+        text-sm
+        hover:bg-gray-50
+      "
+    >
+      {room.name}
+    </a >
+
+  ))}
+
+</div>
+
+{/* ===== Rooms ===== */}
+
+<div className="space-y-14">
 
         {rooms?.map((room: any) => (
-          <div key={room.id} className="space-y-5">
+<div
+  id={`room-${room.id}`}
+  key={room.id}
+  className="space-y-5"
+>
 
             {/* Room Title */}
             <div className="border-b pb-2">
@@ -240,9 +441,33 @@ export default async function PackagePage({
                   className="border rounded-2xl p-4 space-y-3 hover:shadow-sm transition"
                 >
 
-                  <div className="text-sm text-gray-500">
-                    {item.item_type?.name}
-                  </div>
+<div className="flex justify-between items-center">
+
+  <div className="text-sm text-gray-500">
+    {item.item_type?.name}
+  </div>
+
+  <div className="text-xs text-gray-400">
+
+    Qty: {
+
+      item.products?.reduce(
+        (
+          total: number,
+          p: any
+        ) =>
+          total +
+          (
+            p.quantity || 0
+          ),
+        0
+      )
+
+    }
+
+  </div>
+
+</div>
 
                   {item.products?.map((p: any, idx: number) => (
                     <Link
@@ -263,14 +488,26 @@ export default async function PackagePage({
                       <div className="text-sm flex-1">
 
                         <div className="font-medium">
-                          {p.product?.sku_code}
+                          {p.product?.display_name_en}
                         </div>
 
-                        {(p.variant?.size_label ||
-                          p.variant?.config) && (
+                        {p.product?.display_description_en && (
+
+  <div
+    className="
+      text-xs
+      text-gray-400
+      line-clamp-2
+    "
+  >
+    {p.product.display_description_en}
+  </div>
+
+)}
+
+                        {(p.variant?.size_label) && (
                           <div className="text-gray-400 text-xs">
-                            {p.variant?.size_label}{" "}
-                            {p.variant?.config}
+                            {p.variant?.size_label}
                           </div>
                         )}
 
@@ -321,14 +558,18 @@ export default async function PackagePage({
 
       </div>
 
-      {/* ===== CTA ===== */}
-      <div className="border-t pt-8 text-center">
+{/* ===== CTA ===== */}
+<div className="border-t pt-8 text-center">
 
-        <button className="px-8 py-3 bg-black text-white rounded-lg hover:opacity-90 transition">
-          Enquire This Package
-        </button>
+  <Link
+    href={`/package-proposal/${pkg.slug}`}
+    className="inline-flex items-center px-8 py-3 bg-black text-white rounded-lg hover:opacity-90 transition"
+    prefetch={false}
+  >
+    Get Package Proposal
+  </Link>
 
-      </div>
+</div>
 
     </div>
   )

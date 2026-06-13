@@ -52,8 +52,7 @@ export default async function PackagesPage() {
         bedrooms,
         bathrooms,
         garage,
-        land_size,
-        floor_size
+        land_size
       )
     `)
     .order("sort_order", { ascending: true })
@@ -93,7 +92,7 @@ export default async function PackagesPage() {
         </div>
 
         <h1 className="text-3xl md:text-4xl font-semibold leading-tight">
-          Move-in Ready Packages for Modern New Zealand Homes
+          Furniture Packages for Modern New Zealand Homes
         </h1>
 
         <p className="text-gray-500 leading-relaxed">
@@ -135,13 +134,12 @@ export default async function PackagesPage() {
                   {group.layout.garage} Garage
                 </div>
 
-                                   {group.layout.floor_size && (
-                    <> · {group.layout.floor_size} Floor</>
-                  )}
-
-                  {group.layout.land_size && (
-                    <> · {group.layout.land_size} Land</>
-                  )}
+                {/* 占地面积 */}
+                {group.layout.land_size && (
+                  <div className="text-sm text-gray-400">
+                    {group.layout.land_size}
+                  </div>
+                )}
 
               </div>
 
@@ -194,7 +192,7 @@ export default async function PackagesPage() {
 
                     {pkg.display_price && (
                       <div className="text-sm text-gray-600">
-                        Fully furnished from ${pkg.display_price}+
+                        From ${pkg.display_price} NZD
                       </div>
                     )}
 
