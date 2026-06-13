@@ -159,15 +159,6 @@ export default async function LayoutsPage() {
                     {layout.bedrooms} Bed ·{" "}
                     {layout.bathrooms} Bath ·{" "}
                     {layout.garage} Garage
-
-                   {layout.floor_size && (
-                    <> · {layout.floor_size} Floor</>
-                  )}
-
-                  {layout.land_size && (
-                    <> · {layout.land_size} Land</>
-                  )}
-                                     
                   </div>
 
                   {layout.land_size && (
