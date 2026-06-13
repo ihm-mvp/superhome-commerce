@@ -97,7 +97,8 @@ const { data: pkg } = await supabase
       bedrooms,
       bathrooms,
       garage,
-      floor_size
+      floor_size,
+      land_size
     )
   `)
     .eq("slug", slug)
@@ -175,7 +176,7 @@ const { data: pkg } = await supabase
 
         {pkg.display_price && (
           <div className="text-xl text-gray-600">
-            From ${pkg.display_price} NZD
+            Fully furnished from ${pkg.display_price}+
           </div>
         )}
 
@@ -191,7 +192,7 @@ const { data: pkg } = await supabase
   <div className="border rounded-2xl p-5 bg-gray-50 max-w-3xl">
 
     <div className="text-xs uppercase tracking-wide text-gray-400">
-      Layout
+      Move-In Ready Showhome
     </div>
 
     <div className="text-2xl font-semibold mt-1">
@@ -223,7 +224,13 @@ const { data: pkg } = await supabase
 
     {layout.floor_size && (
       <div className="text-gray-500 mt-2">
-        {layout.floor_size}
+        {layout.floor_size} Floor
+      </div>
+    )}
+
+        {layout.land_size && (
+      <div className="text-gray-500 mt-2">
+        {layout.land_size} Land
       </div>
     )}
 
