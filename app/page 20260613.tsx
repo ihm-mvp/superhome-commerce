@@ -342,7 +342,7 @@ export default async function HomePage() {
 
         {pkg.display_price && (
           <div className="text-sm text-gray-600">
-            From ${pkg.display_price}
+            From ${pkg.display_price} NZD
           </div>
         )}
 
