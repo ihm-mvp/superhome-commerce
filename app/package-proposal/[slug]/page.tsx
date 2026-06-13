@@ -82,7 +82,10 @@ export default async function PackageProposalPage({
     .select(`
       id,
       name,
-      sort_order
+      sort_order,
+      space_type:space_types(
+      display_name
+    )
     `)
     .eq("package_id", pkg.id)
     .order("sort_order")
@@ -158,8 +161,34 @@ items?.forEach((item: any) => {
 })
 
 const packageSummary =
+
+
   Object.entries(summaryMap)
     .sort((a, b) => b[1] - a[1])
+
+const layoutSummary: Record<
+  string,
+  number
+> = {}
+
+rooms?.forEach(
+  (room: any) => {
+
+    const spaceName =
+      room.space_type
+        ?.display_name
+
+    if (!spaceName) return
+
+    layoutSummary[
+      spaceName
+    ] =
+      (layoutSummary[
+        spaceName
+      ] || 0) + 1
+
+  }
+)
 
   return (
 
@@ -180,6 +209,8 @@ const packageSummary =
         </div>
 
       )}
+
+
 
 {/* ================================================= */}
 {/* HERO */}
@@ -216,6 +247,43 @@ const packageSummary =
     allowing homeowners to move in
     from day one.
   </p >
+
+</div>
+
+{/* ===== Layout Summary ===== */}
+
+<div className="border rounded-2xl p-4 bg-gray-50">
+
+  <h2 className="text-xl font-semibold mb-4">
+    Layout Included
+  </h2>
+
+  <div className="flex flex-wrap gap-3">
+
+    {Object.entries(
+      layoutSummary
+    ).map(
+      ([name, qty]) => (
+
+        <div
+          key={name}
+          className="
+            px-4
+            py-2
+            rounded-full
+            bg-white
+            border
+            text-sm
+            text-gray-700
+          "
+        >
+          {qty} × {name}
+        </div>
+
+      )
+    )}
+
+  </div>
 
 </div>
 
