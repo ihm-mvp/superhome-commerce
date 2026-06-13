@@ -193,7 +193,7 @@ export default async function HomePage() {
           <div className="space-y-1">
 
             <h2 className="text-2xl font-semibold">
-              Real Home Layouts
+              Available Home Layouts
             </h2>
 
             <div className="text-sm text-gray-400">
@@ -279,7 +279,7 @@ export default async function HomePage() {
           <div className="space-y-1">
 
             <h2 className="text-2xl font-semibold">
-              Furniture Packages
+              Move-in Ready Packages
             </h2>
 
             <div className="text-sm text-gray-400">

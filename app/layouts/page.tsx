@@ -167,14 +167,8 @@ export default async function LayoutsPage() {
                   {layout.land_size && (
                     <> · {layout.land_size} Land</>
                   )}
-                                     
-                  </div>
 
-                  {layout.land_size && (
-                    <div className="text-xs text-gray-400">
-                      {layout.land_size}
-                    </div>
-                  )}
+                  </div>
 
                   {minPrice && (
                     <div className="text-sm font-medium text-black">
