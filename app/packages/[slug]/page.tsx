@@ -220,19 +220,17 @@ const { data: pkg } = await supabase
       {layout.garage}
       {" Garage"}
 
+            {" · "}
+
+      {layout.floor_size}
+      {" Floor"}
+
+      {" · "}
+
+      {layout.land_size}
+      {" Land"}
+
     </div>
-
-    {layout.floor_size && (
-      <div className="text-gray-500 mt-2">
-        {layout.floor_size} Floor
-      </div>
-    )}
-
-        {layout.land_size && (
-      <div className="text-gray-500 mt-2">
-        {layout.land_size} Land
-      </div>
-    )}
 
   </div>
 
