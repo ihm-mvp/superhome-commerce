@@ -172,7 +172,7 @@ const { data: files } = await supabase
 
               {layout.floor_size && (
                 <div className="border rounded-lg px-4 py-2">
-                  {layout.floor_size} Floor
+                  {layout.floor_size}
                 </div>
               )}
 
@@ -287,7 +287,7 @@ const { data: files } = await supabase
             <div className="space-y-1">
 
               <h2 className="text-2xl font-semibold">
-                Move-in Ready Packages
+                Furniture Packages
               </h2>
 
               <div className="text-sm text-gray-400">
@@ -341,7 +341,7 @@ const { data: files } = await supabase
 
                     {pkg.display_price && (
                       <div className="text-sm text-gray-600">
-                        Fully furnished from ${pkg.display_price}+
+                        From ${pkg.display_price} NZD
                       </div>
                     )}
 
