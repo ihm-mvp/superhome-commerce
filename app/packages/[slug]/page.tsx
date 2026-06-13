@@ -145,7 +145,7 @@ const { data: pkg } = await supabase
       products:package_item_products(
         quantity,
         product:products(id, sku_code, display_name_en, display_description_en, image_url),
-        variant:variants(size_label, config, display_config_en)
+        variant:variants(size_label, config, display_config_en, display_config_en, display_note_en, width_mm, length_mm, height_mm)
       )
     `)
     .in("package_room_id", rooms?.map(r => r.id) || [])
