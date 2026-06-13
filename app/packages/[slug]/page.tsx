@@ -432,7 +432,7 @@ const { data: pkg } = await supabase
                   className="border rounded-2xl p-4 space-y-3 hover:shadow-sm transition"
                 >
 
-<div className="flex justify-between items-center">
+<div className="flex uppercase justify-between items-center">
 
   <div className="text-sm text-gray-500">
     {item.item_type?.name}

@@ -376,11 +376,13 @@ rooms?.forEach(
                   className="border rounded-2xl p-5 space-y-5"
                 >
 
-                  <div className="text-sm uppercase tracking-wide text-gray-400">
-                    {item.item_type?.display_name}
-                  </div>
+<div className="flex uppercase justify-between items-center">
 
-                    <div className="text-xs text-gray-400">
+  <div className="text-sm text-gray-500">
+    {item.item_type?.name}
+  </div>
+
+  <div className="text-xs text-gray-400">
 
     Qty: {
 
@@ -399,6 +401,8 @@ rooms?.forEach(
     }
 
   </div>
+
+</div>
 
                   {item.products?.map(
                     (p: any, idx: number) => (

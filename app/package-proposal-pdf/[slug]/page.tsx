@@ -376,6 +376,26 @@ rooms?.forEach(
                     {item.item_type?.display_name}
                   </div>
 
+                                      <div className="text-xs text-gray-400">
+
+    Qty: {
+
+      item.products?.reduce(
+        (
+          total: number,
+          p: any
+        ) =>
+          total +
+          (
+            p.quantity || 0
+          ),
+        0
+      )
+
+    }
+
+  </div>
+
                   {item.products?.map(
                     (p: any, idx: number) => (
 
@@ -407,7 +427,7 @@ rooms?.forEach(
 
   <div className="text-sm text-gray-500 whitespace-nowrap">
 
-    Qty: {p.quantity}
+    x{p.quantity}
 
   </div>
 
