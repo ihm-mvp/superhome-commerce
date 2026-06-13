@@ -33,11 +33,17 @@ export async function generateMetadata({
 
 export default async function PackageProposalPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>
+  searchParams: Promise<{ pdf?: string }>
 }) {
 
   const { slug } = await params
+
+  const { pdf } = await searchParams
+
+  const isPdf = pdf === "1"
 
   // ===== Package =====
 
@@ -88,7 +94,7 @@ export default async function PackageProposalPage({
     .select(`
       id,
       package_room_id,
-      item_type:item_types(name),
+      item_type:item_types(name, display_name),
 
 products:package_item_products(
   quantity,
@@ -129,47 +135,126 @@ products:package_item_products(
 
   })
 
+const summaryMap: Record<
+  string,
+  number
+> = {}
+
+items?.forEach((item: any) => {
+
+  const displayName =
+    item.item_type?.display_name ||
+    item.item_type?.name
+
+  const qty = item.products?.reduce(
+    (sum: number, p: any) =>
+      sum + (p.quantity || 0),
+    0
+  ) || 0
+
+  summaryMap[displayName] =
+    (summaryMap[displayName] || 0) + qty
+
+})
+
+const packageSummary =
+  Object.entries(summaryMap)
+    .sort((a, b) => b[1] - a[1])
+
   return (
 
     <div className="max-w-6xl mx-auto px-6 py-10 space-y-14">
 
-      {/* ================================================= */}
-      {/* HERO */}
-      {/* ================================================= */}
+      {isPdf && (
 
-      <div className="space-y-6">
+        <div className="border-b pb-6 break-inside-avoid">
 
-        <div className="text-sm uppercase tracking-wide text-gray-400">
-          MoveInReady Package Proposal
-        </div>
-
-        <h1 className="text-4xl font-semibold">
-          {pkg.name}
-        </h1>
-
-        {pkg.display_price && (
-          <div className="text-2xl text-gray-700">
-            Included Value ${pkg.display_price} NZD
+          <div className="text-sm uppercase tracking-wide text-gray-400">
+            MoveInReady
           </div>
-        )}
 
-        <div className="max-w-3xl text-gray-600 leading-relaxed">
-
-          <p>
-            A complete move-in-ready solution professionally
-            selected for modern townhouse living.
-          </p >
-
-          <p className="mt-3">
-            Furniture, curtains, styling, delivery and
-            installation are coordinated as one package,
-            allowing homeowners to move in with confidence
-            from day one.
-          </p >
+          <div className="text-xs text-gray-500 mt-2">
+            Package Proposal
+          </div>
 
         </div>
 
+      )}
+
+{/* ================================================= */}
+{/* HERO */}
+{/* ================================================= */}
+
+<div className="space-y-5">
+
+  <div className="text-sm uppercase tracking-wide text-gray-400">
+    MoveInReady Package Proposal
+  </div>
+
+  <h1 className="text-4xl font-semibold">
+    {pkg.name}
+  </h1>
+
+  {pkg.display_price && (
+    <div className="text-2xl text-gray-700">
+      Included Value ${pkg.display_price} NZD
+    </div>
+  )}
+
+<div className="max-w-3xl text-gray-600 leading-relaxed">
+
+  <p>
+    A complete turn-key move-in solution
+    professionally selected for modern
+    New Zealand homes.
+  </p >
+
+  <p className="mt-3">
+    Furniture, window furnishings,
+    styling, delivery and installation
+    are coordinated as one package,
+    allowing homeowners to move in
+    from day one.
+  </p >
+
+</div>
+
+{/* ===== Package Summary ===== */}
+
+<div className="border rounded-2xl p-4 bg-gray-50">
+
+  <h2 className="text-xl font-semibold mb-4">
+    Furniture Included
+  </h2>
+
+<div className="flex flex-wrap gap-3">
+
+  {packageSummary.map(
+    ([name, qty]) => (
+
+      <div
+        key={name}
+        className="
+          px-4
+          py-2
+          rounded-full
+          bg-white
+          border
+          text-sm
+          text-gray-700
+        "
+      >
+        {qty} × {name}
       </div>
+
+    )
+  )}
+
+</div>
+
+</div>
+
+</div>
 
       {/* ================================================= */}
       {/* WHAT'S INCLUDED */}
@@ -178,17 +263,16 @@ products:package_item_products(
       <div className="border-t pt-10">
 
         <h2 className="text-2xl font-semibold mb-6">
-          What's Included
+          Turn-Key Benefits
         </h2>
 
         <div className="grid md:grid-cols-2 gap-4 text-gray-700">
 
-          <div>✓ Living Room Furniture</div>
-          <div>✓ Dining Furniture</div>
-          <div>✓ Bedroom Furniture</div>
-          <div>✓ Sunshine Package</div>
-          <div>✓ Styling Package</div>
-          <div>✓ Delivery & Installation</div>
+          <div>✓ Window Furnishings Included</div>
+          <div>✓ Professional Styling Included</div>
+          <div>✓ Delivery Included</div>
+          <div>✓ Installation Included</div>
+          <div>✓ Ready To Move In From Day One</div>
 
         </div>
 
@@ -204,7 +288,7 @@ products:package_item_products(
 
           <div
             key={room.id}
-            className="space-y-8"
+            className="space-y-8 room-section"
           >
 
             <div className="border-b pb-3">
@@ -225,7 +309,7 @@ products:package_item_products(
                 >
 
                   <div className="text-sm uppercase tracking-wide text-gray-400">
-                    {item.item_type?.name}
+                    {item.item_type?.display_name}
                   </div>
 
                   {item.products?.map(
@@ -241,7 +325,7 @@ products:package_item_products(
                           <img
                             src={p.product.image_url}
                             className="w-full h-64 object-contain bg-gray-50 rounded-xl"
-                            loading="lazy"
+                            loading="eager"
                           />
 
                         )}
@@ -340,17 +424,6 @@ products:package_item_products(
 
 )}
 
-{/* ===== Description ===== */}
-
-{p.product?.display_description_en && (
-
-  <p className="text-gray-600 text-sm mt-3 leading-relaxed">
-
-    {p.product.display_description_en}
-
-  </p >
-
-)}
 
                         </div>
 
@@ -371,51 +444,53 @@ products:package_item_products(
 
       </div>
 
-      {/* ================================================= */}
-      {/* PACKAGE VALUE */}
-      {/* ================================================= */}
+{/* ================================================= */}
+{/* PROPOSAL SUMMARY */}
+{/* ================================================= */}
 
-      <div className="border-t pt-12">
+<div className="page-break"></div>
 
-        <h2 className="text-2xl font-semibold mb-6">
-          Package Value
-        </h2>
+<div className="border-t pt-12">
 
-        <div className="space-y-3 text-gray-700">
+  <h2 className="text-2xl font-semibold mb-6">
+    Turn-Key Services Included
+  </h2>
 
-          <div>
-            ✓ Furniture Included
-          </div>
+  <div className="space-y-3 text-gray-700">
 
-          <div>
-            ✓ Sunshine Package Included
-          </div>
+    <div>
+      ✓ Furniture Included
+    </div>
 
-          <div>
-            ✓ Styling Included
-          </div>
+    <div>
+      ✓ Sunshine Package Included
+    </div>
 
-          <div>
-            ✓ Delivery Included
-          </div>
+    <div>
+      ✓ Styling Included
+    </div>
 
-          <div>
-            ✓ Installation Included
-          </div>
+    <div>
+      ✓ Delivery Included
+    </div>
 
-        </div>
+    <div>
+      ✓ Installation Included
+    </div>
 
-        {pkg.display_price && (
+  </div>
 
-          <div className="mt-8 text-3xl font-semibold">
+  {pkg.display_price && (
 
-            Included Value ${pkg.display_price} NZD
+    <div className="mt-8 text-3xl font-semibold">
 
-          </div>
+      Included Value ${pkg.display_price} NZD
 
-        )}
+    </div>
 
-      </div>
+  )}
+
+</div>
 
       {/* ================================================= */}
       {/* FOOTER */}
@@ -441,6 +516,10 @@ products:package_item_products(
         </div>
 
       </div>
+
+{!isPdf && (
+
+<>
 
 {/* ================================================= */}
 {/* REQUEST PROPOSAL */}
@@ -512,6 +591,10 @@ products:package_item_products(
   </div>
 
 </div>
+
+</>
+
+)}
 
     </div>
 

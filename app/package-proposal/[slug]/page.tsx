@@ -192,12 +192,12 @@ const packageSummary =
   </div>
 
   <h1 className="text-4xl font-semibold">
-    {pkg.name}
+    Move-in Ready {pkg.name} Package
   </h1>
 
   {pkg.display_price && (
     <div className="text-2xl text-gray-700">
-      Included Value ${pkg.display_price} NZD
+      Included Value ${pkg.display_price}
     </div>
   )}
 
