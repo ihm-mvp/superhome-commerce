@@ -176,7 +176,7 @@ const { data: pkg } = await supabase
 
         {pkg.display_price && (
           <div className="text-xl text-gray-600">
-            Fully furnished from ${pkg.display_price}+
+            Fully furnished from ${pkg.display_price}
           </div>
         )}
 
@@ -379,20 +379,6 @@ const { data: pkg } = await supabase
           className="w-full rounded-2xl border"
           loading="lazy"
         />
-
-<div className="flex flex-wrap gap-2 text-xs text-gray-500">
-
-  <span>
-    {layout.name}
-  </span>
-
-  <span>•</span>
-
-  <span>
-    {pkg.name} Package
-  </span>
-
-</div>
 
       </div>
 

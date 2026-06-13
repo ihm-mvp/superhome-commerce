@@ -172,7 +172,7 @@ export default async function LayoutsPage() {
 
                   {minPrice && (
                     <div className="text-sm font-medium text-black">
-                      Fully furnished from ${minPrice}+
+                      Fully furnished from ${minPrice}
                     </div>
                   )}
 

@@ -133,7 +133,6 @@ export default async function PackagesPage() {
                   {group.layout.bedrooms} Bed ·{" "}
                   {group.layout.bathrooms} Bath ·{" "}
                   {group.layout.garage} Garage
-                </div>
 
                                    {group.layout.floor_size && (
                     <> · {group.layout.floor_size} Floor</>
@@ -142,6 +141,8 @@ export default async function PackagesPage() {
                   {group.layout.land_size && (
                     <> · {group.layout.land_size} Land</>
                   )}
+
+                </div>
 
               </div>
 
@@ -194,7 +195,7 @@ export default async function PackagesPage() {
 
                     {pkg.display_price && (
                       <div className="text-sm text-gray-600">
-                        Fully furnished from ${pkg.display_price}+
+                        Fully furnished from ${pkg.display_price}
                       </div>
                     )}
 

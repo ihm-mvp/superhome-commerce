@@ -341,7 +341,7 @@ const { data: files } = await supabase
 
                     {pkg.display_price && (
                       <div className="text-sm text-gray-600">
-                        Fully furnished from ${pkg.display_price}+
+                        Fully furnished from ${pkg.display_price}
                       </div>
                     )}
 
