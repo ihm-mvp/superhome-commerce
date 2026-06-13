@@ -576,7 +576,7 @@ rooms?.forEach(
 
     <div className="mt-8 text-3xl font-semibold">
 
-      Included Value ${pkg.display_price} NZD
+      Included Value ${pkg.display_price}
 
     </div>
 
