@@ -145,7 +145,7 @@ const { data: pkg } = await supabase
       products:package_item_products(
         quantity,
         product:products(id, sku_code, display_name_en, display_description_en, image_url),
-        variant:variants(size_label, config)
+        variant:variants(size_label, config, display_config_en)
       )
     `)
     .in("package_room_id", rooms?.map(r => r.id) || [])
@@ -482,25 +482,82 @@ const { data: pkg } = await supabase
                           {p.product?.display_name_en}
                         </div>
 
-                        {p.product?.display_description_en && (
+ 
+{/* ===== Variant ===== */}
 
-  <div
-    className="
-      text-xs
-      text-gray-400
-      line-clamp-2
-    "
-  >
-    {p.product.display_description_en}
+{(
+  p.variant?.display_config_en ||
+  p.variant?.config ||
+  p.variant?.size_label ||
+  p.variant?.width_mm ||
+  p.variant?.length_mm ||
+  p.variant?.height_mm
+) && (
+
+  <div className="mt-2 space-y-1">
+
+    {(p.variant?.display_config_en ||
+      p.variant?.config) && (
+
+      <div className="text-sm font-medium text-gray-700">
+
+        {p.variant?.display_config_en ||
+          p.variant?.config}
+
+      </div>
+
+    )}
+
+    {p.variant?.size_label && (
+
+      <div className="text-sm text-gray-500">
+
+        Size: {p.variant.size_label}
+
+      </div>
+
+    )}
+
+    {p.variant?.display_note_en && (
+
+      <div className="text-xs text-gray-500">
+
+        {p.variant.display_note_en}
+
+      </div>
+
+    )}
+
+    {(
+      p.variant?.width_mm ||
+      p.variant?.length_mm ||
+      p.variant?.height_mm
+    ) && (
+
+      <div className="text-xs text-gray-500">
+
+        Dimensions:{" "}
+
+        {p.variant?.width_mm || "-"}
+
+        ×
+
+        {p.variant?.length_mm || "-"}
+
+        ×
+
+        {p.variant?.height_mm || "-"}
+
+        mm
+
+      </div>
+
+    )}
+
   </div>
 
 )}
 
-                        {(p.variant?.size_label) && (
-                          <div className="text-gray-400 text-xs">
-                            {p.variant?.size_label}
-                          </div>
-                        )}
 
                       </div>
 
