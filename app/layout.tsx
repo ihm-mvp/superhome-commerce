@@ -28,9 +28,6 @@ export default function RootLayout({
               <span className="font-semibold text-lg">
                 MoveInReady
               </span>
-              <span className="text-xs text-gray-400">
-                by SuperHome
-              </span>
             </Link>
 
             {/* Nav */}
@@ -86,10 +83,6 @@ export default function RootLayout({
                 Move-in ready homes, fully furnished before you arrive.
               </div>
 
-              <div className="mt-3 text-xs text-gray-400">
-                A SuperHome platform
-              </div>
-
               <div className="mt-4 text-xs text-gray-400 leading-relaxed">
                 Operated by SuperMilkBaba (NZ) Limited<br />
                 Christchurch, New Zealand
@@ -98,7 +91,7 @@ export default function RootLayout({
               <div className="mt-3 text-xs">
                 Contact:{" "}
                 <a
-                  href=" "  // ✅ 修复
+                  href="mailto:sales@moveinready.co.nz"  // ✅ 修复
                   className="underline"
                 >
                   sales@moveinready.co.nz
