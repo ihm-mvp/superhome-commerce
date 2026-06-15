@@ -6,19 +6,9 @@ import { useEffect, useMemo, useState } from "react"
 
 type ProductRow = {
   room_name: string
-
-  opening_code?: string
-
   sku_code: string
-
   quantity: number
-
   exw_price_rmb: number
-
-  width_mm?: number | null
-
-  height_mm?: number | null
-
   variant_config?: string
 }
 
@@ -96,119 +86,17 @@ export default function PackagePricingCalculatorPage() {
 
   }, [rows])
 
-  function calculateCost(
-  row: ProductRow
-) {
-
-  const sku =
-    row.sku_code || ""
-
-  // ====================
-  // Curtain
-  // ====================
-
-  if (
-    sku.startsWith(
-      "SUN-CUR-"
-    )
-  ) {
-
-    return (
-      (
-        (
-          (
-            row.width_mm || 0
-          ) + 30
-        )
-        / 1000
-      )
-      *
-      2.2
-      *
-      row.exw_price_rmb
-    )
-
-  }
-
-  // ====================
-  // Track
-  // ====================
-
-  if (
-    sku.startsWith(
-      "SUN-TRK-"
-    )
-  ) {
-
-    return (
-      (
-        row.width_mm || 0
-      )
-      / 1000
-      *
-      row.exw_price_rmb
-    )
-
-  }
-
-  // ====================
-  // Blind
-  // ====================
-
-  if (
-    sku.startsWith(
-      "SUN-BLD-"
-    )
-  ) {
-
-    return (
-      (
-        (
-          row.width_mm || 0
-        )
-        / 1000
-      )
-      *
-      (
-        (
-          row.height_mm || 0
-        )
-        / 1000
-      )
-      *
-      row.exw_price_rmb
-    )
-
-  }
-
-  // ====================
-  // Furniture
-  // ====================
-
-  return (
-    row.exw_price_rmb
-    *
-    row.quantity
-  )
-
-}
-
   // ===== EXW RMB =====
-const exwTotalRmb = useMemo(() => {
+  const exwTotalRmb = useMemo(() => {
 
-  return rows.reduce(
-    (sum, r) => {
-
+    return rows.reduce((sum, r) => {
       return (
         sum +
-        calculateCost(r)
+        (r.exw_price_rmb || 0) * r.quantity
       )
+    }, 0)
 
-    },
-    0
-  )
-
-}, [rows])
+  }, [rows])
 
   // ===== 中国出口成本 =====
   const exportCostRmb =
@@ -488,14 +376,11 @@ const exwTotalRmb = useMemo(() => {
                         </div>
 
                         <div className="w-28 text-right">
-¥
-{calculateCost(p)
-  .toLocaleString(
-    undefined,
-    {
-      maximumFractionDigits: 0,
-    }
-  )}
+                          ¥
+                          {(
+                            p.exw_price_rmb *
+                            p.quantity
+                          ).toLocaleString()}
                         </div>
 
                       </div>
