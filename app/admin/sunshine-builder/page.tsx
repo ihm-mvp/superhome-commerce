@@ -139,7 +139,7 @@ export default function SunshineBuilder() {
 
     const res =
       await fetch(
-        `/api/admin/recovery-variants?product_id=${productId}`
+        `/api/admin/recovery-builder-variants?product_id=${productId}`
       )
 
     const data =
@@ -287,7 +287,7 @@ export default function SunshineBuilder() {
 
     const res =
       await fetch(
-        "/api/admin/recovery-add-product",
+        "/api/admin/recovery-builder-add-product",
         {
           method: "POST",
 
