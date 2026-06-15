@@ -85,41 +85,59 @@ export async function GET(
             item.package_room_id
         )
 
-      item.products?.forEach(
-        (p: any) => {
+item.products?.forEach(
+  (p: any) => {
 
-          rows.push({
+    const sku =
+      p.product?.sku_code || ""
 
-            room_name:
-              room?.name || "",
+    // ====================
+    // Sunshine Products
+    // Skip here
+    // Cost comes from
+    // package_opening_products
+    // ====================
 
-            opening_code: "",
+    if (
+      sku.startsWith("SUN-")
+    ) {
 
-            sku_code:
-              p.product?.sku_code || "",
+      return
 
-            quantity:
-              p.quantity || 1,
+    }
 
-            exw_price_rmb:
-              p.variant?.price_rmb || 0,
+    rows.push({
 
-            width_mm: null,
+      room_name:
+        room?.name || "",
 
-            height_mm: null,
+      opening_code: "",
 
-            variant_config:
-              [
-                p.variant?.size_label,
-                p.variant?.config,
-              ]
-                .filter(Boolean)
-                .join(" "),
+      sku_code:
+        sku,
 
-          })
+      quantity:
+        p.quantity || 1,
 
-        }
-      )
+      exw_price_rmb:
+        p.variant?.price_rmb || 0,
+
+      width_mm: null,
+
+      height_mm: null,
+
+      variant_config:
+        [
+          p.variant?.size_label,
+          p.variant?.config,
+        ]
+          .filter(Boolean)
+          .join(" "),
+
+    })
+
+  }
+)
 
     }
   )
