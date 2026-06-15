@@ -31,14 +31,14 @@ export default function PackagePricingCalculatorPage() {
   // ===== 输入参数 =====
   const [fxRate, setFxRate] = useState(4.0)
   const [shippingFactor, setShippingFactor] = useState(1.2)
-  const [localCost, setLocalCost] = useState(3000)
-  const [marginPercent, setMarginPercent] = useState(30)
+  const [localCost, setLocalCost] = useState(2000)
+  const [marginPercent, setMarginPercent] = useState(10)
 
   // ===== 中国出口成本系数 =====
 const [
   exportFactor,
   setExportFactor,
-] = useState(1.2)
+] = useState(1.1)
 
   // ===== GST =====
   const gstRate = 15
