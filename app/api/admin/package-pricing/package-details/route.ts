@@ -1,8 +1,8 @@
-// /app/api/admin/package-pricing/package-details/route.ts
-
 import { supabase } from "@/lib/supabase"
 
-export async function GET(req: Request) {
+export async function GET(
+  req: Request
+) {
 
   const { searchParams } =
     new URL(req.url)
@@ -11,74 +11,208 @@ export async function GET(req: Request) {
     searchParams.get("package_id")
 
   if (!packageId) {
+
     return Response.json([])
+
   }
 
-  // ===== rooms =====
-  const { data: rooms } = await supabase
-    .from("package_rooms")
-    .select("id, name")
-    .eq("package_id", packageId)
+  // =====================================
+  // Package Rooms
+  // =====================================
+
+  const { data: rooms } =
+    await supabase
+      .from("package_rooms")
+      .select(`
+        id,
+        name
+      `)
+      .eq(
+        "package_id",
+        packageId
+      )
 
   if (!rooms?.length) {
-    return Response.json([])
-  }
 
-  // ===== items =====
-  const { data: items } = await supabase
-    .from("package_items")
-    .select(`
-      id,
-      package_room_id,
-      products:package_item_products(
-        quantity,
-        product:products(
-          sku_code
-        ),
-        variant:variants(
-          price_rmb,
-          config,
-          size_label
-        )
-      )
-    `)
-    .in(
-      "package_room_id",
-      rooms.map((r) => r.id)
-    )
+    return Response.json([])
+
+  }
 
   const rows: any[] = []
 
-  items?.forEach((item: any) => {
+  // =====================================
+  // Furniture
+  // =====================================
 
-    const room = rooms.find(
-      (r) => r.id === item.package_room_id
-    )
+  const { data: items } =
+    await supabase
+      .from("package_items")
+      .select(`
+        id,
+        package_room_id,
 
-    item.products?.forEach((p: any) => {
+        products:package_item_products(
+
+          quantity,
+
+          product:products(
+            sku_code
+          ),
+
+          variant:variants(
+            price_rmb,
+            config,
+            size_label
+          )
+
+        )
+
+      `)
+      .in(
+        "package_room_id",
+        rooms.map(
+          (r) => r.id
+        )
+      )
+
+  items?.forEach(
+    (item: any) => {
+
+      const room =
+        rooms.find(
+          (r) =>
+            r.id ===
+            item.package_room_id
+        )
+
+      item.products?.forEach(
+        (p: any) => {
+
+          rows.push({
+
+            room_name:
+              room?.name || "",
+
+            opening_code: "",
+
+            sku_code:
+              p.product?.sku_code || "",
+
+            quantity:
+              p.quantity || 1,
+
+            exw_price_rmb:
+              p.variant?.price_rmb || 0,
+
+            width_mm: null,
+
+            height_mm: null,
+
+            variant_config:
+              [
+                p.variant?.size_label,
+                p.variant?.config,
+              ]
+                .filter(Boolean)
+                .join(" "),
+
+          })
+
+        }
+      )
+
+    }
+  )
+
+  // =====================================
+  // Sunshine Opening Products
+  // =====================================
+
+  const {
+    data: openingProducts,
+  } =
+    await supabase
+      .from(
+        "package_opening_products"
+      )
+      .select(`opening:layout_openings(
+
+          room_name,
+          opening_code,
+          width_mm,
+          height_mm
+
+        ),
+
+        product:products(
+
+          sku_code
+
+        ),
+
+        variant:variants(
+
+          price_rmb,
+          config,
+          size_label
+
+        )
+
+      `)
+      .eq(
+        "package_id",
+        packageId
+      )
+
+  openingProducts?.forEach(
+    (row: any) => {
 
       rows.push({
-        room_name: room?.name || "",
+
+        room_name:
+          row.opening
+            ?.room_name || "",
+
+        opening_code:
+          row.opening
+            ?.opening_code || "",
 
         sku_code:
-          p.product?.sku_code || "",
+          row.product
+            ?.sku_code || "",
 
         quantity:
-          p.quantity || 1,
+          row.quantity || 1,
 
         exw_price_rmb:
-          p.variant?.price_rmb || 0,
+          row.variant
+            ?.price_rmb || 0,
+
+        width_mm:
+          row.opening
+            ?.width_mm || null,
+
+        height_mm:
+          row.opening
+            ?.height_mm || null,
 
         variant_config:
           [
-            p.variant?.size_label,
-            p.variant?.config,
+            row.variant
+              ?.size_label,
+            row.variant
+              ?.config,
           ]
             .filter(Boolean)
             .join(" "),
-      })
-    })
-  })
 
-  return Response.json(rows)
+      })
+
+    }
+  )
+
+  return Response.json(
+    rows
+  )
+
 }
