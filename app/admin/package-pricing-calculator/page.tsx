@@ -629,7 +629,7 @@ const exwTotalRmb = useMemo(() => {
             <div className="border-t pt-6 space-y-2">
 
               <div className="text-sm text-gray-500">
-                Suggested Display Price
+                Suggested Display Price (Included GST)
               </div>
 
               <div className="text-4xl font-semibold">

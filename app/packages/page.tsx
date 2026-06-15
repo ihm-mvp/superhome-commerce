@@ -193,6 +193,13 @@ export default async function PackagesPage() {
 
                     </div>
 
+<div className="text-red-500">
+  DEBUG:
+  {pkg.name}
+  -
+  {String(pkg.display_price)}
+</div>
+
                     {pkg.display_price && (
                       <div className="text-sm text-gray-600">
                         Fully furnished from ${pkg.display_price}
