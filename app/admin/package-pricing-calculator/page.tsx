@@ -35,7 +35,10 @@ export default function PackagePricingCalculatorPage() {
   const [marginPercent, setMarginPercent] = useState(30)
 
   // ===== 中国出口成本系数 =====
-  const exportFactor = 1.2
+const [
+  exportFactor,
+  setExportFactor,
+] = useState(1.2)
 
   // ===== GST =====
   const gstRate = 15
@@ -118,7 +121,7 @@ export default function PackagePricingCalculatorPage() {
         (
           (
             row.width_mm || 0
-          ) + 30
+          ) + 300
         )
         / 1000
       )
@@ -360,12 +363,17 @@ const exwTotalRmb = useMemo(() => {
                 China Export Factor
               </div>
 
-              <input
-                type="number"
-                value={exportFactor}
-                disabled
-                className="w-full border rounded-lg px-3 py-2 bg-gray-100"
-              />
+<input
+  type="number"
+  value={exportFactor}
+  step="0.01"
+  onChange={(e) =>
+    setExportFactor(
+      Number(e.target.value)
+    )
+  }
+  className="w-full border rounded-lg px-3 py-2"
+/>
 
             </div>
 
@@ -479,11 +487,62 @@ const exwTotalRmb = useMemo(() => {
                             </span>
                           </div>
 
-                          {p.variant_config && (
-                            <div className="text-xs text-gray-400">
-                              {p.variant_config}
-                            </div>
-                          )}
+{p.sku_code?.startsWith(
+  "SUN-CUR-"
+) && (
+
+  <div className="text-xs text-blue-600">
+
+    ({p.width_mm} + 300)
+    ÷ 1000
+    × 2.2
+    × ¥{p.exw_price_rmb}
+
+    = ¥
+    {calculateCost(p)
+      .toFixed(0)}
+
+  </div>
+
+)}
+
+{p.sku_code?.startsWith(
+  "SUN-TRK-"
+) && (
+
+  <div className="text-xs text-blue-600">
+
+    {p.width_mm}
+    ÷ 1000
+    × ¥{p.exw_price_rmb}
+
+    = ¥
+    {calculateCost(p)
+      .toFixed(0)}
+
+  </div>
+
+)}
+
+{p.sku_code?.startsWith(
+  "SUN-BLD-"
+) && (
+
+  <div className="text-xs text-blue-600">
+
+    {p.width_mm}
+    ×
+    {p.height_mm}
+    ÷ 1000000
+    × ¥{p.exw_price_rmb}
+
+    = ¥
+    {calculateCost(p)
+      .toFixed(0)}
+
+  </div>
+
+)}
 
                         </div>
 
