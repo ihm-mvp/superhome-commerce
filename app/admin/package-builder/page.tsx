@@ -1,131 +1,814 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import {
+  useEffect,
+  useState,
+} from "react"
+
+type SpaceType = {
+  id: string
+  name: string
+  display_name: string
+}
+
+type PackageRow = {
+  name: string
+  sort_order: number
+}
+
+type RoomRow = {
+  name: string
+  space_type_id: string
+  sort_order: number
+}
 
 export default function PackageBuilder() {
-  const [layouts, setLayouts] = useState<any[]>([])
-  const [packages, setPackages] = useState<any[]>([])
-  const [selectedLayout, setSelectedLayout] = useState("")
-  const [selectedPackage, setSelectedPackage] = useState("")
-  const [structure, setStructure] = useState<any[]>([])
-  const [newName, setNewName] = useState("")
-  const [loading, setLoading] = useState(false)
 
-  // 获取 layouts
+  const [
+    spaceTypes,
+    setSpaceTypes,
+  ] = useState<SpaceType[]>([])
+
+  // ===== Layout =====
+
+  const [
+    layoutName,
+    setLayoutName,
+  ] = useState("")
+
+  const [
+    slug,
+    setSlug,
+  ] = useState("")
+
+  const [
+    location,
+    setLocation,
+  ] = useState("")
+
+  const [
+    bedrooms,
+    setBedrooms,
+  ] = useState(2)
+
+  const [
+    bathrooms,
+    setBathrooms,
+  ] = useState(1)
+
+  const [
+    garage,
+    setGarage,
+  ] = useState(1)
+
+  const [
+    floorSize,
+    setFloorSize,
+  ] = useState("")
+
+  const [
+    landSize,
+    setLandSize,
+  ] = useState("")
+
+  const [
+    description,
+    setDescription,
+  ] = useState("")
+
+  const [
+    heroExteriorImage,
+    setHeroExteriorImage,
+  ] = useState("")
+
+  const [
+    elevationImage,
+    setElevationImage,
+  ] = useState("")
+
+  const [
+    floorplanImage,
+    setFloorplanImage,
+  ] = useState("")
+
+  const [
+    videoUrl,
+    setVideoUrl,
+  ] = useState("")
+
+  // ===== Packages =====
+
+  const [
+    packages,
+    setPackages,
+  ] = useState<PackageRow[]>([
+    {
+      name: "Basic",
+      sort_order: 1,
+    },
+    {
+      name: "Standard",
+      sort_order: 2,
+    },
+    {
+      name: "Premium",
+      sort_order: 3,
+    },
+  ])
+
+  // ===== Rooms =====
+
+  const [
+    rooms,
+    setRooms,
+  ] = useState<RoomRow[]>([])
+
+  // ===== Load Space Types =====
+
   useEffect(() => {
-    fetch("/api/admin/layouts")
-      .then(res => res.json())
-      .then(setLayouts)
+
+    async function loadSpaceTypes() {
+
+      const res =
+        await fetch(
+          "/api/admin/package-builder-space-types"
+        )
+
+      const data =
+        await res.json()
+
+      setSpaceTypes(
+        data || []
+      )
+
+    }
+
+    loadSpaceTypes()
+
   }, [])
 
-  // 获取 packages
+  // ===== Initialize Default Rooms =====
+
   useEffect(() => {
-    if (!selectedLayout) return
 
-    fetch(`/api/admin/packages?layout_id=${selectedLayout}`)
-      .then(res => res.json())
-      .then(setPackages)
-  }, [selectedLayout])
+    if (
+      !spaceTypes.length
+    ) return
 
-  // 加载结构（Standard）
-  const loadStructure = async () => {
-    const res = await fetch(`/api/admin/package-structure?package_id=${selectedPackage}`)
-    const data = await res.json()
-    setStructure(data)
+    const living =
+      spaceTypes.find(
+        (s) =>
+          s.name
+            ?.toLowerCase()
+            .includes("living")
+      )
+
+    const dining =
+      spaceTypes.find(
+        (s) =>
+          s.name
+            ?.toLowerCase()
+            .includes("dining")
+      )
+
+    const bedroom =
+      spaceTypes.find(
+        (s) =>
+          s.name
+            ?.toLowerCase()
+            .includes("bedroom")
+      )
+
+    setRooms([
+      {
+        name: "Living",
+        space_type_id:
+          living?.id || "",
+        sort_order: 1,
+      },
+      {
+        name: "Dining",
+        space_type_id:
+          dining?.id || "",
+        sort_order: 2,
+      },
+      {
+        name: "Bedroom 1",
+        space_type_id:
+          bedroom?.id || "",
+        sort_order: 3,
+      },
+      {
+        name: "Bedroom 2",
+        space_type_id:
+          bedroom?.id || "",
+        sort_order: 4,
+      },
+    ])
+
+  }, [spaceTypes])
+
+  function addRoom() {
+
+    setRooms([
+      ...rooms,
+      {
+        name: "",
+        space_type_id: "",
+        sort_order:
+          rooms.length + 1,
+      },
+    ])
+
   }
 
-  // 保存新 package
-  const handleSave = async () => {
-    setLoading(true)
+  function updateRoom(
+    index: number,
+    field: keyof RoomRow,
+    value: any
+  ) {
 
-    await fetch("/api/admin/clone-package", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        source_package_id: selectedPackage,
-        name: newName,
-      }),
-    })
+    const copy =
+      [...rooms]
 
-    alert("Package created")
-    setLoading(false)
+    copy[index] = {
+      ...copy[index],
+      [field]: value,
+    }
+
+    setRooms(copy)
+
+  }
+
+  function removeRoom(
+    index: number
+  ) {
+
+    const copy =
+      rooms.filter(
+        (_, i) =>
+          i !== index
+      )
+
+    setRooms(copy)
+
+  }
+
+  function updatePackage(
+    index: number,
+    field: keyof PackageRow,
+    value: any
+  ) {
+
+    const copy =
+      [...packages]
+
+    copy[index] = {
+      ...copy[index],
+      [field]: value,
+    }
+
+    setPackages(copy)
+
+  }
+  async function generate() {
+
+    if (
+      !layoutName ||
+      !slug
+    ) {
+
+      alert(
+        "Layout Name and Slug are required."
+      )
+
+      return
+
+    }
+
+    const res =
+      await fetch(
+        "/api/admin/package-builder-generate",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+
+          body:
+            JSON.stringify({
+              layout: {
+                name:
+                  layoutName,
+
+                slug,
+
+                location,
+
+                bedrooms,
+
+                bathrooms,
+
+                garage,
+
+                floor_size:
+                  floorSize,
+
+                land_size:
+                  landSize,
+
+                description,
+
+                hero_exterior_image:
+                  heroExteriorImage,
+
+                elevation_image:
+                  elevationImage,
+
+                floorplan_image:
+                  floorplanImage,
+
+                video_url:
+                  videoUrl,
+              },
+
+              packages,
+
+              rooms,
+            }),
+        }
+      )
+
+    const json =
+      await res.json()
+
+    if (
+      !res.ok
+    ) {
+
+      alert(
+        json.error ||
+        "Failed"
+      )
+
+      return
+
+    }
+
+    alert(
+      "Package structure generated."
+    )
+
   }
 
   return (
-    <div className="p-10 space-y-6 max-w-3xl">
 
-      <h1 className="text-xl font-semibold">Package Builder</h1>
+    <div
+      className="
+        max-w-7xl
+        mx-auto
+        p-8
+        space-y-8
+      "
+    >
 
-      {/* Layout */}
-      <div>
-        <div className="text-sm mb-1">Layout</div>
-        <select
-          className="border p-2 w-full"
-          onChange={(e) => setSelectedLayout(e.target.value)}
-        >
-          <option value="">Select layout</option>
-          {layouts.map((l) => (
-            <option key={l.id} value={l.id}>{l.name}</option>
-          ))}
-        </select>
-      </div>
-
-      {/* Package */}
-      <div>
-        <div className="text-sm mb-1">Template (Standard)</div>
-        <select
-          className="border p-2 w-full"
-          onChange={(e) => setSelectedPackage(e.target.value)}
-        >
-          <option value="">Select package</option>
-          {packages.map((p) => (
-            <option key={p.id} value={p.id}>{p.name}</option>
-          ))}
-        </select>
-      </div>
-
-      <button
-        onClick={loadStructure}
-        className="px-4 py-2 bg-black text-white"
+      <h1
+        className="
+          text-3xl
+          font-semibold
+        "
       >
-        Load Structure
-      </button>
+        Package Builder
+      </h1>
 
-      {/* Structure */}
-      <div className="space-y-4">
-        {structure.map((room: any) => (
-          <div key={room.name} className="border p-3">
-            <div className="font-medium mb-2">{room.name}</div>
+      {/* ===== Layout ===== */}
 
-            {room.items.map((item: any) => (
-              <div key={item.id} className="text-sm text-gray-600">
-                {item.product_name} ({item.variant})
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
+      <div
+        className="
+          border
+          rounded-2xl
+          p-6
+          space-y-5
+        "
+      >
 
-      {/* New package */}
-      <div>
-        <input
-          placeholder="New package name (Basic / Premium)"
-          className="border p-2 w-full"
-          value={newName}
-          onChange={(e) => setNewName(e.target.value)}
+        <h2
+          className="
+            text-xl
+            font-semibold
+          "
+        >
+          Layout Information
+        </h2>
+
+        <div
+          className="
+            grid
+            md:grid-cols-2
+            gap-4
+          "
+        >
+
+          <input
+            placeholder="Layout Name"
+            value={layoutName}
+            onChange={(e) =>
+              setLayoutName(
+                e.target.value
+              )
+            }
+            className="border p-2"
+          />
+
+          <input
+            placeholder="Slug"
+            value={slug}
+            onChange={(e) =>
+              setSlug(
+                e.target.value
+              )
+            }
+            className="border p-2"
+          />
+
+          <input
+            placeholder="Location"
+            value={location}
+            onChange={(e) =>
+              setLocation(
+                e.target.value
+              )
+            }
+            className="border p-2"
+          />
+
+          <input
+            placeholder="Floor Size"
+            value={floorSize}
+            onChange={(e) =>
+              setFloorSize(
+                e.target.value
+              )
+            }
+            className="border p-2"
+          />
+
+          <input
+            placeholder="Land Size"
+            value={landSize}
+            onChange={(e) =>
+              setLandSize(
+                e.target.value
+              )
+            }
+            className="border p-2"
+          />
+
+          <input
+            placeholder="Hero Exterior Image"
+            value={
+              heroExteriorImage
+            }
+            onChange={(e) =>
+              setHeroExteriorImage(
+                e.target.value
+              )
+            }
+            className="border p-2"
+          />
+
+          <input
+            placeholder="Elevation Image"
+            value={
+              elevationImage
+            }
+            onChange={(e) =>
+              setElevationImage(
+                e.target.value
+              )
+            }
+            className="border p-2"
+          />
+
+          <input
+            placeholder="Floorplan Image"
+            value={
+              floorplanImage
+            }
+            onChange={(e) =>
+              setFloorplanImage(
+                e.target.value
+              )
+            }
+            className="border p-2"
+          />
+
+          <input
+            placeholder="Video URL"
+            value={videoUrl}
+            onChange={(e) =>
+              setVideoUrl(
+                e.target.value
+              )
+            }
+            className="border p-2"
+          />
+
+        </div>
+
+        <div
+          className="
+            grid
+            grid-cols-3
+            gap-4
+          "
+        >
+
+          <input
+            type="number"
+            placeholder="Bedrooms"
+            value={bedrooms}
+            onChange={(e) =>
+              setBedrooms(
+                Number(
+                  e.target.value
+                )
+              )
+            }
+            className="border p-2"
+          />
+
+          <input
+            type="number"
+            placeholder="Bathrooms"
+            value={bathrooms}
+            onChange={(e) =>
+              setBathrooms(
+                Number(
+                  e.target.value
+                )
+              )
+            }
+            className="border p-2"
+          />
+
+          <input
+            type="number"
+            placeholder="Garage"
+            value={garage}
+            onChange={(e) =>
+              setGarage(
+                Number(
+                  e.target.value
+                )
+              )
+            }
+            className="border p-2"
+          />
+
+        </div>
+
+        <textarea
+          placeholder="Description"
+          value={description}
+          onChange={(e) =>
+            setDescription(
+              e.target.value
+            )
+          }
+          rows={4}
+          className="
+            border
+            p-2
+            w-full
+          "
         />
+
+      </div>
+
+      {/* ===== Packages ===== */}
+
+      <div
+        className="
+          border
+          rounded-2xl
+          p-6
+          space-y-4
+        "
+      >
+
+        <h2
+          className="
+            text-xl
+            font-semibold
+          "
+        >
+          Packages
+        </h2>
+
+        {packages.map(
+          (pkg, index) => (
+
+            <div
+              key={index}
+              className="
+                grid
+                grid-cols-2
+                gap-4
+              "
+            >
+
+              <input
+                value={pkg.name}
+                onChange={(e) =>
+                  updatePackage(
+                    index,
+                    "name",
+                    e.target.value
+                  )
+                }
+                className="border p-2"
+              />
+
+              <input
+                type="number"
+                value={
+                  pkg.sort_order
+                }
+                onChange={(e) =>
+                  updatePackage(
+                    index,
+                    "sort_order",
+                    Number(
+                      e.target.value
+                    )
+                  )
+                }
+                className="border p-2"
+              />
+
+            </div>
+
+          )
+        )}
+
+      </div>
+
+      {/* ===== Rooms ===== */}
+
+      <div
+        className="
+          border
+          rounded-2xl
+          p-6
+          space-y-4
+        "
+      >
+
+        <div
+          className="
+            flex
+            justify-between
+            items-center
+          "
+        >
+
+          <h2
+            className="
+              text-xl
+              font-semibold
+            "
+          >
+            Rooms
+          </h2>
+
+          <button
+            onClick={addRoom}
+            className="
+              px-4
+              py-2
+              border
+              rounded-lg
+            "
+          >
+            Add Room
+          </button>
+
+        </div>
+
+        {rooms.map(
+          (room, index) => (
+
+            <div
+              key={index}
+              className="
+                grid
+                md:grid-cols-4
+                gap-4
+              "
+            >
+
+              <input
+                value={room.name}
+                onChange={(e) =>
+                  updateRoom(
+                    index,
+                    "name",
+                    e.target.value
+                  )
+                }
+                placeholder="Room Name"
+                className="border p-2"
+              />
+
+              <select
+                value={
+                  room.space_type_id
+                }
+                onChange={(e) =>
+                  updateRoom(
+                    index,
+                    "space_type_id",
+                    e.target.value
+                  )
+                }
+                className="border p-2"
+              >
+
+                <option value="">
+                  Select Space Type
+                </option>
+
+                {spaceTypes.map(
+                  (s) => (
+
+                    <option
+                      key={s.id}
+                      value={s.id}
+                    >
+                      {s.display_name}
+                    </option>
+
+                  )
+                )}
+
+              </select>
+
+              <input
+                type="number"
+                value={
+                  room.sort_order
+                }
+                onChange={(e) =>
+                  updateRoom(
+                    index,
+                    "sort_order",
+                    Number(
+                      e.target.value
+                    )
+                  )
+                }
+                className="border p-2"
+              />
+
+              <button
+                onClick={() =>
+                  removeRoom(
+                    index
+                  )
+                }
+                className="
+                  border
+                  text-red-600
+                "
+              >
+                Remove
+              </button>
+
+            </div>
+
+          )
+        )}
+
       </div>
 
       <button
-        onClick={handleSave}
-        disabled={loading}
-        className="px-4 py-2 bg-green-600 text-white"
+        onClick={generate}
+        className="
+          w-full
+          bg-black
+          text-white
+          py-4
+          rounded-xl
+        "
       >
-        {loading ? "Saving..." : "Create Package"}
+        Generate Package Structure
       </button>
 
     </div>
+
   )
+
 }
