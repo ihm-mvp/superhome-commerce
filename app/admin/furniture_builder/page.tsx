@@ -5,7 +5,7 @@ import {
   useState,
 } from "react"
 
-export default function PackageRecovery() {
+export default function FurnitureBuilder() {
 
   const [packages, setPackages] =
     useState<any[]>([])
@@ -43,13 +43,13 @@ export default function PackageRecovery() {
   useEffect(() => {
 
     fetch(
-      "/api/admin/recovery-packages"
+      "/api/admin/furniture-builder-packages"
     )
       .then(r => r.json())
       .then(setPackages)
 
     fetch(
-      "/api/admin/recovery-item-types"
+      "/api/admin/furniture-builder-item-types"
     )
       .then(r => r.json())
       .then(setItemTypes)
@@ -67,7 +67,7 @@ export default function PackageRecovery() {
 
       const res =
         await fetch(
-          `/api/admin/recovery-package-rooms?package_id=${package_id}`
+          `/api/admin/furniture-builder-package-rooms?package_id=${package_id}`
         )
 
       const json =
@@ -94,7 +94,7 @@ export default function PackageRecovery() {
 
       const res =
         await fetch(
-          `/api/admin/recovery-products?category_id=${itemType.category_id}`
+          `/api/admin/furniture-builder-products?category_id=${itemType.category_id}`
         )
 
       const json =
@@ -115,7 +115,7 @@ export default function PackageRecovery() {
 
       const res =
         await fetch(
-          `/api/admin/recovery-variants?product_id=${productId}`
+          `/api/admin/furniture-builder-variants?product_id=${productId}`
         )
 
       const json =
@@ -138,7 +138,7 @@ console.log({
 
       const res =
         await fetch(
-          "/api/admin/recovery-add-product",
+          "/api/admin/furniture-builder-add-product",
           {
             method: "POST",
 
@@ -188,7 +188,7 @@ console.log({
     <div className="p-10 space-y-6 max-w-5xl">
 
       <h1 className="text-xl font-bold">
-        Package Recovery
+        Furniture Builder
       </h1>
 
       <select
