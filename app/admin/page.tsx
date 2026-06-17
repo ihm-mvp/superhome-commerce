@@ -514,6 +514,38 @@ export default function AdminDashboard() {
           </Link>
 
           <Link
+            href="/admin/furniture-editor"
+            className="
+              border
+              rounded-xl
+              p-6
+              hover:shadow-md
+              transition
+              bg-white
+            "
+          >
+
+            <div
+              className="
+                font-semibold
+                mb-2
+              "
+            >
+              Furniture Editor
+            </div>
+
+            <div
+              className="
+                text-sm
+                text-gray-500
+              "
+            >
+              Edit furniture and item
+            </div>
+
+          </Link>
+
+          <Link
             href="/admin/package-pricing-calculator"
             className="
               border
