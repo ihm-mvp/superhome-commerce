@@ -80,17 +80,13 @@ export async function POST(
     // Create Request Record
     // =====================================
 
-const {
-  data: requestRow,
-  error: requestError,
-} = await supabase
-  .from("package_requests")
-  .insert({
-    user_id: userId,
-    package_id,
-  })
-  .select("id")
-  .single()
+    const { error: requestError } =
+      await supabase
+        .from("package_requests")
+        .insert({
+          user_id: userId,
+          package_id,
+        })
 
     if (requestError) {
       throw requestError
@@ -192,62 +188,9 @@ subject:
 
 })
 
-const adminEmail =
-  process.env.ADMIN_EMAIL
-
-if (!adminEmail) {
-  throw new Error(
-    "ADMIN_EMAIL not configured"
-  )
-}
-
-const submittedAt =
-  new Date()
-    .toISOString()
-    .replace("T", " ")
-    .substring(0, 19)
-
-await resend.emails.send({
-
-  from:
-    `MoveInReady <${fromEmail}>`,
-
-  to:
-    adminEmail,
-
-  subject:
-    `New Proposal Request | ${pkg.slug}`,
-
-  html: `
-    <h2>New Proposal Request</h2>
-
-    <p>
-      <strong>Request ID:</strong>
-      ${requestRow?.id}
-    </p >
-
-    <p>
-      <strong>Name:</strong>
-      ${first_name}
-    </p >
-
-    <p>
-      <strong>Email:</strong>
-      ${email}
-    </p >
-
-    <p>
-      <strong>Package:</strong>
-      ${pkg.slug}
-    </p >
-
-    <p>
-      <strong>Submitted:</strong>
-      ${submittedAt}
-    </p >
-  `,
-
-})
+console.log(
+  "Proposal Email Sent"
+)
 
 console.log(
   "Proposal Email Sent"
