@@ -514,7 +514,7 @@ export default function AdminDashboard() {
           </Link>
 
           <Link
-            href="/admin/package-pricing"
+            href="/admin/package-pricing-calculator"
             className="
               border
               rounded-xl
