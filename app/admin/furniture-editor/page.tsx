@@ -460,18 +460,29 @@ export default function FurnitureEditor() {
 
                         {/* Quantity */}
 
-                        <div
-                          className="
-                            border
-                            p-2
-                            bg-gray-50
-                            text-gray-500
-                          "
-                        >
-                          Qty:
-                          {" "}
-                          {p.quantity}
-                        </div>
+<input
+  type="number"
+  min="1"
+  value={p.quantity || 1}
+  onChange={(e) =>
+
+    handleChange(
+      p.id,
+      {
+        quantity:
+          Number(
+            e.target.value
+          ),
+      }
+    )
+
+  }
+  className="
+    border
+    p-2
+    w-24
+  "
+/>
 
                       </div>
 

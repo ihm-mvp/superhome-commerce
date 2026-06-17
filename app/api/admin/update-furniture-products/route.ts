@@ -27,15 +27,18 @@ export async function POST(
             .from(
               "package_item_products"
             )
-            .update({
+.update({
 
-              product_id:
-                pip.product_id,
+  product_id:
+    pip.product_id,
 
-              variant_id:
-                pip.variant_id,
+  variant_id:
+    pip.variant_id,
 
-            })
+  quantity:
+    pip.quantity,
+
+})
             .eq(
               "id",
               pip.id
