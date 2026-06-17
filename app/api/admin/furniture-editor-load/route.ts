@@ -107,12 +107,28 @@ export async function GET(
         name:
           room.name,
 
-        items:
-          (
-            room.package_items ||
-            []
-          ).map(
-            (item: any) => {
+items:
+(
+  room.package_items ||
+  []
+)
+.filter(
+  (item: any) => {
+
+    const typeName =
+      item.item_types?.name
+        ?.toLowerCase()
+
+    return ![
+      "curtain",
+      "track",
+      "blind",
+    ].includes(typeName)
+
+  }
+)
+.map(
+  (item: any) => {
 
               const itemType =
                 item.item_types
