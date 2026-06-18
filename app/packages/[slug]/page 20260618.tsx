@@ -1,9 +1,6 @@
 import { supabase } from "@/lib/supabase"
 import { notFound } from "next/navigation"
 import Link from "next/link"
-import {
-  calculatePackageAllocation,
-} from "@/lib/package-allocation"
 
 export async function generateMetadata({
   params,
@@ -147,96 +144,11 @@ const { data: pkg } = await supabase
       item_type:item_types(name),
       products:package_item_products(
         quantity,
-        product:products(
-  id,
-  sku_code,
-  display_name_en,
-  display_description_en,
-  image_url
-),
-        variant:variants(
-  id,
-  size_label,
-  config,
-  price_rmb,
-  display_config_en,
-  display_note_en,
-  width_mm,
-  length_mm,
-  height_mm
-)
+        product:products(id, sku_code, display_name_en, display_description_en, image_url),
+        variant:variants(size_label, config, display_config_en, display_config_en, display_note_en, width_mm, length_mm, height_mm)
       )
     `)
     .in("package_room_id", rooms?.map(r => r.id) || [])
-
-// ====================
-// Package Allocation
-// ====================
-
-const allocationRows: any[] = []
-
-items?.forEach(
-  (item: any) => {
-
-    item.products?.forEach(
-      (p: any) => {
-
-        allocationRows.push({
-
-          product_id:
-            p.product?.id,
-
-          variant_id:
-            p.variant?.id,
-
-          sku_code:
-            p.product?.sku_code || "",
-
-          quantity:
-            p.quantity || 0,
-
-          exw_price_rmb:
-            p.variant?.price_rmb || 0,
-
-          width_mm:
-            p.variant?.width_mm,
-
-          height_mm:
-            p.variant?.height_mm,
-
-        })
-
-      }
-    )
-
-  }
-)
-
-const allocation =
-  calculatePackageAllocation(
-
-    allocationRows,
-
-    pkg.display_price || 0
-
-  )
-
-  const valueMap: Record<
-  string,
-  number
-> = {}
-
-allocation.rows.forEach(
-  (row: any) => {
-
-    const key =
-      `${row.product_id}_${row.variant_id}`
-
-    valueMap[key] =
-      row.included_value
-
-  }
-)
 
   const grouped: Record<string, any[]> = {}
 
@@ -570,23 +482,6 @@ allocation.rows.forEach(
                           {p.product?.display_name_en}
                         </div>
 
-<div className="text-green-700 font-medium">
-
-  Included Value
-
-  {" "}
-
-  $
-
-  {
-
-    valueMap[
-      `${p.product?.id}_${p.variant?.id}`
-    ]?.toLocaleString()
-
-  }
-
-</div>
  
 {/* ===== Variant ===== */}
 
