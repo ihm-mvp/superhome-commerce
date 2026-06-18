@@ -145,7 +145,9 @@ const [
 
     return (
       (
-        row.width_mm || 0
+          (
+            row.width_mm || 0
+          ) + 300
       )
       / 1000
       *
