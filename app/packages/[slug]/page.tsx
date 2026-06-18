@@ -245,6 +245,8 @@ const {
   )
   .select(`
 
+    id,
+    
     opening:layout_openings(
 
       width_mm,
