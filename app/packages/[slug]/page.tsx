@@ -221,6 +221,18 @@ const allocation =
 
   )
 
+  console.log(
+  "PACKAGE TOTAL",
+  allocation.package_cost_total
+)
+
+console.log(
+  allocation.rows.filter(
+    (r: any) =>
+      r.sku_code?.startsWith("SUN-")
+  )
+)
+
   const valueMap: Record<
   string,
   number
