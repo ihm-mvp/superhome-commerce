@@ -175,11 +175,30 @@ const { data: pkg } = await supabase
 
 const allocationRows: any[] = []
 
+// ====================
+// Furniture
+// ====================
+
 items?.forEach(
   (item: any) => {
 
     item.products?.forEach(
       (p: any) => {
+
+        const sku =
+          p.product?.sku_code || ""
+
+        // Sunshine
+        // comes from
+        // package_opening_products
+
+        if (
+          sku.startsWith("SUN-")
+        ) {
+
+          return
+
+        }
 
         allocationRows.push({
 
@@ -190,7 +209,7 @@ items?.forEach(
             p.variant?.id,
 
           sku_code:
-            p.product?.sku_code || "",
+            sku,
 
           quantity:
             p.quantity || 0,
@@ -198,16 +217,83 @@ items?.forEach(
           exw_price_rmb:
             p.variant?.price_rmb || 0,
 
-          width_mm:
-            p.variant?.width_mm,
+          width_mm: null,
 
-          height_mm:
-            p.variant?.height_mm,
+          height_mm: null,
 
         })
 
       }
     )
+
+  }
+)
+
+// ====================
+// Sunshine
+// ====================
+
+const {
+  data: openingProducts,
+} = await supabase
+  .from(
+    "package_opening_products"
+  )
+  .select(`
+
+    opening:layout_openings(
+
+      width_mm,
+      height_mm
+
+    ),
+
+    product:products(
+
+      id,
+      sku_code
+
+    ),
+
+    variant:variants(
+
+      id,
+      price_rmb
+
+    )
+
+  `)
+  .eq(
+    "package_id",
+    pkg.id
+  )
+
+openingProducts?.forEach(
+  (p: any) => {
+
+    allocationRows.push({
+
+      product_id:
+        p.product?.id,
+
+      variant_id:
+        p.variant?.id,
+
+      sku_code:
+        p.product?.sku_code || "",
+
+      quantity: 1,
+
+      exw_price_rmb:
+        p.variant?.price_rmb || 0,
+
+      width_mm:
+        p.opening?.width_mm,
+
+      height_mm:
+        p.opening?.height_mm,
+
+    })
 
   }
 )
