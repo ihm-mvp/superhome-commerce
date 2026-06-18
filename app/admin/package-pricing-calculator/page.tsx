@@ -90,6 +90,13 @@ const [
   }, [selectedPackageId])
 
   // ===== grouped by room =====
+
+  const selectedPackage =
+  packages.find(
+    (p) =>
+      p.id === selectedPackageId
+  )
+
   const grouped = useMemo(() => {
 
     const map: Record<string, ProductRow[]> = {}
@@ -561,6 +568,22 @@ const exwTotalRmb = useMemo(() => {
 
     <div className="text-4xl font-semibold">
       ${roundedPrice.toLocaleString()}
+    </div>
+
+  </div>
+
+    <div>
+
+    <div className="text-sm text-gray-500">
+      Current Display Price
+    </div>
+
+    <div className="text-2xl font-medium text-blue-600">
+
+      $
+      {selectedPackage?.display_price
+        ?.toLocaleString() || "-"}
+
     </div>
 
   </div>

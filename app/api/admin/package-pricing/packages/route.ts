@@ -9,6 +9,7 @@ export async function GET() {
     .select(`
       id,
       name,
+      display_price,
       sort_order,
       layout:layouts!packages_layout_id_fkey(
         name
