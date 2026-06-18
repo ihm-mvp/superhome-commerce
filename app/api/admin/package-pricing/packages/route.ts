@@ -26,6 +26,7 @@ export async function GET() {
     return {
       id: p.id,
       name: p.name,
+      display_price: p.display_price,
       layout_name: layout?.name || "",
     }
   })
