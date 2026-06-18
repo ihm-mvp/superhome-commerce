@@ -37,6 +37,10 @@ export default function PackagePricingCalculatorPage() {
   const [shippingFactor, setShippingFactor] = useState(1.2)
   const [localCost, setLocalCost] = useState(2000)
   const [marginPercent, setMarginPercent] = useState(10)
+  const [
+  displayPrice,
+  setDisplayPrice,
+] = useState(0)
 
   // ===== 中国出口成本系数 =====
 const [
@@ -161,6 +165,14 @@ const exwTotalRmb = useMemo(() => {
   const roundedPrice =
     Math.round(finalPrice / 100) * 100
 
+    useEffect(() => {
+
+  setDisplayPrice(
+    roundedPrice
+  )
+
+}, [roundedPrice])
+
   // ===== save =====
   async function saveDisplayPrice() {
 
@@ -175,7 +187,7 @@ const exwTotalRmb = useMemo(() => {
         },
         body: JSON.stringify({
           package_id: selectedPackageId,
-          display_price: roundedPrice,
+          display_price: displayPrice,
         }),
       }
     )
@@ -539,9 +551,46 @@ const exwTotalRmb = useMemo(() => {
                 Suggested Display Price (Included GST)
               </div>
 
-              <div className="text-4xl font-semibold">
-                ${roundedPrice.toLocaleString()}
-              </div>
+<div className="space-y-4">
+
+  <div>
+
+    <div className="text-sm text-gray-500">
+      Suggested Price
+    </div>
+
+    <div className="text-4xl font-semibold">
+      ${roundedPrice.toLocaleString()}
+    </div>
+
+  </div>
+
+  <div>
+
+    <div className="text-sm text-gray-500">
+      Display Price
+    </div>
+
+    <input
+      type="number"
+      value={displayPrice}
+      onChange={(e) =>
+        setDisplayPrice(
+          Number(e.target.value)
+        )
+      }
+      className="
+        w-full
+        border
+        rounded-lg
+        px-3
+        py-2
+      "
+    />
+
+  </div>
+
+</div>
 
             </div>
 
