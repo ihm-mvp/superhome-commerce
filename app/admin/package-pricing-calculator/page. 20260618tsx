@@ -4,10 +4,6 @@
 
 import { useEffect, useMemo, useState } from "react"
 
-import {
-  calculateProductExwCost
-} from "@/lib/product-cost"
-
 type ProductRow = {
   room_name: string
 
@@ -103,6 +99,105 @@ const [
 
   }, [rows])
 
+  function calculateCost(
+  row: ProductRow
+) {
+
+  const sku =
+    row.sku_code || ""
+
+  // ====================
+  // Curtain
+  // ====================
+
+  if (
+    sku.startsWith(
+      "SUN-CUR-"
+    )
+  ) {
+
+    return (
+      (
+        (
+          (
+            row.width_mm || 0
+          ) + 300
+        )
+        / 1000
+      )
+      *
+      2.2
+      *
+      row.exw_price_rmb
+    )
+
+  }
+
+  // ====================
+  // Track
+  // ====================
+
+  if (
+    sku.startsWith(
+      "SUN-TRK-"
+    )
+  ) {
+
+    return (
+      (
+          (
+            row.width_mm || 0
+          ) + 300
+      )
+      / 1000
+      *
+      row.exw_price_rmb
+    )
+
+  }
+
+  // ====================
+  // Blind
+  // ====================
+
+  if (
+    sku.startsWith(
+      "SUN-BLD-"
+    )
+  ) {
+
+    return (
+      (
+        (
+          row.width_mm || 0
+        )
+        / 1000
+      )
+      *
+      (
+        (
+          row.height_mm || 0
+        )
+        / 1000
+      )
+      *
+      row.exw_price_rmb
+    )
+
+  }
+
+  // ====================
+  // Furniture
+  // ====================
+
+  return (
+    row.exw_price_rmb
+    *
+    row.quantity
+  )
+
+}
+
   // ===== EXW RMB =====
 const exwTotalRmb = useMemo(() => {
 
@@ -111,7 +206,7 @@ const exwTotalRmb = useMemo(() => {
 
       return (
         sum +
-        calculateProductExwCost(r)
+        calculateCost(r)
       )
 
     },
@@ -406,7 +501,7 @@ const exwTotalRmb = useMemo(() => {
     × ¥{p.exw_price_rmb}
 
     = ¥
-    {calculateProductExwCost(p)
+    {calculateCost(p)
       .toFixed(0)}
 
   </div>
@@ -424,7 +519,7 @@ const exwTotalRmb = useMemo(() => {
     × ¥{p.exw_price_rmb}
 
     = ¥
-    {calculateProductExwCost(p)
+    {calculateCost(p)
       .toFixed(0)}
 
   </div>
@@ -444,7 +539,7 @@ const exwTotalRmb = useMemo(() => {
     × ¥{p.exw_price_rmb}
 
     = ¥
-    {calculateProductExwCost(p)
+    {calculateCost(p)
       .toFixed(0)}
 
   </div>
@@ -455,7 +550,7 @@ const exwTotalRmb = useMemo(() => {
 
                         <div className="w-28 text-right">
 ¥
-{calculateProductExwCost(p)
+{calculateCost(p)
   .toLocaleString(
     undefined,
     {
