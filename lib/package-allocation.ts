@@ -5,7 +5,10 @@ import {
 } from "@/lib/product-cost"
 
 export type AllocationRow = {
-  sku_code: string
+  
+  allocation_id?: string
+  
+    sku_code: string
 
   quantity: number
 

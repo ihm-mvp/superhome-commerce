@@ -202,9 +202,6 @@ items?.forEach(
 
         allocationRows.push({
 
-            allocation_id:
-  p.id,
-
           product_id:
             p.product?.id,
 
@@ -276,9 +273,6 @@ openingProducts?.forEach(
 
     allocationRows.push({
 
-allocation_id:
-  p.id,
-
       product_id:
         p.product?.id,
 
@@ -333,9 +327,10 @@ console.log(
 allocation.rows.forEach(
   (row: any) => {
 
-    valueMap[
-      row.allocation_id
-    ] =
+    const key =
+      `${row.product_id}_${row.variant_id}`
+
+    valueMap[key] =
       row.included_value
 
   }
