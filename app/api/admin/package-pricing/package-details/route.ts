@@ -153,30 +153,32 @@ item.products?.forEach(
       .from(
         "package_opening_products"
       )
-      .select(`opening:layout_openings(
+.select(`
 
-          room_name,
-          opening_code,
-          width_mm,
-          height_mm
+  id,
 
-        ),
+  opening:layout_openings(
 
-        product:products(
+    width_mm,
+    height_mm
 
-          sku_code
+  ),
 
-        ),
+  product:products(
 
-        variant:variants(
+    id,
+    sku_code
 
-          price_rmb,
-          config,
-          size_label
+  ),
 
-        )
+  variant:variants(
 
-      `)
+    id,
+    price_rmb
+
+  )
+
+`)
       .eq(
         "package_id",
         packageId

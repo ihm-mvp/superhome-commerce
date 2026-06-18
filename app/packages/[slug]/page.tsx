@@ -146,6 +146,7 @@ const { data: pkg } = await supabase
       package_room_id,
       item_type:item_types(name),
       products:package_item_products(
+        id,
         quantity,
         product:products(
   id,
@@ -339,6 +340,11 @@ allocation.rows.forEach(
       row.included_value
 
   }
+)
+
+console.log(
+  "VALUEMAP",
+  valueMap
 )
 
   const grouped: Record<string, any[]> = {}
@@ -673,6 +679,14 @@ allocation.rows.forEach(
                           {p.product?.display_name_en}
                         </div>
 
+                        <div className="text-xs text-red-500">
+
+  Product PIP ID:
+
+  {p.id}
+
+</div>
+
 <div className="text-green-700 font-medium">
 
   Included Value
@@ -684,7 +698,7 @@ allocation.rows.forEach(
   {
 
     valueMap[
-      `${p.product?.id}_${p.variant?.id}`
+p.id
     ]?.toLocaleString()
 
   }
