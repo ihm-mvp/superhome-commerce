@@ -512,7 +512,7 @@ const exwTotalRmb = useMemo(() => {
 
   <div className="text-xs text-blue-600">
 
-    {p.width_mm}
+    ({p.width_mm} + 300)
     ÷ 1000
     × ¥{p.exw_price_rmb}
 
