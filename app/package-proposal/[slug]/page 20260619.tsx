@@ -1,8 +1,5 @@
 import { supabase } from "@/lib/supabase"
 import { notFound } from "next/navigation"
-import {
-  calculatePackageAllocation,
-} from "@/lib/package-allocation"
 
 export async function generateMetadata({
   params,
@@ -103,10 +100,7 @@ export default async function PackageProposalPage({
       item_type:item_types(name, display_name),
 
 products:package_item_products(
-
-  id,
   quantity,
-  opening_id,
 
   product:products(
     id,
@@ -117,8 +111,6 @@ products:package_item_products(
   ),
 
   variant:variants(
-    id,
-    price_rmb,
     size_label,
     config,
     display_config_en,
@@ -127,7 +119,6 @@ products:package_item_products(
     length_mm,
     height_mm
   )
-
 )
     `)
     .in(
@@ -135,94 +126,7 @@ products:package_item_products(
       rooms?.map(r => r.id) || []
     )
 
-    const { data: openings } =
-  await supabase
-    .from("layout_openings")
-    .select(`
-      id,
-      width_mm,
-      height_mm
-    `)
-
-const openingMap:
-Record<string, any> = {}
-
-openings?.forEach(
-  (o) => {
-
-    openingMap[o.id] = o
-
-  }
-)
-
   const grouped: Record<string, any[]> = {}
-
-  const allocationRows: any[] = []
-
-items?.forEach(
-  (item: any) => {
-
-    item.products?.forEach(
-      (p: any) => {
-
-        allocationRows.push({
-
-          pip_id:
-            p.id,
-
-          opening_id:
-            p.opening_id,
-
-          sku_code:
-            p.product?.sku_code || "",
-
-          quantity:
-            p.quantity || 0,
-
-          exw_price_rmb:
-            p.variant?.price_rmb || 0,
-
-          width_mm:
-            p.opening_id
-              ? openingMap[
-                  p.opening_id
-                ]?.width_mm
-              : null,
-
-          height_mm:
-            p.opening_id
-              ? openingMap[
-                  p.opening_id
-                ]?.height_mm
-              : null,
-
-        })
-
-      }
-    )
-
-  }
-)
-
-const allocation =
-  calculatePackageAllocation(
-    allocationRows,
-    pkg.display_price || 0
-  )
-
-const valueMap:
-Record<string, number> = {}
-
-allocation.rows.forEach(
-  (row: any) => {
-
-    valueMap[
-      row.pip_id
-    ] =
-      row.included_value
-
-  }
-)
 
   items?.forEach((i: any) => {
 
@@ -528,24 +432,6 @@ rooms?.forEach(
       p.product?.sku_code}
 
   </h3>
-
-  <div className="text-green-700 font-medium">
-
-  Included Value
-
-  {" "}
-
-  $
-
-  {
-
-    valueMap[
-      p.id
-    ]?.toLocaleString()
-
-  }
-
-</div>
 
   <div className="text-sm text-gray-500 whitespace-nowrap">
 
