@@ -116,6 +116,26 @@ const { data: pkg } = await supabase
 
   if (!layout) return notFound()
 
+    const { data: openings } =
+  await supabase
+    .from("layout_openings")
+    .select(`
+      id,
+      width_mm,
+      height_mm
+    `)
+
+const openingMap:
+Record<string, any> = {}
+
+openings?.forEach(
+  (o) => {
+
+    openingMap[o.id] = o
+
+  }
+)
+
   const layoutSlug = layout.slug
 
   const packageType =
@@ -145,40 +165,43 @@ const { data: pkg } = await supabase
       id,
       package_room_id,
       item_type:item_types(name),
-      products:package_item_products(
-        id,
-        quantity,
-        product:products(
+products:package_item_products(
+
   id,
-  sku_code,
-  display_name_en,
-  display_description_en,
-  image_url
-),
-        variant:variants(
-  id,
-  size_label,
-  config,
-  price_rmb,
-  display_config_en,
-  display_note_en,
-  width_mm,
-  length_mm,
-  height_mm
+  quantity,
+  opening_id,
+
+  product:products(
+    id,
+    sku_code,
+    display_name_en,
+    display_description_en,
+    image_url
+  ),
+
+  variant:variants(
+    id,
+    price_rmb,
+    size_label,
+    config,
+    display_config_en,
+    display_note_en,
+    width_mm,
+    length_mm,
+    height_mm
+  )
+
 )
-      )
     `)
     .in("package_room_id", rooms?.map(r => r.id) || [])
 
-// ====================
-// Package Allocation
-// ====================
+  const grouped: Record<string, any[]> = {}
+
+  import {
+  calculatePackageAllocation,
+} from "@/lib/package-allocation"
 
 const allocationRows: any[] = []
-
-// ====================
-// Furniture
-// ====================
 
 items?.forEach(
   (item: any) => {
@@ -186,34 +209,16 @@ items?.forEach(
     item.products?.forEach(
       (p: any) => {
 
-        const sku =
-          p.product?.sku_code || ""
-
-        // Sunshine
-        // comes from
-        // package_opening_products
-
-        if (
-          sku.startsWith("SUN-")
-        ) {
-
-          return
-
-        }
-
         allocationRows.push({
 
-            allocation_id:
-  p.id,
+          pip_id:
+            p.id,
 
-          product_id:
-            p.product?.id,
-
-          variant_id:
-            p.variant?.id,
+            opening_id:
+  p.opening_id,
 
           sku_code:
-            sku,
+            p.product?.sku_code || "",
 
           quantity:
             p.quantity || 0,
@@ -221,9 +226,19 @@ items?.forEach(
           exw_price_rmb:
             p.variant?.price_rmb || 0,
 
-          width_mm: null,
+          width_mm:
+            p.opening_id
+              ? openingMap[
+                  p.opening_id
+                ]?.width_mm
+              : null,
 
-          height_mm: null,
+          height_mm:
+            p.opening_id
+              ? openingMap[
+                  p.opening_id
+                ]?.height_mm
+              : null,
 
         })
 
@@ -233,123 +248,25 @@ items?.forEach(
   }
 )
 
-// ====================
-// Sunshine
-// ====================
-
-const {
-  data: openingProducts,
-} = await supabase
-  .from(
-    "package_opening_products"
-  )
-  .select(`
-
-    id,
-    
-    opening:layout_openings(
-
-      width_mm,
-      height_mm
-
-    ),
-
-    product:products(
-
-      id,
-      sku_code
-
-    ),
-
-    variant:variants(
-
-      id,
-      price_rmb
-
-    )
-
-  `)
-  .eq(
-    "package_id",
-    pkg.id
-  )
-
-openingProducts?.forEach(
-  (p: any) => {
-
-    allocationRows.push({
-
-allocation_id:
-  p.id,
-
-      product_id:
-        p.product?.id,
-
-      variant_id:
-        p.variant?.id,
-
-      sku_code:
-        p.product?.sku_code || "",
-
-      quantity: 1,
-
-      exw_price_rmb:
-        p.variant?.price_rmb || 0,
-
-      width_mm:
-        p.opening?.width_mm,
-
-      height_mm:
-        p.opening?.height_mm,
-
-    })
-
-  }
-)
-
 const allocation =
   calculatePackageAllocation(
-
     allocationRows,
-
     pkg.display_price || 0
-
   )
 
-  console.log(
-  "PACKAGE TOTAL",
-  allocation.package_cost_total
-)
-
-console.log(
-  allocation.rows.filter(
-    (r: any) =>
-      r.sku_code?.startsWith("SUN-")
-  )
-)
-
-  const valueMap: Record<
-  string,
-  number
-> = {}
+const valueMap:
+Record<string, number> = {}
 
 allocation.rows.forEach(
   (row: any) => {
 
     valueMap[
-      row.allocation_id
+      row.pip_id
     ] =
       row.included_value
 
   }
 )
-
-console.log(
-  "VALUEMAP",
-  valueMap
-)
-
-  const grouped: Record<string, any[]> = {}
 
   items?.forEach((i: any) => {
     if (!grouped[i.package_room_id]) {
@@ -681,14 +598,6 @@ console.log(
                           {p.product?.display_name_en}
                         </div>
 
-                        <div className="text-xs text-red-500">
-
-  Product PIP ID:
-
-  {p.id}
-
-</div>
-
 <div className="text-green-700 font-medium">
 
   Included Value
@@ -700,7 +609,7 @@ console.log(
   {
 
     valueMap[
-p.id
+      p.id
     ]?.toLocaleString()
 
   }
