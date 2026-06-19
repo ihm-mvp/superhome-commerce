@@ -1,5 +1,8 @@
 import { supabase } from "@/lib/supabase"
 import { notFound } from "next/navigation"
+import {
+  calculatePackageAllocation,
+} from "@/lib/package-allocation"
 
 export async function generateMetadata({
   params,
@@ -100,7 +103,10 @@ export default async function PackageProposalPage({
       item_type:item_types(name, display_name),
 
 products:package_item_products(
+
+  id,
   quantity,
+  opening_id,
 
   product:products(
     id,
@@ -111,6 +117,8 @@ products:package_item_products(
   ),
 
   variant:variants(
+    id,
+    price_rmb,
     size_label,
     config,
     display_config_en,
@@ -119,6 +127,7 @@ products:package_item_products(
     length_mm,
     height_mm
   )
+
 )
     `)
     .in(
@@ -126,7 +135,95 @@ products:package_item_products(
       rooms?.map(r => r.id) || []
     )
 
+    const { data: openings } =
+  await supabase
+    .from("layout_openings")
+    .select(`
+      id,
+      opening_code,
+      width_mm,
+      height_mm
+    `)
+
+const openingMap:
+Record<string, any> = {}
+
+openings?.forEach(
+  (o) => {
+
+    openingMap[o.id] = o
+
+  }
+)
+
   const grouped: Record<string, any[]> = {}
+
+  const allocationRows: any[] = []
+
+items?.forEach(
+  (item: any) => {
+
+    item.products?.forEach(
+      (p: any) => {
+
+        allocationRows.push({
+
+          pip_id:
+            p.id,
+
+          opening_id:
+            p.opening_id,
+
+          sku_code:
+            p.product?.sku_code || "",
+
+          quantity:
+            p.quantity || 0,
+
+          exw_price_rmb:
+            p.variant?.price_rmb || 0,
+
+          width_mm:
+            p.opening_id
+              ? openingMap[
+                  p.opening_id
+                ]?.width_mm
+              : null,
+
+          height_mm:
+            p.opening_id
+              ? openingMap[
+                  p.opening_id
+                ]?.height_mm
+              : null,
+
+        })
+
+      }
+    )
+
+  }
+)
+
+const allocation =
+  calculatePackageAllocation(
+    allocationRows,
+    pkg.display_price || 0
+  )
+
+const valueMap:
+Record<string, number> = {}
+
+allocation.rows.forEach(
+  (row: any) => {
+
+    valueMap[
+      row.pip_id
+    ] =
+      row.included_value
+
+  }
+)
 
   items?.forEach((i: any) => {
 
@@ -422,12 +519,34 @@ rooms?.forEach(
 
 <div className="flex items-start justify-between gap-4">
 
-  <h3 className="font-semibold text-lg">
+  <div>
 
-    {p.product?.display_name_en ||
-      p.product?.sku_code}
+    <h3 className="font-semibold text-lg">
 
-  </h3>
+      {p.product?.display_name_en ||
+        p.product?.sku_code}
+
+    </h3>
+
+    <div className="text-green-700 font-medium mt-1">
+
+      Included Value
+
+      {" "}
+
+      $
+
+      {
+
+        valueMap[
+          p.id
+        ]?.toLocaleString()
+
+      }
+
+    </div>
+
+  </div>
 
   <div className="text-sm text-gray-500 whitespace-nowrap">
 
@@ -462,15 +581,63 @@ rooms?.forEach(
 
     )}
 
-    {p.variant?.size_label && (
+{p.product?.sku_code?.startsWith("SUN-")
+  ? (
 
-      <div className="text-sm text-gray-500">
+      p.opening_id &&
+      openingMap[
+        p.opening_id
+      ] && (
 
-        Size: {p.variant.size_label}
+        <div className="text-sm text-gray-500">
 
-      </div>
+          Opening
 
-    )}
+          {" "}
+
+          {
+            openingMap[
+              p.opening_id
+            ]?.opening_code
+          }
+
+          {" · "}
+
+          {
+            openingMap[
+              p.opening_id
+            ]?.width_mm
+          }
+
+          ×
+
+          {
+            openingMap[
+              p.opening_id
+            ]?.height_mm
+          }
+
+          mm
+
+        </div>
+
+      )
+
+    )
+  : (
+
+      p.variant?.size_label && (
+
+        <div className="text-sm text-gray-500">
+
+          Size: {p.variant.size_label}
+
+        </div>
+
+      )
+
+    )
+}
 
     {p.variant?.display_note_en && (
 

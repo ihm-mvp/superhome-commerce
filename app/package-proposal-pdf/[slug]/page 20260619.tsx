@@ -82,7 +82,10 @@ export default async function PackageProposalPage({
     .select(`
       id,
       name,
-      sort_order
+      sort_order,
+            space_type:space_types(
+      display_name
+    )
     `)
     .eq("package_id", pkg.id)
     .order("sort_order")
@@ -161,6 +164,30 @@ const packageSummary =
   Object.entries(summaryMap)
     .sort((a, b) => b[1] - a[1])
 
+    const layoutSummary: Record<
+  string,
+  number
+> = {}
+
+rooms?.forEach(
+  (room: any) => {
+
+    const spaceName =
+      room.space_type
+        ?.display_name
+
+    if (!spaceName) return
+
+    layoutSummary[
+      spaceName
+    ] =
+      (layoutSummary[
+        spaceName
+      ] || 0) + 1
+
+  }
+)
+
   return (
 
     <div className="max-w-6xl mx-auto px-6 py-10 space-y-14">
@@ -192,12 +219,12 @@ const packageSummary =
   </div>
 
   <h1 className="text-4xl font-semibold">
-    {pkg.name}
+    Move-in Ready {pkg.name} Package
   </h1>
 
   {pkg.display_price && (
     <div className="text-2xl text-gray-700">
-      Included Value ${pkg.display_price} NZD
+      Included Value ${pkg.display_price}
     </div>
   )}
 
@@ -216,6 +243,43 @@ const packageSummary =
     allowing homeowners to move in
     from day one.
   </p >
+
+</div>
+
+{/* ===== Layout Summary ===== */}
+
+<div className="border rounded-2xl p-4 bg-gray-50">
+
+  <h2 className="text-xl font-semibold mb-4">
+    Layout Included
+  </h2>
+
+  <div className="flex flex-wrap gap-3">
+
+    {Object.entries(
+      layoutSummary
+    ).map(
+      ([name, qty]) => (
+
+        <div
+          key={name}
+          className="
+            px-4
+            py-2
+            rounded-full
+            bg-white
+            border
+            text-sm
+            text-gray-700
+          "
+        >
+          {qty} × {name}
+        </div>
+
+      )
+    )}
+
+  </div>
 
 </div>
 
@@ -308,9 +372,33 @@ const packageSummary =
                   className="border rounded-2xl p-5 space-y-5"
                 >
 
-                  <div className="text-sm uppercase tracking-wide text-gray-400">
-                    {item.item_type?.display_name}
-                  </div>
+<div className="flex uppercase justify-between items-center">
+
+  <div className="text-sm text-gray-500">
+    {item.item_type?.name}
+  </div>
+
+  <div className="text-xs text-gray-400">
+
+    Qty: {
+
+      item.products?.reduce(
+        (
+          total: number,
+          p: any
+        ) =>
+          total +
+          (
+            p.quantity || 0
+          ),
+        0
+      )
+
+    }
+
+  </div>
+
+</div>
 
                   {item.products?.map(
                     (p: any, idx: number) => (
@@ -343,7 +431,7 @@ const packageSummary =
 
   <div className="text-sm text-gray-500 whitespace-nowrap">
 
-    Qty: {p.quantity}
+    x{p.quantity}
 
   </div>
 
@@ -483,7 +571,7 @@ const packageSummary =
 
     <div className="mt-8 text-3xl font-semibold">
 
-      Included Value ${pkg.display_price} NZD
+      Included Value ${pkg.display_price}
 
     </div>
 
