@@ -1,6 +1,9 @@
 import { supabase } from "@/lib/supabase"
 import { notFound } from "next/navigation"
 import Link from "next/link"
+import {
+  calculatePackageAllocation,
+} from "@/lib/package-allocation"
 
 export async function generateMetadata({
   params,
@@ -82,19 +85,25 @@ export default async function PackagePage({
   const { slug } = await params
 
   // ===== Package =====
-  const { data: pkg } = await supabase
-    .from("packages")
-    .select(`
-      id,
-      name,
+const { data: pkg } = await supabase
+  .from("packages")
+  .select(`
+    id,
+    name,
+    slug,
+    display_price,
+    layout_id,
+    layout:layouts!packages_layout_id_fkey(
       slug,
-      display_price,
-      layout_id,
-      layout:layouts!packages_layout_id_fkey(
-        slug,
-        name
-      )
-    `)
+      name,
+      location,
+      bedrooms,
+      bathrooms,
+      garage,
+      floor_size,
+      land_size
+    )
+  `)
     .eq("slug", slug)
     .single()
 
@@ -106,6 +115,26 @@ export default async function PackagePage({
     : pkg.layout
 
   if (!layout) return notFound()
+
+    const { data: openings } =
+  await supabase
+    .from("layout_openings")
+    .select(`
+      id,
+      width_mm,
+      height_mm
+    `)
+
+const openingMap:
+Record<string, any> = {}
+
+openings?.forEach(
+  (o) => {
+
+    openingMap[o.id] = o
+
+  }
+)
 
   const layoutSlug = layout.slug
 
@@ -136,15 +165,104 @@ export default async function PackagePage({
       id,
       package_room_id,
       item_type:item_types(name),
-      products:package_item_products(
-        quantity,
-        product:products(id, sku_code, image_url),
-        variant:variants(size_label, config)
-      )
+products:package_item_products(
+
+  id,
+  quantity,
+  opening_id,
+
+  product:products(
+    id,
+    sku_code,
+    display_name_en,
+    display_description_en,
+    image_url
+  ),
+
+  variant:variants(
+    id,
+    price_rmb,
+    size_label,
+    config,
+    display_config_en,
+    display_note_en,
+    width_mm,
+    length_mm,
+    height_mm
+  )
+
+)
     `)
     .in("package_room_id", rooms?.map(r => r.id) || [])
 
   const grouped: Record<string, any[]> = {}
+
+const allocationRows: any[] = []
+
+items?.forEach(
+  (item: any) => {
+
+    item.products?.forEach(
+      (p: any) => {
+
+        allocationRows.push({
+
+          pip_id:
+            p.id,
+
+            opening_id:
+  p.opening_id,
+
+          sku_code:
+            p.product?.sku_code || "",
+
+          quantity:
+            p.quantity || 0,
+
+          exw_price_rmb:
+            p.variant?.price_rmb || 0,
+
+          width_mm:
+            p.opening_id
+              ? openingMap[
+                  p.opening_id
+                ]?.width_mm
+              : null,
+
+          height_mm:
+            p.opening_id
+              ? openingMap[
+                  p.opening_id
+                ]?.height_mm
+              : null,
+
+        })
+
+      }
+    )
+
+  }
+)
+
+const allocation =
+  calculatePackageAllocation(
+    allocationRows,
+    pkg.display_price || 0
+  )
+
+const valueMap:
+Record<string, number> = {}
+
+allocation.rows.forEach(
+  (row: any) => {
+
+    valueMap[
+      row.pip_id
+    ] =
+      row.included_value
+
+  }
+)
 
   items?.forEach((i: any) => {
     if (!grouped[i.package_room_id]) {
@@ -170,7 +288,7 @@ export default async function PackagePage({
 
         {pkg.display_price && (
           <div className="text-xl text-gray-600">
-            From ${pkg.display_price} NZD
+            Fully furnished from ${pkg.display_price}
           </div>
         )}
 
@@ -181,7 +299,53 @@ export default async function PackagePage({
   dining and bedroom furniture selections.
 </div>
 
-<div className="pt-4">
+<div className="space-y-4 pt-2">
+
+  <div className="border rounded-2xl p-5 bg-gray-50 max-w-3xl">
+
+    <div className="text-xs uppercase tracking-wide text-gray-400">
+      Move-In Ready Showhome
+    </div>
+
+    <div className="text-2xl font-semibold mt-1">
+      {layout.name}
+    </div>
+
+    {layout.location && (
+      <div className="text-gray-500 mt-2">
+        {layout.location}
+      </div>
+    )}
+
+    <div className="text-gray-500 mt-2">
+
+      {layout.bedrooms}
+      {" Bed"}
+
+      {" · "}
+
+      {layout.bathrooms}
+      {" Bath"}
+
+      {" · "}
+
+      {layout.garage}
+      {" Garage"}
+
+            {" · "}
+
+      {layout.floor_size}
+      {" Floor"}
+
+      {" · "}
+
+      {layout.land_size}
+      {" Land"}
+
+    </div>
+
+  </div>
+
   <Link
     href={`/package-proposal/${pkg.slug}`}
     className="inline-flex items-center px-6 py-3 bg-black text-white rounded-lg hover:opacity-90 transition"
@@ -189,9 +353,113 @@ export default async function PackagePage({
   >
     Get Package Proposal
   </Link>
+
 </div>
 
       </div>
+
+{/* ===== Furniture Summary ===== */}
+
+{(() => {
+
+  const summary: Record<
+    string,
+    number
+  > = {}
+
+  items?.forEach(
+    (item: any) => {
+
+      const itemName =
+        item.item_type?.name
+
+      if (!itemName) return
+
+      const qty =
+        item.products?.reduce(
+          (
+            total: number,
+            p: any
+          ) =>
+            total +
+            (
+              p.quantity ||
+              0
+            ),
+          0
+        ) || 0
+
+      summary[itemName] =
+        (
+          summary[
+            itemName
+          ] || 0
+        ) + qty
+
+    }
+  )
+
+  return (
+
+    <div
+      className="
+        border
+        rounded-2xl
+        p-5
+        max-w-4xl
+      "
+    >
+
+      <div
+        className="
+          font-semibold
+          text-lg
+          mb-4
+        "
+      >
+        Furniture Included
+      </div>
+
+      <div
+        className="
+          flex
+          flex-wrap
+          gap-3
+        "
+      >
+
+        {Object.entries(
+          summary
+        ).map(
+          (
+            [name, qty]
+          ) => (
+
+            <div
+              key={name}
+              className="
+                px-4
+                py-2
+                border
+                rounded-full
+                text-sm
+              "
+            >
+              {qty}
+              {" × "}
+              {name}
+            </div>
+
+          )
+        )}
+
+      </div>
+
+    </div>
+
+  )
+
+})()}
 
       {/* ===== Package切换 ===== */}
       <div className="flex gap-3 flex-wrap">
@@ -222,17 +490,43 @@ export default async function PackagePage({
           loading="lazy"
         />
 
-        <div className="text-xs text-gray-400">
-          Concept illustration for the {pkg.name} package
-        </div>
-
       </div>
 
-      {/* ===== Rooms ===== */}
-      <div className="space-y-14">
+{/* ===== Room Navigation ===== */}
+
+<div className="flex flex-wrap gap-2">
+
+  {rooms?.map((room: any) => (
+
+    <a
+      key={room.id}
+      href={`#room-${room.id}`}
+      className="
+        px-3
+        py-2
+        border
+        rounded-lg
+        text-sm
+        hover:bg-gray-50
+      "
+    >
+      {room.name}
+    </a >
+
+  ))}
+
+</div>
+
+{/* ===== Rooms ===== */}
+
+<div className="space-y-14">
 
         {rooms?.map((room: any) => (
-          <div key={room.id} className="space-y-5">
+<div
+  id={`room-${room.id}`}
+  key={room.id}
+  className="space-y-5"
+>
 
             {/* Room Title */}
             <div className="border-b pb-2">
@@ -250,9 +544,33 @@ export default async function PackagePage({
                   className="border rounded-2xl p-4 space-y-3 hover:shadow-sm transition"
                 >
 
-                  <div className="text-sm text-gray-500">
-                    {item.item_type?.name}
-                  </div>
+<div className="flex uppercase justify-between items-center">
+
+  <div className="text-sm text-gray-500">
+    {item.item_type?.name}
+  </div>
+
+  <div className="text-xs text-gray-400">
+
+    Qty: {
+
+      item.products?.reduce(
+        (
+          total: number,
+          p: any
+        ) =>
+          total +
+          (
+            p.quantity || 0
+          ),
+        0
+      )
+
+    }
+
+  </div>
+
+</div>
 
                   {item.products?.map((p: any, idx: number) => (
                     <Link
@@ -273,16 +591,102 @@ export default async function PackagePage({
                       <div className="text-sm flex-1">
 
                         <div className="font-medium">
-                          {p.product?.sku_code}
+                          {p.product?.display_name_en}
                         </div>
 
-                        {(p.variant?.size_label ||
-                          p.variant?.config) && (
-                          <div className="text-gray-400 text-xs">
-                            {p.variant?.size_label}{" "}
-                            {p.variant?.config}
-                          </div>
-                        )}
+<div className="text-green-700 font-medium">
+
+  Included Value
+
+  {" "}
+
+  $
+
+  {
+
+    valueMap[
+      p.id
+    ]?.toLocaleString()
+
+  }
+
+</div>
+ 
+{/* ===== Variant ===== */}
+
+{(
+  p.variant?.display_config_en ||
+  p.variant?.config ||
+  p.variant?.size_label ||
+  p.variant?.width_mm ||
+  p.variant?.length_mm ||
+  p.variant?.height_mm
+) && (
+
+  <div className="mt-2 space-y-1">
+
+    {(p.variant?.display_config_en ||
+      p.variant?.config) && (
+
+      <div className="text-sm font-medium text-gray-700">
+
+        {p.variant?.display_config_en ||
+          p.variant?.config}
+
+      </div>
+
+    )}
+
+    {p.variant?.size_label && (
+
+      <div className="text-sm text-gray-500">
+
+        Size: {p.variant.size_label}
+
+      </div>
+
+    )}
+
+    {p.variant?.display_note_en && (
+
+      <div className="text-xs text-gray-500">
+
+        {p.variant.display_note_en}
+
+      </div>
+
+    )}
+
+    {(
+      p.variant?.width_mm ||
+      p.variant?.length_mm ||
+      p.variant?.height_mm
+    ) && (
+
+      <div className="text-xs text-gray-500">
+
+        Dimensions:{" "}
+
+        {p.variant?.width_mm || "-"}
+
+        ×
+
+        {p.variant?.length_mm || "-"}
+
+        ×
+
+        {p.variant?.height_mm || "-"}
+
+        mm
+
+      </div>
+
+    )}
+
+  </div>
+
+)}
+
 
                       </div>
 
