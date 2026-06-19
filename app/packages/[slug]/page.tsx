@@ -197,10 +197,6 @@ products:package_item_products(
 
   const grouped: Record<string, any[]> = {}
 
-  import {
-  calculatePackageAllocation,
-} from "@/lib/package-allocation"
-
 const allocationRows: any[] = []
 
 items?.forEach(
