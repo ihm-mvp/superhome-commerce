@@ -1,5 +1,8 @@
 import { supabase } from "@/lib/supabase"
 import { notFound } from "next/navigation"
+import {
+  calculatePackageAllocation,
+} from "@/lib/package-allocation"
 
 export async function generateMetadata({
   params,
@@ -82,7 +85,10 @@ export default async function PackageProposalPage({
     .select(`
       id,
       name,
-      sort_order
+      sort_order,
+      space_type:space_types(
+      display_name
+    )
     `)
     .eq("package_id", pkg.id)
     .order("sort_order")
@@ -94,10 +100,13 @@ export default async function PackageProposalPage({
     .select(`
       id,
       package_room_id,
-      item_type:item_types(name),
+      item_type:item_types(name, display_name),
 
 products:package_item_products(
+
+  id,
   quantity,
+  opening_id,
 
   product:products(
     id,
@@ -108,6 +117,8 @@ products:package_item_products(
   ),
 
   variant:variants(
+    id,
+    price_rmb,
     size_label,
     config,
     display_config_en,
@@ -116,6 +127,7 @@ products:package_item_products(
     length_mm,
     height_mm
   )
+
 )
     `)
     .in(
@@ -123,7 +135,94 @@ products:package_item_products(
       rooms?.map(r => r.id) || []
     )
 
+    const { data: openings } =
+  await supabase
+    .from("layout_openings")
+    .select(`
+      id,
+      width_mm,
+      height_mm
+    `)
+
+const openingMap:
+Record<string, any> = {}
+
+openings?.forEach(
+  (o) => {
+
+    openingMap[o.id] = o
+
+  }
+)
+
   const grouped: Record<string, any[]> = {}
+
+  const allocationRows: any[] = []
+
+items?.forEach(
+  (item: any) => {
+
+    item.products?.forEach(
+      (p: any) => {
+
+        allocationRows.push({
+
+          pip_id:
+            p.id,
+
+          opening_id:
+            p.opening_id,
+
+          sku_code:
+            p.product?.sku_code || "",
+
+          quantity:
+            p.quantity || 0,
+
+          exw_price_rmb:
+            p.variant?.price_rmb || 0,
+
+          width_mm:
+            p.opening_id
+              ? openingMap[
+                  p.opening_id
+                ]?.width_mm
+              : null,
+
+          height_mm:
+            p.opening_id
+              ? openingMap[
+                  p.opening_id
+                ]?.height_mm
+              : null,
+
+        })
+
+      }
+    )
+
+  }
+)
+
+const allocation =
+  calculatePackageAllocation(
+    allocationRows,
+    pkg.display_price || 0
+  )
+
+const valueMap:
+Record<string, number> = {}
+
+allocation.rows.forEach(
+  (row: any) => {
+
+    valueMap[
+      row.pip_id
+    ] =
+      row.included_value
+
+  }
+)
 
   items?.forEach((i: any) => {
 
@@ -135,13 +234,65 @@ products:package_item_products(
 
   })
 
+const summaryMap: Record<
+  string,
+  number
+> = {}
+
+items?.forEach((item: any) => {
+
+  const displayName =
+    item.item_type?.display_name ||
+    item.item_type?.name
+
+  const qty = item.products?.reduce(
+    (sum: number, p: any) =>
+      sum + (p.quantity || 0),
+    0
+  ) || 0
+
+  summaryMap[displayName] =
+    (summaryMap[displayName] || 0) + qty
+
+})
+
+const packageSummary =
+
+
+  Object.entries(summaryMap)
+    .sort((a, b) => b[1] - a[1])
+
+const layoutSummary: Record<
+  string,
+  number
+> = {}
+
+rooms?.forEach(
+  (room: any) => {
+
+    const spaceName =
+      room.space_type
+        ?.display_name
+
+    if (!spaceName) return
+
+    layoutSummary[
+      spaceName
+    ] =
+      (layoutSummary[
+        spaceName
+      ] || 0) + 1
+
+  }
+)
+
   return (
 
     <div className="max-w-6xl mx-auto px-6 py-10 space-y-14">
 
       {isPdf && (
 
-        <div className="border-b pb-6">
+        <div className="border-b pb-6 break-inside-avoid">
 
           <div className="text-sm uppercase tracking-wide text-gray-400">
             MoveInReady
@@ -151,51 +302,123 @@ products:package_item_products(
             Package Proposal
           </div>
 
-          <div className="text-xs text-gray-500">
-            PDF Version
-          </div>
-
         </div>
 
       )}
 
-      {/* ================================================= */}
-      {/* HERO */}
-      {/* ================================================= */}
 
-      <div className="space-y-6">
 
-        <div className="text-sm uppercase tracking-wide text-gray-400">
-          MoveInReady Package Proposal
+{/* ================================================= */}
+{/* HERO */}
+{/* ================================================= */}
+
+<div className="space-y-5">
+
+  <div className="text-sm uppercase tracking-wide text-gray-400">
+    MoveInReady Package Proposal
+  </div>
+
+  <h1 className="text-4xl font-semibold">
+    Move-in Ready {pkg.name} Package
+  </h1>
+
+  {pkg.display_price && (
+    <div className="text-2xl text-gray-700">
+      Included Value ${pkg.display_price}
+    </div>
+  )}
+
+<div className="max-w-3xl text-gray-600 leading-relaxed">
+
+  <p>
+    A complete turn-key move-in solution
+    professionally selected for modern
+    New Zealand homes.
+  </p >
+
+  <p className="mt-3">
+    Furniture, window furnishings,
+    styling, delivery and installation
+    are coordinated as one package,
+    allowing homeowners to move in
+    from day one.
+  </p >
+
+</div>
+
+{/* ===== Layout Summary ===== */}
+
+<div className="border rounded-2xl p-4 bg-gray-50">
+
+  <h2 className="text-xl font-semibold mb-4">
+    Layout Included
+  </h2>
+
+  <div className="flex flex-wrap gap-3">
+
+    {Object.entries(
+      layoutSummary
+    ).map(
+      ([name, qty]) => (
+
+        <div
+          key={name}
+          className="
+            px-4
+            py-2
+            rounded-full
+            bg-white
+            border
+            text-sm
+            text-gray-700
+          "
+        >
+          {qty} × {name}
         </div>
 
-        <h1 className="text-4xl font-semibold">
-          {pkg.name}
-        </h1>
+      )
+    )}
 
-        {pkg.display_price && (
-          <div className="text-2xl text-gray-700">
-            Included Value ${pkg.display_price} NZD
-          </div>
-        )}
+  </div>
 
-        <div className="max-w-3xl text-gray-600 leading-relaxed">
+</div>
 
-          <p>
-            A complete move-in-ready solution professionally
-            selected for modern townhouse living.
-          </p >
+{/* ===== Package Summary ===== */}
 
-          <p className="mt-3">
-            Furniture, curtains, styling, delivery and
-            installation are coordinated as one package,
-            allowing homeowners to move in with confidence
-            from day one.
-          </p >
+<div className="border rounded-2xl p-4 bg-gray-50">
 
-        </div>
+  <h2 className="text-xl font-semibold mb-4">
+    Furniture Included
+  </h2>
 
+<div className="flex flex-wrap gap-3">
+
+  {packageSummary.map(
+    ([name, qty]) => (
+
+      <div
+        key={name}
+        className="
+          px-4
+          py-2
+          rounded-full
+          bg-white
+          border
+          text-sm
+          text-gray-700
+        "
+      >
+        {qty} × {name}
       </div>
+
+    )
+  )}
+
+</div>
+
+</div>
+
+</div>
 
       {/* ================================================= */}
       {/* WHAT'S INCLUDED */}
@@ -204,17 +427,16 @@ products:package_item_products(
       <div className="border-t pt-10">
 
         <h2 className="text-2xl font-semibold mb-6">
-          What's Included
+          Turn-Key Benefits
         </h2>
 
         <div className="grid md:grid-cols-2 gap-4 text-gray-700">
 
-          <div>✓ Living Room Furniture</div>
-          <div>✓ Dining Furniture</div>
-          <div>✓ Bedroom Furniture</div>
-          <div>✓ Sunshine Package</div>
-          <div>✓ Styling Package</div>
-          <div>✓ Delivery & Installation</div>
+          <div>✓ Window Furnishings Included</div>
+          <div>✓ Professional Styling Included</div>
+          <div>✓ Delivery Included</div>
+          <div>✓ Installation Included</div>
+          <div>✓ Ready To Move In From Day One</div>
 
         </div>
 
@@ -230,7 +452,7 @@ products:package_item_products(
 
           <div
             key={room.id}
-            className="space-y-8"
+            className="space-y-8 room-section"
           >
 
             <div className="border-b pb-3">
@@ -250,9 +472,33 @@ products:package_item_products(
                   className="border rounded-2xl p-5 space-y-5"
                 >
 
-                  <div className="text-sm uppercase tracking-wide text-gray-400">
-                    {item.item_type?.name}
-                  </div>
+<div className="flex uppercase justify-between items-center">
+
+  <div className="text-sm text-gray-500">
+    {item.item_type?.name}
+  </div>
+
+  <div className="text-xs text-gray-400">
+
+    Qty: {
+
+      item.products?.reduce(
+        (
+          total: number,
+          p: any
+        ) =>
+          total +
+          (
+            p.quantity || 0
+          ),
+        0
+      )
+
+    }
+
+  </div>
+
+</div>
 
                   {item.products?.map(
                     (p: any, idx: number) => (
@@ -283,9 +529,27 @@ products:package_item_products(
 
   </h3>
 
+  <div className="text-green-700 font-medium">
+
+  Included Value
+
+  {" "}
+
+  $
+
+  {
+
+    valueMap[
+      p.id
+    ]?.toLocaleString()
+
+  }
+
+</div>
+
   <div className="text-sm text-gray-500 whitespace-nowrap">
 
-    Qty: {p.quantity}
+    x{p.quantity}
 
   </div>
 
@@ -366,17 +630,6 @@ products:package_item_products(
 
 )}
 
-{/* ===== Description ===== */}
-
-{p.product?.display_description_en && (
-
-  <p className="text-gray-600 text-sm mt-3 leading-relaxed">
-
-    {p.product.display_description_en}
-
-  </p >
-
-)}
 
                         </div>
 
@@ -397,51 +650,53 @@ products:package_item_products(
 
       </div>
 
-      {/* ================================================= */}
-      {/* PACKAGE VALUE */}
-      {/* ================================================= */}
+{/* ================================================= */}
+{/* PROPOSAL SUMMARY */}
+{/* ================================================= */}
 
-      <div className="border-t pt-12">
+<div className="page-break"></div>
 
-        <h2 className="text-2xl font-semibold mb-6">
-          Package Value
-        </h2>
+<div className="border-t pt-12">
 
-        <div className="space-y-3 text-gray-700">
+  <h2 className="text-2xl font-semibold mb-6">
+    Turn-Key Services Included
+  </h2>
 
-          <div>
-            ✓ Furniture Included
-          </div>
+  <div className="space-y-3 text-gray-700">
 
-          <div>
-            ✓ Sunshine Package Included
-          </div>
+    <div>
+      ✓ Furniture Included
+    </div>
 
-          <div>
-            ✓ Styling Included
-          </div>
+    <div>
+      ✓ Sunshine Package Included
+    </div>
 
-          <div>
-            ✓ Delivery Included
-          </div>
+    <div>
+      ✓ Styling Included
+    </div>
 
-          <div>
-            ✓ Installation Included
-          </div>
+    <div>
+      ✓ Delivery Included
+    </div>
 
-        </div>
+    <div>
+      ✓ Installation Included
+    </div>
 
-        {pkg.display_price && (
+  </div>
 
-          <div className="mt-8 text-3xl font-semibold">
+  {pkg.display_price && (
 
-            Included Value ${pkg.display_price} NZD
+    <div className="mt-8 text-3xl font-semibold">
 
-          </div>
+      Included Value ${pkg.display_price}
 
-        )}
+    </div>
 
-      </div>
+  )}
+
+</div>
 
       {/* ================================================= */}
       {/* FOOTER */}
@@ -546,20 +801,6 @@ products:package_item_products(
 </>
 
 )}
-
-      {isPdf && (
-
-        <div className="border-t pt-8 text-xs text-gray-400">
-
-          MoveInReady
-
-          <br />
-
-          Furniture + Sunshine + Styling
-
-        </div>
-
-      )}
 
     </div>
 
