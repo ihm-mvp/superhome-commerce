@@ -185,7 +185,7 @@ export default function FurnitureEditor() {
             font-semibold
           "
         >
-          Furniture Editor
+          Package Editor
         </h1>
 
         <div
@@ -194,9 +194,8 @@ export default function FurnitureEditor() {
             mt-2
           "
         >
-          Modify furniture products
-          without changing package
-          structure.
+          Modify package products
+          without changing structure.
         </div>
 
       </div>

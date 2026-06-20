@@ -41,7 +41,7 @@ export async function GET(
   const rows: any[] = []
 
   // =====================================
-  // Furniture
+  // Package Products
   // =====================================
 
   const { data: items } =
@@ -64,6 +64,16 @@ export async function GET(
             price_rmb,
             config,
             size_label
+          ),
+
+          opening:layout_openings(
+
+            id,
+            room_name,
+            opening_code,
+            width_mm,
+            height_mm
+
           )
 
         )
@@ -86,159 +96,75 @@ export async function GET(
             item.package_room_id
         )
 
-item.products?.forEach(
-  (p: any) => {
+      item.products?.forEach(
+        (p: any) => {
 
-    const sku =
-      p.product?.sku_code || ""
+          const sku =
+            p.product?.sku_code || ""
 
-    // ====================
-    // Sunshine Products
-    // Skip here
-    // Cost comes from
-    // package_opening_products
-    // ====================
+          rows.push({
 
-    if (
-      sku.startsWith("SUN-")
-    ) {
+            room_name:
 
-      return
+              p.opening?.room_name ||
 
-    }
+              room?.name ||
 
-    rows.push({
-
-      room_name:
-        room?.name || "",
-
-        opening_id:
-    p.opening_id || null,
-
-      opening_code: "",
-
-      sku_code:
-        sku,
-
-      quantity:
-        p.quantity || 1,
-
-      exw_price_rmb:
-        p.variant?.price_rmb || 0,
-
-      width_mm: null,
-
-      height_mm: null,
-
-      variant_config:
-        [
-          p.variant?.size_label,
-          p.variant?.config,
-        ]
-          .filter(Boolean)
-          .join(" "),
-
-    })
-
-  }
-)
-
-    }
-  )
-
-  // =====================================
-  // Sunshine Opening Products
-  // =====================================
-
-  const {
-    data: openingProducts,
-  } =
-    await supabase
-      .from(
-        "package_opening_products"
-      )
-.select(`
-
-  id,
-
-  opening:layout_openings(
-
-    id,
-    room_name,
-    opening_code,
-    width_mm,
-    height_mm
-
-  ),
-
-  product:products(
-
-    id,
-    sku_code
-
-  ),
-
-  variant:variants(
-
-    id,
-    price_rmb,
-    config,
-    size_label
-
-  )
-
-`)
-      .eq(
-        "package_id",
-        packageId
-      )
-
-  openingProducts?.forEach(
-    (row: any) => {
-
-      rows.push({
-
-        room_name:
-          row.opening
-            ?.room_name || "",
+              "",
 
             opening_id:
-    row.opening?.id || null,
 
-        opening_code:
-          row.opening
-            ?.opening_code || "",
+              p.opening_id ||
 
-        sku_code:
-          row.product
-            ?.sku_code || "",
+              null,
 
-        quantity:
-          row.quantity || 1,
+            opening_code:
 
-        exw_price_rmb:
-          row.variant
-            ?.price_rmb || 0,
+              p.opening
+                ?.opening_code ||
 
-        width_mm:
-          row.opening
-            ?.width_mm || null,
+              "",
 
-        height_mm:
-          row.opening
-            ?.height_mm || null,
+            sku_code:
 
-        variant_config:
-          [
-            row.variant
-              ?.size_label,
-            row.variant
-              ?.config,
-          ]
-            .filter(Boolean)
-            .join(" "),
+              sku,
 
-      })
+            quantity:
+
+              p.quantity || 1,
+
+            exw_price_rmb:
+
+              p.variant
+                ?.price_rmb || 0,
+
+            width_mm:
+
+              p.opening
+                ?.width_mm || null,
+
+            height_mm:
+
+              p.opening
+                ?.height_mm || null,
+
+            variant_config:
+
+              [
+                p.variant
+                  ?.size_label,
+
+                p.variant
+                  ?.config,
+
+              ]
+                .filter(Boolean)
+                .join(" "),
+
+          })
+
+        }
+      )
 
     }
   )
