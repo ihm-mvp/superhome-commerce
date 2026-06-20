@@ -450,6 +450,10 @@ export default function FurnitureEditor() {
                                   {
                                     variant.config
                                   }
+                                  {" | ¥"}
+{
+  variant.price_rmb || 0
+}
                                 </option>
 
                               )

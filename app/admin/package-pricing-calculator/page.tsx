@@ -37,7 +37,7 @@ export default function PackagePricingCalculatorPage() {
   // ===== 输入参数 =====
   const [fxRate, setFxRate] = useState(4.0)
   const [shippingFactor, setShippingFactor] = useState(1.2)
-  const [localCost, setLocalCost] = useState(2000)
+  const [localCost, setLocalCost] = useState(1000)
   const [marginPercent, setMarginPercent] = useState(10)
   const [
   displayPrice,
