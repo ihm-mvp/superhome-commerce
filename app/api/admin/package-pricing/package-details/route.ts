@@ -53,6 +53,7 @@ export async function GET(
 
         products:package_item_products(
 
+          opening_id,
           quantity,
 
           product:products(
@@ -162,6 +163,9 @@ item.products?.forEach(
 
   opening:layout_openings(
 
+    id,
+    room_name,
+    opening_code,
     width_mm,
     height_mm
 
@@ -177,7 +181,9 @@ item.products?.forEach(
   variant:variants(
 
     id,
-    price_rmb
+    price_rmb,
+    config,
+    size_label
 
   )
 
