@@ -4,11 +4,25 @@
 
 import { useEffect, useMemo, useState } from "react"
 
+import {
+  calculateProductExwCost
+} from "@/lib/product-cost"
+
 type ProductRow = {
   room_name: string
+
+  opening_code?: string
+
   sku_code: string
+
   quantity: number
+
   exw_price_rmb: number
+
+  width_mm?: number | null
+
+  height_mm?: number | null
+
   variant_config?: string
 }
 
@@ -21,11 +35,18 @@ export default function PackagePricingCalculatorPage() {
   // ===== 输入参数 =====
   const [fxRate, setFxRate] = useState(4.0)
   const [shippingFactor, setShippingFactor] = useState(1.2)
-  const [localCost, setLocalCost] = useState(3000)
-  const [marginPercent, setMarginPercent] = useState(30)
+  const [localCost, setLocalCost] = useState(2000)
+  const [marginPercent, setMarginPercent] = useState(10)
+  const [
+  displayPrice,
+  setDisplayPrice,
+] = useState(0)
 
   // ===== 中国出口成本系数 =====
-  const exportFactor = 1.2
+const [
+  exportFactor,
+  setExportFactor,
+] = useState(1.1)
 
   // ===== GST =====
   const gstRate = 15
@@ -69,6 +90,13 @@ export default function PackagePricingCalculatorPage() {
   }, [selectedPackageId])
 
   // ===== grouped by room =====
+
+  const selectedPackage =
+  packages.find(
+    (p) =>
+      p.id === selectedPackageId
+  )
+
   const grouped = useMemo(() => {
 
     const map: Record<string, ProductRow[]> = {}
@@ -87,16 +115,21 @@ export default function PackagePricingCalculatorPage() {
   }, [rows])
 
   // ===== EXW RMB =====
-  const exwTotalRmb = useMemo(() => {
+const exwTotalRmb = useMemo(() => {
 
-    return rows.reduce((sum, r) => {
+  return rows.reduce(
+    (sum, r) => {
+
       return (
         sum +
-        (r.exw_price_rmb || 0) * r.quantity
+        calculateProductExwCost(r)
       )
-    }, 0)
 
-  }, [rows])
+    },
+    0
+  )
+
+}, [rows])
 
   // ===== 中国出口成本 =====
   const exportCostRmb =
@@ -139,6 +172,14 @@ export default function PackagePricingCalculatorPage() {
   const roundedPrice =
     Math.round(finalPrice / 100) * 100
 
+    useEffect(() => {
+
+  setDisplayPrice(
+    roundedPrice
+  )
+
+}, [roundedPrice])
+
   // ===== save =====
   async function saveDisplayPrice() {
 
@@ -153,7 +194,7 @@ export default function PackagePricingCalculatorPage() {
         },
         body: JSON.stringify({
           package_id: selectedPackageId,
-          display_price: roundedPrice,
+          display_price: displayPrice,
         }),
       }
     )
@@ -248,12 +289,17 @@ export default function PackagePricingCalculatorPage() {
                 China Export Factor
               </div>
 
-              <input
-                type="number"
-                value={exportFactor}
-                disabled
-                className="w-full border rounded-lg px-3 py-2 bg-gray-100"
-              />
+<input
+  type="number"
+  value={exportFactor}
+  step="0.01"
+  onChange={(e) =>
+    setExportFactor(
+      Number(e.target.value)
+    )
+  }
+  className="w-full border rounded-lg px-3 py-2"
+/>
 
             </div>
 
@@ -367,20 +413,74 @@ export default function PackagePricingCalculatorPage() {
                             </span>
                           </div>
 
-                          {p.variant_config && (
-                            <div className="text-xs text-gray-400">
-                              {p.variant_config}
-                            </div>
-                          )}
+{p.sku_code?.startsWith(
+  "SUN-CUR-"
+) && (
+
+  <div className="text-xs text-blue-600">
+
+    ({p.width_mm} + 300)
+    ÷ 1000
+    × 2.2
+    × ¥{p.exw_price_rmb}
+
+    = ¥
+    {calculateProductExwCost(p)
+      .toFixed(0)}
+
+  </div>
+
+)}
+
+{p.sku_code?.startsWith(
+  "SUN-TRK-"
+) && (
+
+  <div className="text-xs text-blue-600">
+
+    ({p.width_mm} + 300)
+    ÷ 1000
+    × ¥{p.exw_price_rmb}
+
+    = ¥
+    {calculateProductExwCost(p)
+      .toFixed(0)}
+
+  </div>
+
+)}
+
+{p.sku_code?.startsWith(
+  "SUN-BLD-"
+) && (
+
+  <div className="text-xs text-blue-600">
+
+    {p.width_mm}
+    ×
+    {p.height_mm}
+    ÷ 1000000
+    × ¥{p.exw_price_rmb}
+
+    = ¥
+    {calculateProductExwCost(p)
+      .toFixed(0)}
+
+  </div>
+
+)}
 
                         </div>
 
                         <div className="w-28 text-right">
-                          ¥
-                          {(
-                            p.exw_price_rmb *
-                            p.quantity
-                          ).toLocaleString()}
+¥
+{calculateProductExwCost(p)
+  .toLocaleString(
+    undefined,
+    {
+      maximumFractionDigits: 0,
+    }
+  )}
                         </div>
 
                       </div>
@@ -455,12 +555,65 @@ export default function PackagePricingCalculatorPage() {
             <div className="border-t pt-6 space-y-2">
 
               <div className="text-sm text-gray-500">
-                Suggested Display Price
+                Suggested Display Price (Included GST)
               </div>
 
-              <div className="text-4xl font-semibold">
-                ${roundedPrice.toLocaleString()}
-              </div>
+<div className="space-y-4">
+
+  <div>
+
+    <div className="text-sm text-gray-500">
+      Suggested Price
+    </div>
+
+    <div className="text-4xl font-semibold">
+      ${roundedPrice.toLocaleString()}
+    </div>
+
+  </div>
+
+    <div>
+
+    <div className="text-sm text-gray-500">
+      Current Display Price
+    </div>
+
+    <div className="text-2xl font-medium text-blue-600">
+
+      $
+      {selectedPackage?.display_price
+        ?.toLocaleString() || "-"}
+
+    </div>
+
+  </div>
+
+  <div>
+
+    <div className="text-sm text-gray-500">
+      Display Price
+    </div>
+
+    <input
+      type="number"
+      value={displayPrice}
+      onChange={(e) =>
+        setDisplayPrice(
+          Number(e.target.value)
+        )
+      }
+      className="
+        w-full
+        border
+        rounded-lg
+        px-3
+        py-2
+      "
+    />
+
+  </div>
+
+</div>
 
             </div>
 

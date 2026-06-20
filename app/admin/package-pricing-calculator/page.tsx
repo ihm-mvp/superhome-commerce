@@ -13,6 +13,8 @@ type ProductRow = {
 
   opening_code?: string
 
+  opening_id?: string | null
+
   sku_code: string
 
   quantity: number
@@ -403,15 +405,31 @@ const exwTotalRmb = useMemo(() => {
                         className="flex justify-between text-sm"
                       >
 
-                        <div className="flex-1">
+<div>
 
-                          <div>
-                            {p.sku_code}
+  <div>
+    {p.sku_code}
+  </div>
 
-                            <span className="text-gray-400 ml-2">
-                              ×{p.quantity}
-                            </span>
-                          </div>
+  {p.opening_code && (
+
+    <div className="text-xs text-gray-500">
+
+      {p.opening_code}
+
+      {" · "}
+
+      {p.width_mm}
+
+      ×
+
+      {p.height_mm}
+
+      mm
+
+    </div>
+
+  )}
 
 {p.sku_code?.startsWith(
   "SUN-CUR-"
@@ -470,18 +488,19 @@ const exwTotalRmb = useMemo(() => {
 
 )}
 
-                        </div>
+<div className="w-36 text-right">
 
-                        <div className="w-28 text-right">
-¥
-{calculateProductExwCost(p)
-  .toLocaleString(
-    undefined,
-    {
-      maximumFractionDigits: 0,
-    }
-  )}
-                        </div>
+  ¥
+
+  {calculateProductExwCost(p)
+    .toLocaleString(
+      undefined,
+      {
+        maximumFractionDigits: 0,
+      }
+    )}
+
+</div>
 
                       </div>
                     ))}
