@@ -481,7 +481,7 @@ export default function AdminDashboard() {
           </Link>
 
           <Link
-            href="/admin/furniture-builder"
+            href="/admin/Furniture-builder"
             className="
               border
               rounded-xl
@@ -514,7 +514,7 @@ export default function AdminDashboard() {
           </Link>
 
           <Link
-            href="/admin/furniture-editor"
+            href="/admin/package-editor"
             className="
               border
               rounded-xl
@@ -531,7 +531,7 @@ export default function AdminDashboard() {
                 mb-2
               "
             >
-              Furniture Editor
+              Package Editor
             </div>
 
             <div
@@ -540,7 +540,7 @@ export default function AdminDashboard() {
                 text-gray-500
               "
             >
-              Edit furniture and item
+              Edit item and products
             </div>
 
           </Link>

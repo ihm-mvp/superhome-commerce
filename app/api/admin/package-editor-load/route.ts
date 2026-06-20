@@ -98,19 +98,32 @@ export async function GET(
       size_label
     `)
 
-  const {
-    data: openings,
-  } = await supabase
-    .from("layout_openings")
-    .select(`
-      id,
-      room_name,
-      opening_code
-    `)
-    .eq(
-      "package_id",
-      packageId
-    )
+const {
+  data: pkg,
+} = await supabase
+  .from("packages")
+  .select(`
+    layout_id
+  `)
+  .eq(
+    "id",
+    packageId
+  )
+  .single()
+
+const {
+  data: openings,
+} = await supabase
+  .from("layout_openings")
+  .select(`
+    id,
+    room_name,
+    opening_code
+  `)
+  .eq(
+    "layout_id",
+    pkg?.layout_id
+  )
 
   const result =
     (rooms || []).map(

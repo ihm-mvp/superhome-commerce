@@ -37,7 +37,7 @@ export default function FurnitureEditor() {
 
     const res =
       await fetch(
-        "/api/admin/furniture-editor-packages"
+        "/api/admin/package-editor-packages"
       )
 
     const json =
@@ -65,7 +65,7 @@ export default function FurnitureEditor() {
 
     const res =
       await fetch(
-        `/api/admin/furniture-editor-load?package_id=${packageId}`
+        `/api/admin/package-editor-load?package_id=${packageId}`
       )
 
     const json =
