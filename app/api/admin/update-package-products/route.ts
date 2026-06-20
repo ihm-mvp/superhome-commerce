@@ -38,6 +38,9 @@ export async function POST(
   quantity:
     pip.quantity,
 
+  opening_id:
+    pip.opening_id || null,
+
 })
             .eq(
               "id",

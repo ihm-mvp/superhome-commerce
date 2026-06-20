@@ -48,7 +48,8 @@ export async function GET(
           id,
           quantity,
           product_id,
-          variant_id
+          variant_id,
+          opening_id
         )
       )
     `)
@@ -97,6 +98,20 @@ export async function GET(
       size_label
     `)
 
+  const {
+    data: openings,
+  } = await supabase
+    .from("layout_openings")
+    .select(`
+      id,
+      room_name,
+      opening_code
+    `)
+    .eq(
+      "package_id",
+      packageId
+    )
+
   const result =
     (rooms || []).map(
       (room: any) => ({
@@ -107,28 +122,12 @@ export async function GET(
         name:
           room.name,
 
-items:
-(
-  room.package_items ||
-  []
-)
-.filter(
-  (item: any) => {
-
-    const typeName =
-      item.item_types?.name
-        ?.toLowerCase()
-
-    return ![
-      "curtain",
-      "track",
-      "blind",
-    ].includes(typeName)
-
-  }
-)
-.map(
-  (item: any) => {
+        items:
+          (
+            room.package_items ||
+            []
+          ).map(
+            (item: any) => {
 
               const itemType =
                 item.item_types
@@ -171,6 +170,12 @@ items:
 
                       variant_id:
                         pip.variant_id,
+
+                      opening_id:
+                        pip.opening_id,
+
+                      openings:
+                        openings || [],
 
                       options:
                         categoryProducts.map(
