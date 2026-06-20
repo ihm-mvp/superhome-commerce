@@ -16,10 +16,6 @@ export async function GET(
 
   }
 
-  // =====================================
-  // Package Rooms
-  // =====================================
-
   const { data: rooms } =
     await supabase
       .from("package_rooms")
@@ -38,11 +34,19 @@ export async function GET(
 
   }
 
-  const rows: any[] = []
+  const {
+    data: openings,
+  } = await supabase
+    .from("layout_openings")
+    .select(`
+      id,
+      room_name,
+      opening_code,
+      width_mm,
+      height_mm
+    `)
 
-  // =====================================
-  // Package Products
-  // =====================================
+  const rows: any[] = []
 
   const { data: items } =
     await supabase
@@ -64,16 +68,6 @@ export async function GET(
             price_rmb,
             config,
             size_label
-          ),
-
-          opening:layout_openings(
-
-            id,
-            room_name,
-            opening_code,
-            width_mm,
-            height_mm
-
           )
 
         )
@@ -102,11 +96,18 @@ export async function GET(
           const sku =
             p.product?.sku_code || ""
 
+          const opening =
+            openings?.find(
+              (o: any) =>
+                o.id ===
+                p.opening_id
+            )
+
           rows.push({
 
             room_name:
 
-              p.opening?.room_name ||
+              opening?.room_name ||
 
               room?.name ||
 
@@ -120,7 +121,7 @@ export async function GET(
 
             opening_code:
 
-              p.opening
+              opening
                 ?.opening_code ||
 
               "",
@@ -140,12 +141,12 @@ export async function GET(
 
             width_mm:
 
-              p.opening
+              opening
                 ?.width_mm || null,
 
             height_mm:
 
-              p.opening
+              opening
                 ?.height_mm || null,
 
             variant_config:
