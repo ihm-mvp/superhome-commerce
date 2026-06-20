@@ -405,31 +405,35 @@ const exwTotalRmb = useMemo(() => {
                         className="flex justify-between text-sm"
                       >
 
-<div>
+                        <div className="flex-1">
 
-  <div>
-    {p.sku_code}
+                          <div>
+                            {p.sku_code}
+
+                            {p.opening_code && (
+
+  <div className="text-xs text-gray-500">
+
+    {p.opening_code}
+
+    {" · "}
+
+    {p.width_mm}
+
+    ×
+
+    {p.height_mm}
+
+    mm
+
   </div>
 
-  {p.opening_code && (
+)}
 
-    <div className="text-xs text-gray-500">
-
-      {p.opening_code}
-
-      {" · "}
-
-      {p.width_mm}
-
-      ×
-
-      {p.height_mm}
-
-      mm
-
-    </div>
-
-  )}
+                            <span className="text-gray-400 ml-2">
+                              ×{p.quantity}
+                            </span>
+                          </div>
 
 {p.sku_code?.startsWith(
   "SUN-CUR-"
@@ -488,19 +492,18 @@ const exwTotalRmb = useMemo(() => {
 
 )}
 
-<div className="w-36 text-right">
+                        </div>
 
-  ¥
-
-  {calculateProductExwCost(p)
-    .toLocaleString(
-      undefined,
-      {
-        maximumFractionDigits: 0,
-      }
-    )}
-
-</div>
+                        <div className="w-28 text-right">
+¥
+{calculateProductExwCost(p)
+  .toLocaleString(
+    undefined,
+    {
+      maximumFractionDigits: 0,
+    }
+  )}
+                        </div>
 
                       </div>
                     ))}

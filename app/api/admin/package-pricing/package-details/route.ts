@@ -111,6 +111,9 @@ item.products?.forEach(
       room_name:
         room?.name || "",
 
+        opening_id:
+    p.opening_id || null,
+
       opening_code: "",
 
       sku_code:
@@ -192,6 +195,9 @@ item.products?.forEach(
         room_name:
           row.opening
             ?.room_name || "",
+
+            opening_id:
+    row.opening?.id || null,
 
         opening_code:
           row.opening
