@@ -383,6 +383,40 @@ export default function AdminDashboard() {
         >
 
           <Link
+            href="/admin/package-pricing-calculator"
+            className="
+              border
+              rounded-xl
+              p-6
+              hover:shadow-md
+              transition
+              bg-white
+            "
+          >
+
+            <div
+              className="
+                font-semibold
+                mb-2
+              "
+            >
+              Pricing Calculator
+            </div>
+
+            <div
+              className="
+                text-sm
+                text-gray-500
+              "
+            >
+              Calculate package
+              EXW, landed and
+              display pricing
+            </div>
+
+          </Link>
+
+          <Link
             href="/admin/package-builder"
             className="
               border
@@ -546,7 +580,7 @@ export default function AdminDashboard() {
           </Link>
 
           <Link
-            href="/admin/package-pricing-calculator"
+            href="/admin/product-editor"
             className="
               border
               rounded-xl
@@ -563,7 +597,7 @@ export default function AdminDashboard() {
                 mb-2
               "
             >
-              Pricing Calculator
+              Product Editor
             </div>
 
             <div
@@ -572,9 +606,7 @@ export default function AdminDashboard() {
                 text-gray-500
               "
             >
-              Calculate package
-              EXW, landed and
-              display pricing
+              Edit products and variants
             </div>
 
           </Link>

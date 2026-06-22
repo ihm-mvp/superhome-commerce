@@ -30,11 +30,27 @@ const [
 const [
   supplierId,
   setSupplierId,
-] = useState("")
+] = useState(
+
+  typeof window !==
+    "undefined"
+
+    ? localStorage.getItem(
+        "product-editor-supplier"
+      ) || ""
+
+    : ""
+
+)
 
 const [
   categoryId,
   setCategoryId,
+] = useState("")
+
+const [
+  keyword,
+  setKeyword,
 ] = useState("")
 
   async function load() {
@@ -127,6 +143,37 @@ setCategories(
       ) {
         return false
       }
+
+      if (
+
+  keyword &&
+
+  !(
+    p.sku_code
+      ?.toLowerCase()
+      .includes(
+        keyword.toLowerCase()
+      ) ||
+
+    p.name
+      ?.toLowerCase()
+      .includes(
+        keyword.toLowerCase()
+      ) ||
+
+    p.display_name_en
+      ?.toLowerCase()
+      .includes(
+        keyword.toLowerCase()
+      )
+
+  )
+
+) {
+
+  return false
+
+}
 
       return true
 
@@ -252,11 +299,18 @@ setCategories(
 
   <select
     value={supplierId}
-    onChange={(e) =>
-      setSupplierId(
-        e.target.value
-      )
-    }
+onChange={(e) => {
+
+  setSupplierId(
+    e.target.value
+  )
+
+  localStorage.setItem(
+    "product-editor-supplier",
+    e.target.value
+  )
+
+}}
     className="
       border
       p-2
@@ -316,6 +370,21 @@ setCategories(
 
   </select>
 
+  <input
+  value={keyword}
+  onChange={(e) =>
+    setKeyword(
+      e.target.value
+    )
+  }
+  placeholder="Search SKU"
+  className="
+    border
+    p-2
+    min-w-[240px]
+  "
+/>
+
 </div>
 
       {loading && (
@@ -337,6 +406,44 @@ setCategories(
               space-y-4
             "
           >
+
+            <div className="border-b pb-3">
+
+<div className="flex justify-between">
+
+  <div className="font-semibold text-lg">
+
+    {product.sku_code}
+
+  </div>
+
+  <div className="text-sm text-gray-500">
+
+    {product.variants?.length || 0}
+
+    {" Variants"}
+
+  </div>
+
+</div>
+
+  <div className="text-sm text-gray-500">
+
+    {product.supplier?.name}
+
+    {" · "}
+
+    {product.category?.name}
+
+  </div>
+
+</div>
+
+<div className="text-xs text-gray-400">
+
+  {product.id}
+
+</div>
 
             {/* Product */}
 
@@ -419,16 +526,18 @@ setCategories(
             {product.variants?.map(
               (variant: any) => (
 
-                <div
-                  key={variant.id}
-                  className="
-                    border-t
-                    pt-4
-                    grid
-                    md:grid-cols-4
-                    gap-3
-                  "
-                >
+<div
+  key={variant.id}
+  className="
+    border-t
+    pt-4
+    space-y-3
+  "
+>
+
+    <div className="text-sm font-medium text-blue-600">
+  Variant
+</div>
 
                   <input
                     value={
@@ -481,10 +590,12 @@ setCategories(
                         )
                       )
                     }
-                    className="
-                      border
-                      p-2
-                    "
+className="
+  border
+  p-2
+  bg-yellow-50
+  font-semibold
+"
                   />
 
                   <input
