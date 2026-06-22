@@ -539,10 +539,16 @@ onChange={(e) => {
   Variant
 </div>
 
-                  <input
-                    value={
-                      variant.size_label || ""
-                    }
+<div>
+
+  <div className="text-sm font-medium text-blue-600">
+    Size Label
+  </div>
+
+  <input
+    value={
+      variant.size_label || ""
+    }
                     onChange={(e) =>
                       updateVariant(
                         product.id,
@@ -556,6 +562,8 @@ onChange={(e) => {
                       p-2
                     "
                   />
+
+    </div>
 
                   <input
                     value={
