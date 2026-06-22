@@ -515,39 +515,6 @@ export default function AdminDashboard() {
           </Link>
 
           <Link
-            href="/admin/Furniture-builder"
-            className="
-              border
-              rounded-xl
-              p-6
-              hover:shadow-md
-              transition
-              bg-white
-            "
-          >
-
-            <div
-              className="
-                font-semibold
-                mb-2
-              "
-            >
-              Furniture Builder
-            </div>
-
-            <div
-              className="
-                text-sm
-                text-gray-500
-              "
-            >
-              Assign furniture
-              products to rooms
-            </div>
-
-          </Link>
-
-          <Link
             href="/admin/package-editor"
             className="
               border

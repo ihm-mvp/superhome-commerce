@@ -535,6 +535,18 @@ onChange={(e) => {
   "
 >
 
+  <div className="text-sm font-medium text-blue-600">
+    Variant
+  </div>
+
+  <div
+    className="
+      grid
+      grid-cols-4
+      gap-4
+    "
+  >
+
     <div className="text-sm font-medium text-blue-600">
   Variant
 </div>
@@ -754,6 +766,7 @@ className="
                   />
                   </div>
 
+                </div>
                 </div>
 
               )
