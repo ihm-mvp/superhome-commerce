@@ -547,10 +547,6 @@ onChange={(e) => {
     "
   >
 
-    <div className="text-sm font-medium text-blue-600">
-  Variant
-</div>
-
 <div>
 
   <div className="text-sm font-medium text-blue-600">
