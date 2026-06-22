@@ -17,26 +17,6 @@ export default function ProductEditorPage() {
     setLoading,
   ] = useState(false)
 
-  const [
-  suppliers,
-  setSuppliers,
-] = useState<any[]>([])
-
-const [
-  categories,
-  setCategories,
-] = useState<any[]>([])
-
-const [
-  supplierId,
-  setSupplierId,
-] = useState("")
-
-const [
-  categoryId,
-  setCategoryId,
-] = useState("")
-
   async function load() {
 
     setLoading(true)
@@ -46,20 +26,12 @@ const [
         "/api/admin/product-editor-load"
       )
 
-const json =
-  await res.json()
+    const json =
+      await res.json()
 
-setData(
-  json.products || []
-)
-
-setSuppliers(
-  json.suppliers || []
-)
-
-setCategories(
-  json.categories || []
-)
+    setData(
+      json || []
+    )
 
     setLoading(false)
 
@@ -109,29 +81,6 @@ setCategories(
     load()
 
   }, [])
-
-  const filteredData =
-  data.filter(
-    (p: any) => {
-
-      if (
-        supplierId &&
-        p.supplier_id !== supplierId
-      ) {
-        return false
-      }
-
-      if (
-        categoryId &&
-        p.category_id !== categoryId
-      ) {
-        return false
-      }
-
-      return true
-
-    }
-  )
 
   function updateProduct(
 
@@ -243,88 +192,13 @@ setCategories(
 
       </div>
 
-<div
-  className="
-    flex
-    gap-4
-  "
->
-
-  <select
-    value={supplierId}
-    onChange={(e) =>
-      setSupplierId(
-        e.target.value
-      )
-    }
-    className="
-      border
-      p-2
-      min-w-[240px]
-    "
-  >
-
-    <option value="">
-      All Suppliers
-    </option>
-
-    {suppliers.map(
-      (s: any) => (
-
-        <option
-          key={s.id}
-          value={s.id}
-        >
-          {s.name}
-        </option>
-
-      )
-    )}
-
-  </select>
-
-  <select
-    value={categoryId}
-    onChange={(e) =>
-      setCategoryId(
-        e.target.value
-      )
-    }
-    className="
-      border
-      p-2
-      min-w-[240px]
-    "
-  >
-
-    <option value="">
-      All Categories
-    </option>
-
-    {categories.map(
-      (c: any) => (
-
-        <option
-          key={c.id}
-          value={c.id}
-        >
-          {c.name}
-        </option>
-
-      )
-    )}
-
-  </select>
-
-</div>
-
       {loading && (
         <div>
           Loading...
         </div>
       )}
 
-{filteredData.map(
+      {data.map(
         (product: any) => (
 
           <div

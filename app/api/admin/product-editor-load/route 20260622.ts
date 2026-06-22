@@ -11,24 +11,11 @@ export async function GET() {
       id,
       supplier_id,
       category_id,
-
       sku_code,
       name,
-
       display_name_en,
-
       description,
-      display_description_en,
-
-      supplier:suppliers(
-        id,
-        name
-      ),
-
-      category:categories(
-        id,
-        name
-      )
+      display_description_en
     `)
     .order(
       "sku_code"
@@ -69,26 +56,6 @@ export async function GET() {
       price_rmb
     `)
 
-  const {
-    data: suppliers,
-  } = await supabase
-    .from("suppliers")
-    .select(`
-      id,
-      name
-    `)
-    .order("name")
-
-  const {
-    data: categories,
-  } = await supabase
-    .from("categories")
-    .select(`
-      id,
-      name
-    `)
-    .order("name")
-
   const result =
     (products || []).map(
       (product: any) => ({
@@ -107,17 +74,8 @@ export async function GET() {
       })
     )
 
-  return Response.json({
-
-    products:
-      result,
-
-    suppliers:
-      suppliers || [],
-
-    categories:
-      categories || [],
-
-  })
+  return Response.json(
+    result
+  )
 
 }
