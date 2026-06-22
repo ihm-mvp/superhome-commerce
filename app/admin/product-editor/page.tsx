@@ -565,6 +565,12 @@ onChange={(e) => {
 
     </div>
 
+<div>
+
+  <div className="text-sm font-medium text-blue-600">
+    Config
+  </div>
+
                   <input
                     value={
                       variant.config || ""
@@ -582,6 +588,13 @@ onChange={(e) => {
                       p-2
                     "
                   />
+                  </div>
+
+                  <div>
+
+  <div className="text-sm font-medium text-blue-600">
+    Price RMB
+  </div>
 
                   <input
                     type="number"
@@ -605,6 +618,13 @@ className="
   font-semibold
 "
                   />
+                  </div>
+
+                  <div>
+
+  <div className="text-sm font-medium text-blue-600">
+    Display Config English
+  </div>
 
                   <input
                     value={
@@ -623,6 +643,13 @@ className="
                       p-2
                     "
                   />
+                  </div>
+
+                  <div>
+
+  <div className="text-sm font-medium text-blue-600">
+    Width mm
+  </div>
 
                   <input
                     type="number"
@@ -644,6 +671,13 @@ className="
                       p-2
                     "
                   />
+                  </div>
+
+                  <div>
+
+  <div className="text-sm font-medium text-blue-600">
+    Length mm
+  </div>
 
                   <input
                     type="number"
@@ -665,6 +699,13 @@ className="
                       p-2
                     "
                   />
+                  </div>
+
+                  <div>
+
+  <div className="text-sm font-medium text-blue-600">
+    Height mm
+  </div>
 
                   <input
                     type="number"
@@ -686,6 +727,13 @@ className="
                       p-2
                     "
                   />
+                  </div>
+
+                  <div>
+
+  <div className="text-sm font-medium text-blue-600">
+    Display Note English
+  </div>
 
                   <input
                     value={
@@ -704,6 +752,7 @@ className="
                       p-2
                     "
                   />
+                  </div>
 
                 </div>
 
