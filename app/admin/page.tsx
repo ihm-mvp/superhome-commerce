@@ -482,6 +482,39 @@ export default function AdminDashboard() {
           </Link>
 
           <Link
+            href="/admin/furniture-builder"
+            className="
+              border
+              rounded-xl
+              p-6
+              hover:shadow-md
+              transition
+              bg-white
+            "
+          >
+
+            <div
+              className="
+                font-semibold
+                mb-2
+              "
+            >
+              Furniture Builder
+            </div>
+
+            <div
+              className="
+                text-sm
+                text-gray-500
+              "
+            >
+              Assign beds,
+              sofas and other furniture products
+            </div>
+
+          </Link>
+
+                    <Link
             href="/admin/sunshine-builder"
             className="
               border
@@ -510,6 +543,39 @@ export default function AdminDashboard() {
             >
               Assign curtain,
               track and blind products
+            </div>
+
+          </Link>
+
+          <Link
+            href="/admin/product-builder"
+            className="
+              border
+              rounded-xl
+              p-6
+              hover:shadow-md
+              transition
+              bg-white
+            "
+          >
+
+            <div
+              className="
+                font-semibold
+                mb-2
+              "
+            >
+              Product Builder
+            </div>
+
+            <div
+              className="
+                text-sm
+                text-gray-500
+              "
+            >
+              Assign furniture,
+              and sunshince products
             </div>
 
           </Link>
