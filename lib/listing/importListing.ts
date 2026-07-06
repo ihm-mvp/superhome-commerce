@@ -476,9 +476,9 @@ async function parseHarcourtsGold(
 
   const openHomes: any[] = []
 
-  const openHomeRegex =
+const openHomeRegex =
 
-    /"startDate":"([^"]+)".*?"endDate":"([^"]+)"/gs
+  /"startDate":"([^"]+)"[\s\S]*?"endDate":"([^"]+)"/g
 
   let match
 
