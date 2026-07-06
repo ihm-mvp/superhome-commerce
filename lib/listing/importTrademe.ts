@@ -124,9 +124,19 @@ export async function importTrademe(
     !cachedDetails
   ) {
 
-    throw new Error(
-      "listing.cachedDetails not found."
+throw new Error(
+
+  JSON.stringify(
+
+    Object.keys(
+
+      ngrx.listing || {}
+
     )
+
+  )
+
+)
 
   }
 
