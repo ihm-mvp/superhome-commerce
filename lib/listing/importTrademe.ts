@@ -317,16 +317,15 @@ throw new Error(
   // Return
   // =====================================
 
-return {
+return listing
 
-  debug:
+console.log(
+  Object.keys(state)
+)
 
-    Object.keys(
-
-      ngrx
-
-    )
-
-}
+console.log(
+  JSON.stringify(state)
+    .slice(0,1000)
+)
 
 }
