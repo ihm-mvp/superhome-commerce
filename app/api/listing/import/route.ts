@@ -1,160 +1,194 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
+
 import { importTrademe } from "@/lib/listing/importTrademe"
 
 const supabase = createClient(
+
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
+
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+
 )
 
-export async function POST(req: NextRequest) {
+// 临时固定用户
+// 登录完成后改为当前登录用户ID
+
+const USER_ID =
+  "f274bb98-bf20-438b-b6f3-9ac4f875c26a"
+
+export async function POST(
+  req: NextRequest
+) {
+
   try {
 
-    const { url } = await req.json()
+    const { url } =
+      await req.json()
 
     if (!url) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "TradeMe URL is required."
-        },
-        {
-          status: 400
-        }
-      )
+
+      return NextResponse.json({
+
+        success: false,
+
+        message: "TradeMe URL is required."
+
+      }, {
+
+        status: 400
+
+      })
+
     }
 
-    // ===== Import TradeMe =====
+    const property =
+      await importTrademe(url)
 
-    const property = await importTrademe(url)
+    const {
 
-    // ===== TODO =====
-    // Replace with current MIR logged-in user.
-    // Temporary MVP user.
-    const USER_ID = "f274bb98-bf20-438b-b6f3-9ac4f875c26a"
+      data: listing,
 
-    // ===== Upsert Listing =====
+      error: listingError
 
-    const { data: listing, error } = await supabase
+    } = await supabase
+
       .from("listing_listings")
-      .upsert(
-        {
-          user_id: USER_ID,
 
-          source_platform: property.sourcePlatform,
-          source_listing_id: property.sourceListingId,
-          source_url: property.sourceUrl,
+      .upsert({
 
-          address: property.address,
-          headline: property.headline,
+        user_id:
+          USER_ID,
 
-          property_type: property.propertyType,
+        source_platform:
+          property.sourcePlatform,
 
-          price: property.price,
+        source_listing_id:
+          property.sourceListingId,
 
-          bedrooms: property.bedrooms,
-          bathrooms: property.bathrooms,
-          garages: property.garages,
+        source_url:
+          property.sourceUrl,
 
-          floor_area: property.floorArea,
-          land_area: property.landArea,
+        address:
+          property.address,
 
-          tenure: property.tenure,
+        headline:
+          property.headline,
 
-          agent_name: property.agentName,
-          agency_name: property.agencyName,
+        property_type:
+          property.propertyType,
 
-          trademe_description: property.description,
+        price:
+          property.price,
 
-          listing_status: property.listingStatus,
+        bedrooms:
+          property.bedrooms,
 
-          property_json: {
-            images: property.images
-          },
+        bathrooms:
+          property.bathrooms,
 
-          updated_at: new Date().toISOString()
-        },
-        {
-          onConflict:
-            "source_platform,source_listing_id"
-        }
-      )
+        garages:
+          property.garages,
+
+        floor_area:
+          property.floorArea,
+
+        land_area:
+          property.landArea,
+
+        tenure:
+          property.tenure,
+
+        agent_name:
+          property.agentName,
+
+        agency_name:
+          property.agencyName,
+
+        trademe_description:
+          property.description,
+
+        listing_status:
+          property.listingStatus,
+
+        property_json:
+          property.propertyJson
+
+      }, {
+
+        onConflict:
+          "source_platform,source_listing_id"
+
+      })
+
       .select()
+
       .single()
 
-    if (error) {
+    if (listingError)
+      throw listingError
 
-      return NextResponse.json(
-        {
-          success: false,
-          message: error.message
-        },
-        {
-          status: 500
-        }
+    const {
+
+      error: deleteError
+
+    } = await supabase
+
+      .from("listing_openhomes")
+
+      .delete()
+
+      .eq(
+
+        "listing_id",
+
+        listing.id
+
       )
 
-    }
+    if (deleteError)
+      throw deleteError
 
-    // ===== Refresh Open Homes =====
-
-    const { error: deleteError } =
-      await supabase
-        .from("listing_openhomes")
-        .delete()
-        .eq("listing_id", listing.id)
-
-    if (deleteError) {
-
-      return NextResponse.json(
-        {
-          success: false,
-          message: deleteError.message
-        },
-        {
-          status: 500
-        }
-      )
-
-    }
-
-    if (property.openHomes.length > 0) {
+    if (
+      property.openHomes.length > 0
+    ) {
 
       const rows =
-        property.openHomes.map(home => ({
 
-          listing_id: listing.id,
+        property.openHomes.map(
 
-          openhome_date: home.date,
+          (o) => ({
 
-          start_time: home.start,
+            listing_id:
+              listing.id,
 
-          end_time: home.end,
+            openhome_date:
+              o.date,
 
-          status: "Active",
+            start_time:
+              o.start,
 
-          updated_at: new Date().toISOString()
+            end_time:
+              o.end
 
-        }))
+          })
 
-      const { error: insertError } =
-        await supabase
-          .from("listing_openhomes")
-          .insert(rows)
-
-      if (insertError) {
-
-        return NextResponse.json(
-          {
-            success: false,
-            message: insertError.message
-          },
-          {
-            status: 500
-          }
         )
 
-      }
+      const {
+
+        error: openhomeError
+
+      } = await supabase
+
+        .from(
+          "listing_openhomes"
+        )
+
+        .insert(rows)
+
+      if (openhomeError)
+        throw openhomeError
 
     }
 
@@ -162,25 +196,33 @@ export async function POST(req: NextRequest) {
 
       success: true,
 
-      listingId: listing.id,
+      listingId:
+        listing.id,
 
-      message: "Listing imported successfully."
+      message:
+        "Listing imported successfully."
 
     })
 
-  } catch (e: any) {
+  }
 
-    return NextResponse.json(
-      {
-        success: false,
-        message:
-          e?.message ??
-          "Import failed."
-      },
-      {
-        status: 500
-      }
-    )
+  catch (e: any) {
+
+    return NextResponse.json({
+
+      success: false,
+
+      message:
+
+        e.message ??
+
+        "Import failed."
+
+    }, {
+
+      status: 500
+
+    })
 
   }
 

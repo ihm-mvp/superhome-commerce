@@ -1,290 +1,235 @@
-export interface OpenHome {
-  date: string
-  start: string
-  end: string
-}
+// lib/listing/importTrademe.ts
 
-export interface TradeMeProperty {
-  sourcePlatform: "TradeMe"
-  sourceListingId: string
-  sourceUrl: string
+import { mapTrademe } from "./mapTrademe"
+import { TradeMeProperty } from "./types"
 
-  address: string
-  headline: string
-  price: string
-  listingStatus: "Active" | "Sold" | "Withdrawn"
+function extractInitialState(html: string): any {
 
-  propertyType: string
-  bedrooms: number
-  bathrooms: number
-  garages: number | null
-  floorArea: string |null
-  landArea: string | null
-  tenure: string | null
+  const patterns = [
 
-  agentName: string
-  agencyName: string
+    "window.__INITIAL_STATE__=",
 
-  description: string
+    "window.__INITIAL_STATE__ =",
 
-  images: string[]
+    "__INITIAL_STATE__=",
 
-  openHomes: OpenHome[]
-}
-
-function getAttribute(
-  attrs: any[],
-  name: string
-): string | null {
-
-  const item = attrs.find(
-    (a: any) => a.name === name
-  )
-
-  return item?.value ?? null
-
-}
-
-function numberOnly(value: string | null): number {
-
-  if (!value) return 0
-
-  const m = value.match(/\d+/)
-
-  return m ? Number(m[0]) : 0
-
-}
-
-function parseGarage(attrs: any[]): number | null {
-
-  const value =
-    getAttribute(attrs, "garage_parking") ??
-    getAttribute(attrs, "parking")
-
-  if (!value) return null
-
-  const m = value.match(/\d+/)
-
-  return m ? Number(m[0]) : null
-
-}
-
-function extractImages(html: string): string[] {
-
-  const images = new Set<string>()
-
-  const regex =
-    /https:\/\/trademe\.tmcdn\.co\.nz[^"' ]+\.(jpg|jpeg|png|webp)/gi
-
-  let match
-
-  while ((match = regex.exec(html)) !== null) {
-
-    images.add(match[0])
-
-  }
-
-  return [...images]
-
-}
-
-function extractAgentName(html: string): string {
-
-  const m =
-    html.match(/alt="([^"]+)"/)
-
-  return m?.[1] ?? ""
-
-}
-
-function extractAgencyName(html: string): string {
-
-  const agencies = [
-
-    "Harcourts Gold",
-
-    "Harcourts",
-
-    "Ray White",
-
-    "Bayleys",
-
-    "Holmwood",
-
-    "Lugtons",
-
-    "Property Brokers"
+    "__INITIAL_STATE__ ="
 
   ]
 
-  for (const agency of agencies) {
+  let start = -1
 
-    if (html.includes(agency)) {
+  for (const p of patterns) {
 
-      return agency
+    start = html.indexOf(p)
+
+    if (start >= 0) {
+
+      start += p.length
+      break
 
     }
 
   }
 
-  return ""
-
-}
-
-function extractListingJson(html: string): any {
-
-  const start =
-    html.indexOf('"listing":{"cachedDetails"')
-
   if (start < 0) {
 
-    throw new Error("Listing JSON not found.")
+    throw new Error("TradeMe initial state not found.")
 
   }
 
-  const end =
-    html.indexOf('"marketingCollections"', start)
+  while (
+
+    html[start] === " " ||
+    html[start] === "\n" ||
+    html[start] === "\r"
+
+  ) {
+
+    start++
+
+  }
+
+  if (html[start] !== "{") {
+
+    throw new Error("Initial state JSON not found.")
+
+  }
+
+  let depth = 0
+  let inString = false
+  let escaped = false
+  let end = -1
+
+  for (let i = start; i < html.length; i++) {
+
+    const c = html[i]
+
+    if (escaped) {
+
+      escaped = false
+      continue
+
+    }
+
+    if (c === "\\") {
+
+      escaped = true
+      continue
+
+    }
+
+    if (c === "\"") {
+
+      inString = !inString
+      continue
+
+    }
+
+    if (inString) {
+
+      continue
+
+    }
+
+    if (c === "{") {
+
+      depth++
+
+    }
+
+    else if (c === "}") {
+
+      depth--
+
+      if (depth === 0) {
+
+        end = i
+        break
+
+      }
+
+    }
+
+  }
 
   if (end < 0) {
 
-    throw new Error("Listing JSON end not found.")
+    throw new Error("Initial state JSON incomplete.")
 
   }
 
-  const json =
-    "{"
-    + html.substring(start, end - 1)
-    + "}"
+  return JSON.parse(
 
-  return JSON.parse(json)
+    html.substring(
+      start,
+      end + 1
+    )
+
+  )
+
+}
+
+function findCachedDetails(
+  state: any
+): any {
+
+  if (
+    state?.listing?.cachedDetails
+  ) {
+
+    return state.listing.cachedDetails
+
+  }
+
+  throw new Error(
+    "listing.cachedDetails not found."
+  )
+
+}
+
+function firstListing(
+  cachedDetails: any
+): any {
+
+  const ids =
+    cachedDetails.ids ?? []
+
+  if (ids.length === 0) {
+
+    throw new Error(
+      "No listing found."
+    )
+
+  }
+
+  const entity =
+
+    cachedDetails.entities?.[
+      ids[0]
+    ]
+
+  if (!entity?.item) {
+
+    throw new Error(
+      "Listing entity missing."
+    )
+
+  }
+
+  return entity.item
 
 }
 
 export async function importTrademe(
+
   url: string
+
 ): Promise<TradeMeProperty> {
 
-  const html = await fetch(url, {
+  const response =
+    await fetch(url, {
 
-    headers: {
+      headers: {
 
-      "User-Agent": "Mozilla/5.0"
+        "User-Agent":
+          "Mozilla/5.0"
 
-    }
+      }
 
-  }).then(r => r.text())
+    })
 
-  const json =
-    extractListingJson(html)
+  if (!response.ok) {
 
-  const ids =
-    json.listing.cachedDetails.ids
+    throw new Error(
+      "Unable to download TradeMe page."
+    )
 
-  const listingId =
-    ids[0]
+  }
+
+  const html =
+    await response.text()
+      const state =
+    extractInitialState(html)
+
+  const cachedDetails =
+    findCachedDetails(state)
 
   const item =
-    json
-      .listing
-      .cachedDetails
-      .entities[listingId]
-      .item
+    firstListing(cachedDetails)
 
-  const attrs =
-    item.attributes ?? []
-
-  const images =
-    extractImages(html)
-      const openHomes: OpenHome[] =
-    (item.openHomes ?? []).map((o: any) => ({
-
-      date:
-        (o.date ?? "")
-          .toString()
-          .substring(0, 10),
-
-      start:
-        o.startTime ??
-        o.start ??
-        "",
-
-      end:
-        o.endTime ??
-        o.end ??
-        ""
-
-    }))
-
-  const description =
-    item.body ??
-    item.description ??
-    item.marketingDescription ??
-    ""
+  const property =
+    mapTrademe(
+      item,
+      url
+    )
 
   return {
 
-    sourcePlatform: "TradeMe",
+    ...property,
 
-    sourceListingId:
-      String(item.listingId),
-
-    sourceUrl: url,
-
-    address:
-      getAttribute(attrs, "location") ??
-      "",
-
-    headline:
-      item.title ??
-      "",
-
-    price:
-      item.priceDisplay ??
-      getAttribute(attrs, "price") ??
-      "",
-
-    listingStatus:
-      item.isSold
-        ? "Sold"
-        : "Active",
-
-    propertyType:
-      getAttribute(attrs, "property_type") ??
-      "",
-
-    bedrooms:
-      numberOnly(
-        getAttribute(attrs, "bedrooms")
-      ),
-
-    bathrooms:
-      numberOnly(
-        getAttribute(attrs, "bathrooms")
-      ),
-
-    garages:
-      parseGarage(attrs),
-
-    floorArea:
-      getAttribute(attrs, "floor_area"),
-
-    landArea:
-      getAttribute(attrs, "land_area"),
-
-    tenure:
-      getAttribute(attrs, "tenure"),
-
-    agentName:
-      extractAgentName(html),
-
-    agencyName:
-      extractAgencyName(html),
-
-    description,
-
-    images,
-
-    openHomes
+    propertyJson:
+      cachedDetails
 
   }
 

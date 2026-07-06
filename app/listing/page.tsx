@@ -5,58 +5,107 @@ import { useState } from "react"
 export default function ListingPage() {
 
   const [url, setUrl] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState("")
-  const [success, setSuccess] = useState(false)
+
+  const [loading, setLoading] =
+    useState(false)
+
+  const [success, setSuccess] =
+    useState(false)
+
+  const [message, setMessage] =
+    useState("")
 
   async function handleImport() {
 
     if (!url.trim()) {
+
       setSuccess(false)
-      setMessage("Please enter a TradeMe URL.")
+
+      setMessage(
+        "Please enter a TradeMe URL."
+      )
+
       return
+
     }
 
     try {
 
       setLoading(true)
+
       setMessage("")
 
-      const res = await fetch("/api/listing/import", {
+      const res = await fetch(
 
-        method: "POST",
+        "/api/listing/import",
 
-        headers: {
-          "Content-Type": "application/json"
-        },
+        {
 
-        body: JSON.stringify({
-          url
-        })
+          method: "POST",
 
-      })
+          headers: {
 
-      const data = await res.json()
+            "Content-Type":
+              "application/json"
 
-      setSuccess(data.success)
+          },
 
-      setMessage(
-        data.message ??
-        (data.success
-          ? "Listing imported successfully."
-          : "Import failed.")
+          body: JSON.stringify({
+
+            url
+
+          })
+
+        }
+
       )
 
-    } catch (e: any) {
+      const data =
+        await res.json()
+
+      setSuccess(
+        data.success
+      )
+
+      setMessage(
+
+        data.message ??
+
+        (
+
+          data.success
+
+            ? "Listing imported successfully."
+
+            : "Import failed."
+
+        )
+
+      )
+
+      if (data.success) {
+
+        setUrl("")
+
+      }
+
+    }
+
+    catch (e: any) {
 
       setSuccess(false)
 
       setMessage(
+
         e.message ??
+
         "Network error."
+
       )
 
-    } finally {
+    }
+
+    finally {
 
       setLoading(false)
 
@@ -71,11 +120,15 @@ export default function ListingPage() {
       <div>
 
         <h1 className="text-3xl font-semibold">
+
           Listing Import
+
         </h1>
 
-        <p className="mt-3 text-gray-600 leading-relaxed">
-          Import a TradeMe listing into MoveInReady.
+        <p className="mt-3 text-gray-600">
+
+          Import a TradeMe property into MoveInReady.
+
         </p >
 
       </div>
@@ -85,64 +138,104 @@ export default function ListingPage() {
         <div>
 
           <label className="block text-sm font-medium mb-2">
+
             TradeMe Listing URL
+
           </label>
 
           <input
+
             type="url"
+
             value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder="https://www.trademe.co.nz/..."
-            className="w-full rounded-lg border px-4 py-3 outline-none focus:ring"
+
+            onChange={(e) =>
+
+              setUrl(e.target.value)
+
+            }
+
+            placeholder="https://www.trademe.co.nz/a/property/residential/sale/..."
+
+            className="w-full rounded-lg border px-4 py-3"
+
           />
 
         </div>
 
         <button
+
           onClick={handleImport}
+
           disabled={loading}
-          className="bg-black text-white rounded-lg px-6 py-3 disabled:opacity-50"
+
+          className="rounded-lg bg-black text-white px-6 py-3 disabled:opacity-50"
+
         >
-          {loading
-            ? "Importing..."
-            : "Import Listing"}
+
+          {
+
+            loading
+
+              ? "Importing..."
+
+              : "Import Listing"
+
+          }
+
         </button>
 
-        {message && (
+        {
 
-          <div
-            className={`rounded-lg px-4 py-3 text-sm ${
-              success
-                ? "bg-green-50 text-green-700 border border-green-200"
-                : "bg-red-50 text-red-700 border border-red-200"
-            }`}
-          >
-            {message}
-          </div>
+          message && (
 
-        )}
+            <div
+
+              className={
+
+                success
+
+                  ? "rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-green-700"
+
+                  : "rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-700"
+
+              }
+
+            >
+
+              {message}
+
+            </div>
+
+          )
+
+        }
 
       </div>
 
       <div className="border rounded-xl p-6">
 
         <h2 className="font-semibold mb-4">
-          Current MVP Workflow
+
+          Current Workflow
+
         </h2>
 
         <ol className="list-decimal pl-5 space-y-2 text-gray-600">
 
           <li>Paste TradeMe URL</li>
 
-          <li>Read TradeMe HTML</li>
+          <li>Download TradeMe HTML</li>
 
-          <li>Extract Listing Data</li>
+          <li>Extract Redux / Initial State</li>
 
-          <li>Save Listing</li>
+          <li>Parse Listing JSON</li>
 
-          <li>Save Open Homes</li>
+          <li>Map to MIR Property</li>
 
-          <li>Generate AI Draft (Next Stage)</li>
+          <li>Save listing_listings</li>
+
+          <li>Save listing_openhomes</li>
 
         </ol>
 
