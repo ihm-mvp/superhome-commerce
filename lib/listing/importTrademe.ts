@@ -30,6 +30,12 @@ export async function importTrademe(
   const html =
     await response.text()
 
+    throw new Error(
+
+  html.slice(0, 2000)
+
+)
+
   // =====================================
   // Extract frend-state JSON
   // =====================================
