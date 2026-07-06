@@ -1,5 +1,3 @@
-import * as cheerio from "cheerio"
-
 export interface OpenHome {
   date: string
   start: string
@@ -20,7 +18,7 @@ export interface TradeMeProperty {
   bedrooms: number
   bathrooms: number
   garages: number | null
-  floorArea: string | null
+  floorArea: string |null
   landArea: string | null
   tenure: string | null
 
@@ -44,6 +42,7 @@ function getAttribute(
   )
 
   return item?.value ?? null
+
 }
 
 function numberOnly(value: string | null): number {
@@ -53,19 +52,21 @@ function numberOnly(value: string | null): number {
   const m = value.match(/\d+/)
 
   return m ? Number(m[0]) : 0
+
 }
 
 function parseGarage(attrs: any[]): number | null {
 
-  const garage =
+  const value =
     getAttribute(attrs, "garage_parking") ??
     getAttribute(attrs, "parking")
 
-  if (!garage) return null
+  if (!value) return null
 
-  const m = garage.match(/\d+/)
+  const m = value.match(/\d+/)
 
   return m ? Number(m[0]) : null
+
 }
 
 function extractImages(html: string): string[] {
@@ -84,75 +85,78 @@ function extractImages(html: string): string[] {
   }
 
   return [...images]
+
 }
 
-function extractAgency($: cheerio.CheerioAPI) {
+function extractAgentName(html: string): string {
 
-  let agentName = ""
+  const m =
+    html.match(/alt="([^"]+)"/)
 
-  let agencyName = ""
+  return m?.[1] ?? ""
 
-  $("img").each((_, el) => {
+}
 
-    const alt = $(el).attr("alt")
+function extractAgencyName(html: string): string {
 
-    if (
-      alt &&
-      alt.length > 2 &&
-      !agentName
-    ) {
-      agentName = alt.trim()
+  const agencies = [
+
+    "Harcourts Gold",
+
+    "Harcourts",
+
+    "Ray White",
+
+    "Bayleys",
+
+    "Holmwood",
+
+    "Lugtons",
+
+    "Property Brokers"
+
+  ]
+
+  for (const agency of agencies) {
+
+    if (html.includes(agency)) {
+
+      return agency
+
     }
 
-  })
-
-  $("body *").each((_, el) => {
-
-    const text = $(el).text().trim()
-
-    if (
-      text.includes("Harcourts") ||
-      text.includes("Ray White") ||
-      text.includes("Harcourts Gold") ||
-      text.includes("Bayleys") ||
-      text.includes("Harcourts Holmwood")
-    ) {
-
-      agencyName = text
-
-      return false
-
-    }
-
-  })
-
-  return {
-    agentName,
-    agencyName
   }
 
+  return ""
+
 }
 
-function extractJson(html: string): any {
+function extractListingJson(html: string): any {
 
   const start =
     html.indexOf('"listing":{"cachedDetails"')
 
-  if (start < 0)
-    throw new Error("TradeMe listing JSON not found.")
+  if (start < 0) {
+
+    throw new Error("Listing JSON not found.")
+
+  }
 
   const end =
     html.indexOf('"marketingCollections"', start)
 
-  if (end < 0)
-    throw new Error("TradeMe JSON end not found.")
+  if (end < 0) {
 
-  const jsonText =
+    throw new Error("Listing JSON end not found.")
+
+  }
+
+  const json =
     "{"
     + html.substring(start, end - 1)
     + "}"
 
-  return JSON.parse(jsonText)
+  return JSON.parse(json)
 
 }
 
@@ -161,32 +165,33 @@ export async function importTrademe(
 ): Promise<TradeMeProperty> {
 
   const html = await fetch(url, {
+
     headers: {
-      "User-Agent":
-        "Mozilla/5.0"
+
+      "User-Agent": "Mozilla/5.0"
+
     }
+
   }).then(r => r.text())
 
-  const $ = cheerio.load(html)
-
-  const json = extractJson(html)
+  const json =
+    extractListingJson(html)
 
   const ids =
     json.listing.cachedDetails.ids
 
-  const listingId = ids[0]
+  const listingId =
+    ids[0]
 
   const item =
-    json.listing
+    json
+      .listing
       .cachedDetails
       .entities[listingId]
       .item
 
   const attrs =
     item.attributes ?? []
-
-  const agency =
-    extractAgency($)
 
   const images =
     extractImages(html)
@@ -209,9 +214,6 @@ export async function importTrademe(
         ""
 
     }))
-
-  const tenure =
-    getAttribute(attrs, "tenure")
 
   const description =
     item.body ??
@@ -269,13 +271,14 @@ export async function importTrademe(
     landArea:
       getAttribute(attrs, "land_area"),
 
-    tenure,
+    tenure:
+      getAttribute(attrs, "tenure"),
 
     agentName:
-      agency.agentName,
+      extractAgentName(html),
 
     agencyName:
-      agency.agencyName,
+      extractAgencyName(html),
 
     description,
 
