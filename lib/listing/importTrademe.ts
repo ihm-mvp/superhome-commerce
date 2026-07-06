@@ -127,7 +127,7 @@ throw new Error(
 
     Object.keys(
 
-      state.NGRX_STATE
+      state.NGRX_STATE || {}
 
     )
 
