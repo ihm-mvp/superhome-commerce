@@ -26,7 +26,7 @@ export default function ListingPage() {
     if (!url) {
 
       alert(
-        "Please enter TradeMe URL."
+        "Please enter Listing URL."
       )
 
       return
@@ -93,7 +93,7 @@ export default function ListingPage() {
           text-gray-500
         "
       >
-        Import a TradeMe listing into MIR.
+        Import a property listing from a supported website to MIR.
       </div>
 
       <input
@@ -104,7 +104,7 @@ export default function ListingPage() {
             e.target.value
           )
         }
-        placeholder="https://www.trademe.co.nz/..."
+        placeholder="Paste a listing URL..."
         className="
           w-full
           border

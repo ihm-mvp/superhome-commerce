@@ -4,7 +4,7 @@ import { NextResponse } from "next/server"
 
 import { supabase } from "@/lib/supabase"
 
-import { importTrademe } from "@/lib/listing/importTrademe"
+import { importListing } from "@/lib/listing/importListing"
 
 export async function POST(
   req: Request
@@ -31,7 +31,7 @@ export async function POST(
     }
 
     const listing =
-      await importTrademe(
+      await importListing(
         url
       )
 
