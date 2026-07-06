@@ -121,13 +121,19 @@ try {
   const ngrx =
     state?.NGRX_STATE
 
-  if (!ngrx) {
+throw new Error(
 
-    throw new Error(
-      "NGRX_STATE not found."
+  JSON.stringify(
+
+    Object.keys(
+
+      state.NGRX_STATE
+
     )
 
-  }
+  )
+
+)
 
   const cachedDetails =
     ngrx
