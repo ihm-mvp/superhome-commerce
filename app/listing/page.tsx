@@ -1,245 +1,200 @@
 "use client"
 
-import { useState } from "react"
+import {
+  useState,
+} from "react"
 
 export default function ListingPage() {
 
-  const [url, setUrl] = useState("")
+  const [
+    url,
+    setUrl,
+  ] = useState("")
 
-  const [loading, setLoading] =
-    useState(false)
+  const [
+    loading,
+    setLoading,
+  ] = useState(false)
 
-  const [success, setSuccess] =
-    useState(false)
+  const [
+    result,
+    setResult,
+  ] = useState<any>(null)
 
-  const [message, setMessage] =
-    useState("")
+  async function importListing() {
 
-  async function handleImport() {
+    if (!url) {
 
-    if (!url.trim()) {
-
-      setSuccess(false)
-
-      setMessage(
-        "Please enter a TradeMe URL."
+      alert(
+        "Please enter TradeMe URL."
       )
 
       return
 
     }
 
-    try {
+    setLoading(true)
 
-      setLoading(true)
+    setResult(null)
 
-      setMessage("")
-
-      const res = await fetch(
-
+    const res =
+      await fetch(
         "/api/listing/import",
-
         {
-
           method: "POST",
 
           headers: {
-
             "Content-Type":
-              "application/json"
-
+              "application/json",
           },
 
-          body: JSON.stringify({
+          body:
+            JSON.stringify({
 
-            url
+              url,
 
-          })
+            }),
 
         }
-
       )
 
-      const data =
-        await res.json()
+    const json =
+      await res.json()
 
-      setSuccess(
-        data.success
-      )
+    setLoading(false)
 
-      setMessage(
-
-        data.message ??
-
-        (
-
-          data.success
-
-            ? "Listing imported successfully."
-
-            : "Import failed."
-
-        )
-
-      )
-
-      if (data.success) {
-
-        setUrl("")
-
-      }
-
-    }
-
-    catch (e: any) {
-
-      setSuccess(false)
-
-      setMessage(
-
-        e.message ??
-
-        "Network error."
-
-      )
-
-    }
-
-    finally {
-
-      setLoading(false)
-
-    }
+    setResult(json)
 
   }
 
   return (
 
-    <div className="max-w-3xl mx-auto px-6 py-12 space-y-8">
+    <div
+      className="
+        max-w-3xl
+        mx-auto
+        px-6
+        py-10
+        space-y-6
+      "
+    >
 
-      <div>
+      <h1
+        className="
+          text-3xl
+          font-semibold
+        "
+      >
+        Listing Import
+      </h1>
 
-        <h1 className="text-3xl font-semibold">
-
-          Listing Import
-
-        </h1>
-
-        <p className="mt-3 text-gray-600">
-
-          Import a TradeMe property into MoveInReady.
-
-        </p >
-
+      <div
+        className="
+          text-gray-500
+        "
+      >
+        Import a TradeMe listing into MIR.
       </div>
 
-      <div className="border rounded-xl p-6 space-y-5">
+      <input
+        type="text"
+        value={url}
+        onChange={(e) =>
+          setUrl(
+            e.target.value
+          )
+        }
+        placeholder="https://www.trademe.co.nz/..."
+        className="
+          w-full
+          border
+          rounded-lg
+          px-4
+          py-3
+        "
+      />
 
-        <div>
+      <button
+        onClick={
+          importListing
+        }
+        disabled={
+          loading
+        }
+        className="
+          bg-black
+          text-white
+          px-6
+          py-3
+          rounded-lg
+          disabled:opacity-50
+        "
+      >
 
-          <label className="block text-sm font-medium mb-2">
+        {loading
 
-            TradeMe Listing URL
+          ? "Importing..."
 
-          </label>
+          : "Import Listing"}
 
-          <input
+      </button>
 
-            type="url"
+      {result && (
 
-            value={url}
-
-            onChange={(e) =>
-
-              setUrl(e.target.value)
-
-            }
-
-            placeholder="https://www.trademe.co.nz/a/property/residential/sale/..."
-
-            className="w-full rounded-lg border px-4 py-3"
-
-          />
-
-        </div>
-
-        <button
-
-          onClick={handleImport}
-
-          disabled={loading}
-
-          className="rounded-lg bg-black text-white px-6 py-3 disabled:opacity-50"
-
+        <div
+          className="
+            border
+            rounded-xl
+            p-5
+            bg-gray-50
+          "
         >
 
-          {
-
-            loading
-
-              ? "Importing..."
-
-              : "Import Listing"
-
-          }
-
-        </button>
-
-        {
-
-          message && (
+          {result.success ? (
 
             <div
-
-              className={
-
-                success
-
-                  ? "rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-green-700"
-
-                  : "rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-700"
-
-              }
-
+              className="
+                text-green-700
+              "
             >
 
-              {message}
+              Import Success
+
+              <div
+                className="
+                  mt-2
+                  text-sm
+                  text-gray-600
+                "
+              >
+
+                Listing ID:
+
+                {" "}
+
+                {result.id}
+
+              </div>
 
             </div>
 
-          )
+          ) : (
 
-        }
+            <div
+              className="
+                text-red-600
+              "
+            >
 
-      </div>
+              {result.error}
 
-      <div className="border rounded-xl p-6">
+            </div>
 
-        <h2 className="font-semibold mb-4">
+          )}
 
-          Current Workflow
+        </div>
 
-        </h2>
-
-        <ol className="list-decimal pl-5 space-y-2 text-gray-600">
-
-          <li>Paste TradeMe URL</li>
-
-          <li>Download TradeMe HTML</li>
-
-          <li>Extract Redux / Initial State</li>
-
-          <li>Parse Listing JSON</li>
-
-          <li>Map to MIR Property</li>
-
-          <li>Save listing_listings</li>
-
-          <li>Save listing_openhomes</li>
-
-        </ol>
-
-      </div>
+      )}
 
     </div>
 

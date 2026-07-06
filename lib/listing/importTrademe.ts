@@ -1,126 +1,312 @@
-import { load } from "cheerio/slim";
+// lib/listing/importTrademe.ts
 
-export interface TradeMeListing {
-  listingId: number;
-  title: string;
-  address: string;
-  price?: string;
-  description?: string;
-  latitude?: number;
-  longitude?: number;
-  bedrooms?: number;
-  bathrooms?: number;
-  parking?: number;
-  landArea?: number;
-  floorArea?: number;
-  propertyType?: string;
-  agency?: string;
-  office?: string;
-  agent?: string;
-  photos: string[];
-  openHomes: any[];
-  raw: any;
-}
+export async function importTrademe(
+  url: string
+) {
 
-export function importTrademe(html: string): TradeMeListing {
+  // =====================================
+  // Fetch HTML
+  // =====================================
 
-  // MIR统一模式：仅定位script，不解析DOM
-  const $ = load(html);
+  const response =
+    await fetch(
+      url,
+      {
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0",
+        },
+      }
+    )
 
-  const jsonText =
-    $("#frend-state").html() ??
-    (() => {
-      throw new Error("frend-state not found");
-    })();
+  if (!response.ok) {
 
-  const state = JSON.parse(jsonText);
+    throw new Error(
+      "Unable to fetch TradeMe page."
+    )
 
-  const cached =
-    state.NGRX_STATE
+  }
+
+  const html =
+    await response.text()
+
+  // =====================================
+  // Extract frend-state JSON
+  // =====================================
+
+  const scriptStart =
+    html.indexOf(
+      '<script id="frend-state"'
+    )
+
+  if (
+    scriptStart === -1
+  ) {
+
+    throw new Error(
+      "frend-state not found."
+    )
+
+  }
+
+  const jsonStart =
+    html.indexOf(
+      ">",
+      scriptStart
+    ) + 1
+
+  const jsonEnd =
+    html.indexOf(
+      "</script>",
+      jsonStart
+    )
+
+  if (
+    jsonEnd === -1
+  ) {
+
+    throw new Error(
+      "frend-state end tag not found."
+    )
+
+  }
+
+  const jsonString =
+    html
+      .substring(
+        jsonStart,
+        jsonEnd
+      )
+      .trim()
+
+  // =====================================
+  // Parse JSON
+  // =====================================
+
+  let state: any
+
+  try {
+
+    state =
+      JSON.parse(
+        jsonString
+      )
+
+  } catch {
+
+    throw new Error(
+      "Unable to parse frend-state JSON."
+    )
+
+  }
+
+  // =====================================
+  // Locate Listing
+  // =====================================
+
+  const ngrx =
+    state?.NGRX_STATE
+
+  if (!ngrx) {
+
+    throw new Error(
+      "NGRX_STATE not found."
+    )
+
+  }
+
+  const cachedDetails =
+    ngrx
       ?.listing
-      ?.cachedDetails;
+      ?.cachedDetails
 
-  if (!cached)
-    throw new Error("cachedDetails missing");
+  if (
+    !cachedDetails
+  ) {
 
-  const id = String(cached.ids[0]);
+    throw new Error(
+      "listing.cachedDetails not found."
+    )
+
+  }
+
+  const ids =
+    cachedDetails.ids
+
+  const entities =
+    cachedDetails.entities
+
+  if (
+    !ids?.length
+  ) {
+
+    throw new Error(
+      "Listing ids not found."
+    )
+
+  }
 
   const item =
-    cached.entities[id]?.item;
+    entities[
+      ids[0]
+    ]
 
-  if (!item)
-    throw new Error("listing item missing");
+  if (!item) {
 
-  const attrs = item.propertyAttributes ?? [];
+    throw new Error(
+      "Listing entity not found."
+    )
 
-  const findNumber = (...names: string[]) => {
-    const x = attrs.find((a: any) =>
-      names.includes(a.name)
-    );
-    return x?.value ?? x?.displayValue;
-  };
+  }
+    // =====================================
+  // Property Information
+  // =====================================
 
-  return {
+  const info =
+    item.propertyListingInfo || {}
 
-    listingId: item.listingId,
+  const attrs =
+    item.attributes || {}
 
-    title: item.title,
+  const propertyAttrs =
+    item.propertyAttributes || {}
 
-    address:
-      item.geographicLocation?.displayAddress ??
+  const geo =
+    item.geographicLocation || {}
+
+  const agency =
+    item.agency || {}
+
+  const office =
+    item.office || {}
+
+  const member =
+    item.member || {}
+
+  // =====================================
+  // Photos
+  // =====================================
+
+  const photos =
+    (item.photos || [])
+      .map(
+        (p: any) =>
+          p.url ||
+          p.large ||
+          p.medium ||
+          p.thumbnail
+      )
+      .filter(Boolean)
+
+  // =====================================
+  // Open Homes
+  // =====================================
+
+  const openHomes =
+    (item.openHomes || []).map(
+      (o: any) => ({
+
+        start_time:
+          o.startDateTime ||
+
+          o.start ||
+
+          null,
+
+        end_time:
+          o.endDateTime ||
+
+          o.end ||
+
+          null,
+
+        raw_json:
+          o,
+
+      })
+    )
+
+  // =====================================
+  // Listing Object
+  // =====================================
+
+  const listing = {
+
+    trademe_id:
+      item.listingId,
+
+    title:
       item.title,
-
-    price:
-      item.priceDisplay?.displayPrice,
 
     description:
       item.body,
 
-    latitude:
-      item.geographicLocation?.latitude,
+    canonical_path:
+      item.canonicalPath,
 
-    longitude:
-      item.geographicLocation?.longitude,
+    price_display:
+      item.priceDisplay,
+
+    property_type:
+      info.propertyType,
 
     bedrooms:
-      findNumber("Bedrooms"),
+      info.bedrooms,
 
     bathrooms:
-      findNumber("Bathrooms"),
+      info.bathrooms,
 
     parking:
-      findNumber("Parking"),
+      info.parking,
 
-    landArea:
-      findNumber("Land area"),
+    land_area:
+      info.landArea,
 
-    floorArea:
-      findNumber("Floor area"),
+    floor_area:
+      info.floorArea,
 
-    propertyType:
-      findNumber("Property type"),
+    attributes:
+      attrs,
 
-    agency:
-      item.agency?.name,
+    property_attributes:
+      propertyAttrs,
 
-    office:
-      item.office?.name,
+    photos,
 
-    agent:
-      item.member?.displayName,
+    agency_name:
+      agency.name,
 
-    photos:
-      (item.photos ?? []).map(
-        (p: any) =>
-          p.large ??
-          p.medium ??
-          p.value ??
-          p.url
-      ),
+    office_name:
+      office.name,
 
-    openHomes:
-      item.openHomes ?? [],
+    agent_name:
+      member.displayName,
 
-    raw: item
-  };
+    latitude:
+      geo.latitude,
+
+    longitude:
+      geo.longitude,
+
+    suburb:
+      geo.suburb,
+
+    city:
+      geo.city,
+
+    district:
+      geo.district,
+
+    region:
+      geo.region,
+
+    openHomes,
+
+  }
+    // =====================================
+  // Return
+  // =====================================
+
+  return listing
+
 }

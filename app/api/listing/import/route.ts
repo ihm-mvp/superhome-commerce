@@ -1,194 +1,101 @@
-import { NextRequest, NextResponse } from "next/server"
-import { createClient } from "@supabase/supabase-js"
+// app/api/listing/import/route.ts
+
+import { NextResponse } from "next/server"
+
+import { supabase } from "@/lib/supabase"
 
 import { importTrademe } from "@/lib/listing/importTrademe"
 
-const supabase = createClient(
-
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-
-)
-
-// 临时固定用户
-// 登录完成后改为当前登录用户ID
-
-const USER_ID =
-  "f274bb98-bf20-438b-b6f3-9ac4f875c26a"
-
 export async function POST(
-  req: NextRequest
+  req: Request
 ) {
 
   try {
 
-    const { url } =
-      await req.json()
+    const {
+      url,
+    } = await req.json()
 
     if (!url) {
 
-      return NextResponse.json({
-
-        success: false,
-
-        message: "TradeMe URL is required."
-
-      }, {
-
-        status: 400
-
-      })
+      return NextResponse.json(
+        {
+          error:
+            "URL is required.",
+        },
+        {
+          status: 400,
+        }
+      )
 
     }
 
-    const property =
-      await importTrademe(url)
-
-    const {
-
-      data: listing,
-
-      error: listingError
-
-    } = await supabase
-
-      .from("listing_listings")
-
-      .upsert({
-
-        user_id:
-          USER_ID,
-
-        source_platform:
-          property.sourcePlatform,
-
-        source_listing_id:
-          property.sourceListingId,
-
-        source_url:
-          property.sourceUrl,
-
-        address:
-          property.address,
-
-        headline:
-          property.headline,
-
-        property_type:
-          property.propertyType,
-
-        price:
-          property.price,
-
-        bedrooms:
-          property.bedrooms,
-
-        bathrooms:
-          property.bathrooms,
-
-        garages:
-          property.garages,
-
-        floor_area:
-          property.floorArea,
-
-        land_area:
-          property.landArea,
-
-        tenure:
-          property.tenure,
-
-        agent_name:
-          property.agentName,
-
-        agency_name:
-          property.agencyName,
-
-        trademe_description:
-          property.description,
-
-        listing_status:
-          property.listingStatus,
-
-        property_json:
-          property.propertyJson
-
-      }, {
-
-        onConflict:
-          "source_platform,source_listing_id"
-
-      })
-
-      .select()
-
-      .single()
-
-    if (listingError)
-      throw listingError
-
-    const {
-
-      error: deleteError
-
-    } = await supabase
-
-      .from("listing_openhomes")
-
-      .delete()
-
-      .eq(
-
-        "listing_id",
-
-        listing.id
-
+    const listing =
+      await importTrademe(
+        url
       )
 
-    if (deleteError)
-      throw deleteError
+    const {
+
+      openHomes,
+
+      ...listingRow
+
+    } = listing
+
+    const {
+      data: savedListing,
+      error: listingError,
+    } = await supabase
+      .from(
+        "listing_listings"
+      )
+      .insert(
+        listingRow
+      )
+      .select("id")
+      .single()
 
     if (
-      property.openHomes.length > 0
+      listingError
+    ) {
+
+      throw listingError
+
+    }
+
+    if (
+      openHomes?.length
     ) {
 
       const rows =
-
-        property.openHomes.map(
-
-          (o) => ({
+        openHomes.map(
+          (o: any) => ({
 
             listing_id:
-              listing.id,
+              savedListing.id,
 
-            openhome_date:
-              o.date,
-
-            start_time:
-              o.start,
-
-            end_time:
-              o.end
+            ...o,
 
           })
-
         )
 
       const {
-
-        error: openhomeError
-
+        error:
+          openhomeError,
       } = await supabase
-
         .from(
           "listing_openhomes"
         )
-
         .insert(rows)
 
-      if (openhomeError)
+      if (
+        openhomeError
+      ) {
+
         throw openhomeError
+
+      }
 
     }
 
@@ -196,33 +103,29 @@ export async function POST(
 
       success: true,
 
-      listingId:
-        listing.id,
-
-      message:
-        "Listing imported successfully."
+      id:
+        savedListing.id,
 
     })
 
-  }
+  } catch (error: any) {
 
-  catch (e: any) {
+    return NextResponse.json(
 
-    return NextResponse.json({
+      {
 
-      success: false,
+        error:
+          error.message,
 
-      message:
+      },
 
-        e.message ??
+      {
 
-        "Import failed."
+        status: 500,
 
-    }, {
+      }
 
-      status: 500
-
-    })
+    )
 
   }
 
