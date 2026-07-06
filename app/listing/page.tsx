@@ -1,9 +1,40 @@
+"use client"
+
 export const metadata = {
   title: "Listing Import | MoveInReady",
   description: "Import TradeMe listings into MoveInReady.",
 }
 
 export default function ListingPage() {
+
+  async function importListing() {
+
+    const input = document.getElementById("trademeUrl") as HTMLInputElement
+
+    if (!input.value.trim()) {
+      alert("Please enter a TradeMe URL.")
+      return
+    }
+
+    const res = await fetch("/api/listing/import", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        url: input.value,
+      }),
+    })
+
+    const data = await res.json()
+
+    alert(
+      data.success
+        ? "Listing imported successfully."
+        : data.message
+    )
+  }
+
   return (
     <div className="max-w-3xl mx-auto px-6 py-12 space-y-8">
 
@@ -14,7 +45,7 @@ export default function ListingPage() {
 
         <p className="mt-3 text-gray-600">
           Paste a TradeMe property URL to import the listing into MoveInReady.
-        </p>
+        </p >
       </div>
 
       <div className="border rounded-xl p-6 space-y-4">
@@ -32,28 +63,9 @@ export default function ListingPage() {
 
         <button
           id="importButton"
-          className="bg-black text-white px-6 py-3 rounded-lg"
-          onClick={async () => {
-            const input = document.getElementById("trademeUrl") as HTMLInputElement
-
-            const res = await fetch("/api/listing/import", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                url: input.value,
-              }),
-            })
-
-            const data = await res.json()
-
-            alert(
-              data.success
-                ? "Listing imported successfully."
-                : data.message
-            )
-          }}
+          type="button"
+          className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800"
+          onClick={importListing}
         >
           Import Listing
         </button>
