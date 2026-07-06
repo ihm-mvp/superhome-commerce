@@ -118,12 +118,10 @@ try {
 throw new Error(
 
   JSON.stringify(
-
-    Object.keys(
-      ngrx
-    )
-
-  )
+    state,
+    null,
+    2
+  ).slice(0,4000)
 
 )
 
