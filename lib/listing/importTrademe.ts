@@ -117,7 +117,13 @@ try {
 
 throw new Error(
 
-"DEBUG 20260706"
+  JSON.stringify(
+
+    Object.keys(
+      ngrx
+    )
+
+  )
 
 )
 
