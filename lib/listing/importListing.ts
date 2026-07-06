@@ -41,15 +41,17 @@ async function parseHarcourtsGold(
       }
     )
 
-  if (
-    !response.ok
-  ) {
+if (
+  !response.ok
+) {
 
-    throw new Error(
-      "Unable to fetch listing."
-    )
+  throw new Error(
 
-  }
+    `${response.status} ${response.statusText}`
+
+  )
+
+}
 
   const html =
     await response.text()
