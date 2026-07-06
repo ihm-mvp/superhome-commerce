@@ -117,11 +117,34 @@ try {
 
 throw new Error(
 
-  JSON.stringify(
-    state,
-    null,
-    2
-  ).slice(0,4000)
+  JSON.stringify({
+
+    listing:
+      jsonString.indexOf(
+        '"listing"'
+      ),
+
+    cachedDetails:
+      jsonString.indexOf(
+        '"cachedDetails"'
+      ),
+
+    entities:
+      jsonString.indexOf(
+        '"entities"'
+      ),
+
+    listingId:
+      jsonString.indexOf(
+        '"listingId"'
+      ),
+
+    propertyListingInfo:
+      jsonString.indexOf(
+        '"propertyListingInfo"'
+      )
+
+  })
 
 )
 
