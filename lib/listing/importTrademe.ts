@@ -123,15 +123,7 @@ try {
 
 throw new Error(
 
-  JSON.stringify(
-
-    Object.keys(
-
-      state.NGRX_STATE || {}
-
-    )
-
-  )
+"DEBUG 20260706"
 
 )
 
