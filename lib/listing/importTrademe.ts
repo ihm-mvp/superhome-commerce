@@ -92,12 +92,6 @@ try {
       jsonString
     )
 
-  throw new Error(
-    JSON.stringify(
-      Object.keys(state)
-    )
-  )
-
 } catch (e: any) {
 
   if (
