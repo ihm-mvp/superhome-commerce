@@ -317,6 +317,16 @@ throw new Error(
   // Return
   // =====================================
 
-  return listing
+return {
+
+  debug:
+
+    Object.keys(
+
+      ngrx.listing || {}
+
+    )
+
+}
 
 }
