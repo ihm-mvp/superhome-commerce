@@ -83,22 +83,36 @@ export async function importTrademe(
   // Parse JSON
   // =====================================
 
-  let state: any
+let state: any
 
-  try {
+try {
 
-    state =
-      JSON.parse(
-        jsonString
-      )
-
-  } catch {
-
-    throw new Error(
-      "Unable to parse frend-state JSON."
+  state =
+    JSON.parse(
+      jsonString
     )
 
+  throw new Error(
+    JSON.stringify(
+      Object.keys(state)
+    )
+  )
+
+} catch (e: any) {
+
+  if (
+    e.message?.startsWith("[")
+  ) {
+
+    throw e
+
   }
+
+  throw new Error(
+    "Unable to parse frend-state JSON."
+  )
+
+}
 
   // =====================================
   // Locate Listing
