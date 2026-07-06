@@ -323,7 +323,7 @@ return {
 
     Object.keys(
 
-      ngrx.listing || {}
+      ngrx
 
     )
 
