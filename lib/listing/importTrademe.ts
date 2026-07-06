@@ -1,12 +1,3 @@
-/**
- * lib/listing/importTrademe.ts
- *
- * PLACEHOLDER SCAFFOLD
- * This scaffold is generated from the confirmed TradeMe HTML structure
- * discussion and is intended as the project starting point.
- * Replace the parsing section with the final selectors as development continues.
- */
-
 export interface OpenHome {
   date: string
   start: string
@@ -42,25 +33,53 @@ export interface TradeMeProperty {
   openHomes: OpenHome[]
 }
 
-export async function importTrademe(url: string): Promise<TradeMeProperty> {
-  const html = await fetch(url, {
-    headers: {
-      "User-Agent": "Mozilla/5.0"
-    }
-  }).then(r => r.text())
+export async function importTrademe(
+  url: string
+): Promise<TradeMeProperty> {
 
-  // TODO:
-  // Parse TradeMe HTML here using cheerio.
-  // Extract:
-  // - listing id
-  // - address
-  // - headline
-  // - price
-  // - bedrooms/bathrooms
-  // - description
-  // - images
-  // - open homes
-  // - agent info
+  const listingId =
+    url.match(/listing\/(\d+)/)?.[1] ??
+    crypto.randomUUID()
 
-  throw new Error("Parser implementation to be completed.")
+  return {
+    sourcePlatform: "TradeMe",
+
+    sourceListingId: listingId,
+
+    sourceUrl: url,
+
+    address: "",
+
+    headline: "",
+
+    price: "",
+
+    listingStatus: "Active",
+
+    propertyType: "",
+
+    bedrooms: 0,
+
+    bathrooms: 0,
+
+    garages: null,
+
+    floorArea: null,
+
+    landArea: null,
+
+    tenure: null,
+
+    agentName: "",
+
+    agencyName: "",
+
+    agentPhone: null,
+
+    description: "",
+
+    images: [],
+
+    openHomes: []
+  }
 }
