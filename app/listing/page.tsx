@@ -1,10 +1,5 @@
 "use client"
 
-export const metadata = {
-  title: "Listing Import | MoveInReady",
-  description: "Import TradeMe listings into MoveInReady.",
-}
-
 export default function ListingPage() {
 
   async function importListing() {
