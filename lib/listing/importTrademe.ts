@@ -1,236 +1,126 @@
-// lib/listing/importTrademe.ts
+import { load } from "cheerio/slim";
 
-import { mapTrademe } from "./mapTrademe"
-import { TradeMeProperty } from "./types"
-
-function extractInitialState(html: string): any {
-
-  const patterns = [
-
-    "window.__INITIAL_STATE__=",
-
-    "window.__INITIAL_STATE__ =",
-
-    "__INITIAL_STATE__=",
-
-    "__INITIAL_STATE__ ="
-
-  ]
-
-  let start = -1
-
-  for (const p of patterns) {
-
-    start = html.indexOf(p)
-
-    if (start >= 0) {
-
-      start += p.length
-      break
-
-    }
-
-  }
-
-  if (start < 0) {
-
-    throw new Error("TradeMe initial state not found.")
-
-  }
-
-  while (
-
-    html[start] === " " ||
-    html[start] === "\n" ||
-    html[start] === "\r"
-
-  ) {
-
-    start++
-
-  }
-
-  if (html[start] !== "{") {
-
-    throw new Error("Initial state JSON not found.")
-
-  }
-
-  let depth = 0
-  let inString = false
-  let escaped = false
-  let end = -1
-
-  for (let i = start; i < html.length; i++) {
-
-    const c = html[i]
-
-    if (escaped) {
-
-      escaped = false
-      continue
-
-    }
-
-    if (c === "\\") {
-
-      escaped = true
-      continue
-
-    }
-
-    if (c === "\"") {
-
-      inString = !inString
-      continue
-
-    }
-
-    if (inString) {
-
-      continue
-
-    }
-
-    if (c === "{") {
-
-      depth++
-
-    }
-
-    else if (c === "}") {
-
-      depth--
-
-      if (depth === 0) {
-
-        end = i
-        break
-
-      }
-
-    }
-
-  }
-
-  if (end < 0) {
-
-    throw new Error("Initial state JSON incomplete.")
-
-  }
-
-  return JSON.parse(
-
-    html.substring(
-      start,
-      end + 1
-    )
-
-  )
-
+export interface TradeMeListing {
+  listingId: number;
+  title: string;
+  address: string;
+  price?: string;
+  description?: string;
+  latitude?: number;
+  longitude?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  parking?: number;
+  landArea?: number;
+  floorArea?: number;
+  propertyType?: string;
+  agency?: string;
+  office?: string;
+  agent?: string;
+  photos: string[];
+  openHomes: any[];
+  raw: any;
 }
 
-function findCachedDetails(
-  state: any
-): any {
+export function importTrademe(html: string): TradeMeListing {
 
-  if (
-    state?.listing?.cachedDetails
-  ) {
+  // MIR统一模式：仅定位script，不解析DOM
+  const $ = load(html);
 
-    return state.listing.cachedDetails
+  const jsonText =
+    $("#frend-state").html() ??
+    (() => {
+      throw new Error("frend-state not found");
+    })();
 
-  }
+  const state = JSON.parse(jsonText);
 
-  throw new Error(
-    "listing.cachedDetails not found."
-  )
+  const cached =
+    state.NGRX_STATE
+      ?.listing
+      ?.cachedDetails;
 
-}
+  if (!cached)
+    throw new Error("cachedDetails missing");
 
-function firstListing(
-  cachedDetails: any
-): any {
-
-  const ids =
-    cachedDetails.ids ?? []
-
-  if (ids.length === 0) {
-
-    throw new Error(
-      "No listing found."
-    )
-
-  }
-
-  const entity =
-
-    cachedDetails.entities?.[
-      ids[0]
-    ]
-
-  if (!entity?.item) {
-
-    throw new Error(
-      "Listing entity missing."
-    )
-
-  }
-
-  return entity.item
-
-}
-
-export async function importTrademe(
-
-  url: string
-
-): Promise<TradeMeProperty> {
-
-  const response =
-    await fetch(url, {
-
-      headers: {
-
-        "User-Agent":
-          "Mozilla/5.0"
-
-      }
-
-    })
-
-  if (!response.ok) {
-
-    throw new Error(
-      "Unable to download TradeMe page."
-    )
-
-  }
-
-  const html =
-    await response.text()
-      const state =
-    extractInitialState(html)
-
-  const cachedDetails =
-    findCachedDetails(state)
+  const id = String(cached.ids[0]);
 
   const item =
-    firstListing(cachedDetails)
+    cached.entities[id]?.item;
 
-  const property =
-    mapTrademe(
-      item,
-      url
-    )
+  if (!item)
+    throw new Error("listing item missing");
+
+  const attrs = item.propertyAttributes ?? [];
+
+  const findNumber = (...names: string[]) => {
+    const x = attrs.find((a: any) =>
+      names.includes(a.name)
+    );
+    return x?.value ?? x?.displayValue;
+  };
 
   return {
 
-    ...property,
+    listingId: item.listingId,
 
-    propertyJson:
-      cachedDetails
+    title: item.title,
 
-  }
+    address:
+      item.geographicLocation?.displayAddress ??
+      item.title,
 
+    price:
+      item.priceDisplay?.displayPrice,
+
+    description:
+      item.body,
+
+    latitude:
+      item.geographicLocation?.latitude,
+
+    longitude:
+      item.geographicLocation?.longitude,
+
+    bedrooms:
+      findNumber("Bedrooms"),
+
+    bathrooms:
+      findNumber("Bathrooms"),
+
+    parking:
+      findNumber("Parking"),
+
+    landArea:
+      findNumber("Land area"),
+
+    floorArea:
+      findNumber("Floor area"),
+
+    propertyType:
+      findNumber("Property type"),
+
+    agency:
+      item.agency?.name,
+
+    office:
+      item.office?.name,
+
+    agent:
+      item.member?.displayName,
+
+    photos:
+      (item.photos ?? []).map(
+        (p: any) =>
+          p.large ??
+          p.medium ??
+          p.value ??
+          p.url
+      ),
+
+    openHomes:
+      item.openHomes ?? [],
+
+    raw: item
+  };
 }
