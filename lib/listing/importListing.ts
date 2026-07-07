@@ -525,33 +525,47 @@ for (const match of hrefMatches) {
 
   seen.add(uid)
 
+  const start =
+
+    ics.match(
+
+      /DTSTART:(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z/
+
+    )
+
+  const end =
+
+    ics.match(
+
+      /DTEND:(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z/
+
+    )
+
+  if (
+
+    !start ||
+
+    !end
+
+  ) {
+
+    continue
+
+  }
+
   openHomes.push({
+
+    openhome_date:
+
+      `${start[1]}-${start[2]}-${start[3]}`,
 
     start_time:
 
-      ics.match(
-        /DTSTART:([^\r\n]+)/
-      )?.[1] || null,
+      `${start[4]}:${start[5]}:${start[6]}`,
 
     end_time:
 
-      ics.match(
-        /DTEND:([^\r\n]+)/
-      )?.[1] || null,
-
-    raw_json: {
-
-      uid,
-
-      location:
-
-        ics.match(
-          /LOCATION:([^\r\n]+)/
-        )?.[1] || null,
-
-      raw_ics: ics,
-
-    },
+      `${end[4]}:${end[5]}:${end[6]}`,
 
   })
 
