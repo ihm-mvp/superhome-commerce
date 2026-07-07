@@ -8,41 +8,79 @@ export default function Hero({
   listing,
 }: Props) {
 
-  const photo =
+  const photos =
 
-    listing.property_json?.photos?.[0] || ""
+    listing.property_json?.photos || []
 
   return (
 
     <section className="bg-white">
 
-      {/* Hero Image */}
+      {/* Hero Images */}
 
-      <div className="relative">
+      <div
+        className="
+          flex
+          overflow-x-auto
+          snap-x
+          snap-mandatory
+          scrollbar-hide
+        "
+      >
 
-        {photo ? (
+        {photos.length > 0 ? (
 
-          <img
-            src={photo}
-            alt={listing.address}
-            className="w-full aspect-video object-cover"
-          />
+          photos.map(
+
+            (
+              photo: string,
+              index: number
+            ) => (
+
+              <div
+                key={index}
+                className="
+                  relative
+                  min-w-full
+                  snap-center
+                "
+              >
+
+                <img
+                  src={photo}
+                  alt={listing.address}
+                  className="
+                    w-full
+                    aspect-[3/2]
+                    object-cover
+                  "
+                />
+
+                {index === 0 && (
+
+                  <div className="absolute top-4 left-4">
+
+                    <span className="rounded-full bg-green-600 px-3 py-1 text-sm font-semibold text-white">
+
+                      For Sale
+
+                    </span>
+
+                  </div>
+
+                )}
+
+              </div>
+
+            )
+
+          )
 
         ) : (
 
-          <div className="w-full aspect-video bg-gray-200" />
+          <div className="w-full aspect-[3/2] bg-gray-200" />
 
         )}
-
-        <div className="absolute top-4 left-4">
-
-          <span className="rounded-full bg-green-600 px-3 py-1 text-sm font-semibold text-white">
-
-            For Sale
-
-          </span>
-
-        </div>
 
       </div>
 
@@ -50,17 +88,19 @@ export default function Hero({
 
       <div className="px-5 py-6">
 
-        {/* Price */}
+        <div className="text-sm font-medium uppercase tracking-wide text-gray-500">
 
-        <h1 className="text-3xl font-bold text-gray-900">
+          Asking Price
+
+        </div>
+
+        <h1 className="mt-1 text-4xl font-bold text-gray-900">
 
           {listing.price}
 
         </h1>
 
-        {/* Address */}
-
-        <h2 className="mt-3 text-xl font-semibold text-gray-900">
+        <h2 className="mt-4 text-xl font-semibold leading-snug text-gray-900">
 
           {listing.address}
 
