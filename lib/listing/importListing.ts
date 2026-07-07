@@ -484,6 +484,8 @@ const officeName =
 
 const openHomes: any[] = []
 
+const seen = new Set<string>()
+
 const hrefRegex =
 
   /href="data:text\/calendar;charset=utf8;base64,([^"]+)"/g
@@ -492,28 +494,66 @@ const hrefMatches =
 
   [...html.matchAll(hrefRegex)]
 
-console.log(
-
-  "Calendar Links:",
-
-  hrefMatches.length
-
-)
-
 for (const match of hrefMatches) {
-
-  const base64 = match[1]
 
   const ics =
 
     Buffer
       .from(
-        base64,
+        match[1],
         "base64"
       )
       .toString("utf8")
 
-  console.log(ics)
+  const uid =
+
+    ics.match(
+      /UID:([^\r\n]+)/
+    )?.[1]
+
+  if (
+
+    !uid ||
+
+    seen.has(uid)
+
+  ) {
+
+    continue
+
+  }
+
+  seen.add(uid)
+
+  openHomes.push({
+
+    start_time:
+
+      ics.match(
+        /DTSTART:([^\r\n]+)/
+      )?.[1] || null,
+
+    end_time:
+
+      ics.match(
+        /DTEND:([^\r\n]+)/
+      )?.[1] || null,
+
+    raw_json: {
+
+      uid,
+
+      location:
+
+        ics.match(
+          /LOCATION:([^\r\n]+)/
+        )?.[1] || null,
+
+      raw_ics: ics,
+
+    },
+
+  })
 
 }
 
