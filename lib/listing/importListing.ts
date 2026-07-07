@@ -478,43 +478,105 @@ const officeName =
         )
       : null
 
-  // =====================================
-  // Open Homes
-  // =====================================
+// =====================================
+// Open Homes
+// =====================================
 
-  const openHomes: any[] = []
+const openHomes: any[] = []
 
-const openHomeRegex =
+const calendarRegex =
 
-  /"startDate":"([^"]+)"[\s\S]*?"endDate":"([^"]+)"/g
+  /<a[^>]*class="[^"]*download-open-homes[^"]*"[^>]*href="data:text\/calendar;charset=utf8;base64,([^"]+)"/g
 
-  let match
+let calendarMatch
 
-  while (
+while (
 
-    (
-      match =
-        openHomeRegex.exec(
-          html
+  (calendarMatch = calendarRegex.exec(html))
+
+  !== null
+
+) {
+
+  try {
+
+    const ics =
+
+      Buffer
+
+        .from(
+
+          calendarMatch[1],
+
+          "base64"
+
         )
-    ) !== null
 
-  ) {
+        .toString("utf8")
+
+    const start =
+
+      ics.match(
+
+        /DTSTART:([^\r\n]+)/
+
+      )
+
+    const end =
+
+      ics.match(
+
+        /DTEND:([^\r\n]+)/
+
+      )
+
+    const location =
+
+      ics.match(
+
+        /LOCATION:([^\r\n]+)/
+
+      )
 
     openHomes.push({
 
       start_time:
-        match[1],
+
+        start
+
+          ? start[1]
+
+          : null,
 
       end_time:
-        match[2],
 
-      raw_json:
-        match[0],
+        end
+
+          ? end[1]
+
+          : null,
+
+      location:
+
+        location
+
+          ? location[1]
+
+          : null,
+
+      raw_ics:
+
+        ics,
 
     })
 
   }
+
+  catch {
+
+  }
+
+}
 
   // =====================================
   // Listing Id
