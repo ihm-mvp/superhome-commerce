@@ -494,6 +494,85 @@ const hrefMatches =
 
   [...html.matchAll(hrefRegex)]
 
+const nzFormatter =
+
+  new Intl.DateTimeFormat(
+
+    "en-CA",
+
+    {
+
+      timeZone:
+
+        "Pacific/Auckland",
+
+      year:
+
+        "numeric",
+
+      month:
+
+        "2-digit",
+
+      day:
+
+        "2-digit",
+
+      hour:
+
+        "2-digit",
+
+      minute:
+
+        "2-digit",
+
+      second:
+
+        "2-digit",
+
+      hourCycle:
+
+        "h23",
+
+    }
+
+  )
+
+function toNzParts(
+  date: Date
+) {
+
+  const parts =
+
+    nzFormatter.formatToParts(
+      date
+    )
+
+  const get =
+
+    (
+      type: string
+    ) =>
+
+      parts.find(
+        p =>
+          p.type === type
+      )?.value || ""
+
+  return {
+
+    openhome_date:
+
+      `${get("year")}-${get("month")}-${get("day")}`,
+
+    time:
+
+      `${get("hour")}:${get("minute")}:${get("second")}`,
+
+  }
+
+}
+
 for (const match of hrefMatches) {
 
   const ics =
@@ -553,19 +632,75 @@ for (const match of hrefMatches) {
 
   }
 
+  const startUtc =
+
+    new Date(
+
+      Date.UTC(
+
+        Number(start[1]),
+
+        Number(start[2]) - 1,
+
+        Number(start[3]),
+
+        Number(start[4]),
+
+        Number(start[5]),
+
+        Number(start[6])
+
+      )
+
+    )
+
+  const endUtc =
+
+    new Date(
+
+      Date.UTC(
+
+        Number(end[1]),
+
+        Number(end[2]) - 1,
+
+        Number(end[3]),
+
+        Number(end[4]),
+
+        Number(end[5]),
+
+        Number(end[6])
+
+      )
+
+    )
+
+  const startNz =
+
+    toNzParts(
+      startUtc
+    )
+
+  const endNz =
+
+    toNzParts(
+      endUtc
+    )
+
   openHomes.push({
 
     openhome_date:
 
-      `${start[1]}-${start[2]}-${start[3]}`,
+      startNz.openhome_date,
 
     start_time:
 
-      `${start[4]}:${start[5]}:${start[6]}`,
+      startNz.time,
 
     end_time:
 
-      `${end[4]}:${end[5]}:${end[6]}`,
+      endNz.time,
 
   })
 
