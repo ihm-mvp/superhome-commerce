@@ -289,81 +289,89 @@ if (
 
       : ""
 
-  // =====================================
-  // Bathrooms
-  // =====================================
+// =====================================
+// Property Details
+// =====================================
 
-  const bathroomMatch =
-    html.match(
+const bedMatch =
 
-      /([0-9]+)\s*Bathrooms?/i
+  html.match(
 
-    )
+    /<li class="bed">\s*<span>(\d+)<\/span>/i
 
-  const bathrooms =
-    bathroomMatch
+  )
 
-      ? Number(
-          bathroomMatch[1]
-        )
+const bathMatch =
 
-      : null
+  html.match(
 
-  // =====================================
-  // Garage
-  // =====================================
+    /<li class="bath">\s*<span>(\d+)<\/span>/i
 
-  const garageMatch =
-    html.match(
+  )
 
-      /([0-9]+)\s*Garage/i
+const garageMatch =
 
-    )
+  html.match(
 
-  const garage =
-    garageMatch
+    /<li class="garage">\s*<span>(\d+)<\/span>/i
 
-      ? Number(
-          garageMatch[1]
-        )
+  )
 
-      : null
+const bedrooms =
 
-  // =====================================
-  // Floor Area
-  // =====================================
+  bedMatch
 
-  const floorMatch =
-    html.match(
+    ? Number(bedMatch[1])
 
-      /([0-9]+m²)\s*Floor/i
+    : null
 
-    )
+const bathrooms =
 
-  const floorArea =
-    floorMatch
+  bathMatch
 
-      ? floorMatch[1]
+    ? Number(bathMatch[1])
 
-      : ""
+    : null
 
-  // =====================================
-  // Land Area
-  // =====================================
+const garage =
 
-  const landMatch =
-    html.match(
+  garageMatch
 
-      /([0-9]+m²)\s*Land/i
+    ? Number(garageMatch[1])
 
-    )
+    : null
 
-  const landArea =
-    landMatch
+const floorMatch =
 
-      ? landMatch[1]
+  html.match(
 
-      : ""
+    /Floor Area[\s\S]{0,200}?(\d+)\s*m(?:²|2|&sup2;)/i
+
+  )
+
+const landMatch =
+
+  html.match(
+
+    /Land Area[\s\S]{0,200}?(\d+)\s*m(?:²|2|&sup2;)/i
+
+  )
+
+const floorArea =
+
+  floorMatch
+
+    ? `${floorMatch[1]} m²`
+
+    : null
+
+const landArea =
+
+  landMatch
+
+    ? `${landMatch[1]} m²`
+
+    : null
 
       // =====================================
 // Photos
