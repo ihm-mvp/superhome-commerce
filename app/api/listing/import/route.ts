@@ -6,13 +6,13 @@ import { supabase } from "@/lib/supabase"
 
 import { importListing } from "@/lib/listing/importListing"
 
-console.log("=== ROUTE V6 ===")
-
 export async function POST(
   req: Request
 ) {
 
   try {
+
+    console.log("=== ROUTE V6 ===")
 
     const {
       url,
@@ -32,10 +32,14 @@ export async function POST(
 
     }
 
+    console.log("STEP 0")
+
     const listing =
       await importListing(
         url
       )
+
+    console.log("STEP 1")
 
     const {
 
@@ -44,6 +48,11 @@ export async function POST(
       ...listingRow
 
     }: any = listing
+
+    console.log(
+      "STEP 2",
+      openHomes
+    )
 
     listingRow.user_id =
 
@@ -62,6 +71,12 @@ export async function POST(
       .select("id")
       .single()
 
+    console.log(
+      "STEP 3",
+      savedListing,
+      listingError
+    )
+
     if (
       listingError
     ) {
@@ -70,9 +85,16 @@ export async function POST(
 
     }
 
+    console.log(
+      "STEP 4",
+      openHomes?.length
+    )
+
     if (
       openHomes?.length
     ) {
+
+      console.log("STEP 5")
 
       const rows =
         openHomes.map(
@@ -85,11 +107,6 @@ export async function POST(
 
           })
         )
-
-      console.log(
-        "OPENHOMES COUNT",
-        openHomes.length
-      )
 
       console.log(
         "ROWS",
@@ -118,7 +135,11 @@ export async function POST(
 
       }
 
+      console.log("STEP 6")
+
     }
+
+    console.log("STEP 7")
 
     return NextResponse.json({
 
@@ -130,6 +151,11 @@ export async function POST(
     })
 
   } catch (error: any) {
+
+    console.log(
+      "CATCH",
+      error
+    )
 
     return NextResponse.json(
 
