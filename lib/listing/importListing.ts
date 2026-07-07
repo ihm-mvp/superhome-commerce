@@ -500,6 +500,23 @@ console.log(
 
 )
 
+for (const match of hrefMatches) {
+
+  const base64 = match[1]
+
+  const ics =
+
+    Buffer
+      .from(
+        base64,
+        "base64"
+      )
+      .toString("utf8")
+
+  console.log(ics)
+
+}
+
   // =====================================
   // Listing Id
   // =====================================
