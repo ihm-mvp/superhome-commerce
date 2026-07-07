@@ -6,6 +6,8 @@ import { supabase } from "@/lib/supabase"
 
 import { importListing } from "@/lib/listing/importListing"
 
+console.log("=== ROUTE V6 ===")
+
 export async function POST(
   req: Request
 ) {
