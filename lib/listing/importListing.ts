@@ -423,31 +423,41 @@ while (
 
     )
 
-  // =====================================
-  // Agent
-  // =====================================
+// =====================================
+// Agent
+// =====================================
 
-  const agentName =
-    extractBetween(
+const agentMatch =
 
-      html,
+  html.match(
 
-      '"agentName":"',
+    /<p class="agent-name">\s*([^<]+)\s*<\/p>/i
 
-      '"'
+  )
 
-    )
+const agentName =
 
-  const officeName =
-    extractBetween(
+  agentMatch
 
-      html,
+    ? agentMatch[1].trim()
 
-      '"officeName":"',
+    : null
 
-      '"'
+const officeMatch =
 
-    )
+  html.match(
+
+    /<p class="agent-office">\s*([^<]+)\s*<\/p>/i
+
+  )
+
+const officeName =
+
+  officeMatch
+
+    ? officeMatch[1].trim()
+
+    : null
 
   // =====================================
   // Latitude / Longitude
@@ -581,7 +591,7 @@ return {
     agentName,
 
   agency_name:
-    "Harcourts Gold",
+    agentName,
 
   trademe_description:
     description,
