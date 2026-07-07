@@ -492,9 +492,11 @@ const hrefMatches =
 
   [...html.matchAll(hrefRegex)]
 
-throw new Error(
+console.log(
 
-  `Calendar Links: ${hrefMatches.length}`
+  "Calendar Links:",
+
+  hrefMatches.length
 
 )
 
@@ -518,6 +520,8 @@ throw new Error(
   // Return
   // =====================================
 
+console.log(hrefMatches)
+  
 return {
 
   source_platform:
