@@ -587,6 +587,12 @@ for (const match of hrefMatches) {
       ? listingIdMatch[1]
       : null
 
+  // =====================================
+  // Return
+  // =====================================
+
+console.log(hrefMatches)
+  
 return {
 
   source_platform:
@@ -665,5 +671,7 @@ return {
     longitude,
 
   },
+
+}
 
 }
