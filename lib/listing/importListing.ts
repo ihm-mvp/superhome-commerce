@@ -250,25 +250,6 @@ if (
 
   }
 
-  // =====================================
-  // Bedrooms
-  // =====================================
-
-  const bedroomMatch =
-    description.match(
-
-      /(\d+)\s+bedrooms/i
-
-    )
-
-  const bedrooms =
-    bedroomMatch
-
-      ? Number(
-          bedroomMatch[1]
-        )
-
-      : null
 
   // =====================================
   // Price
