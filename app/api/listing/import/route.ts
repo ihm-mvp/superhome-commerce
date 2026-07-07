@@ -41,7 +41,11 @@ export async function POST(
 
       ...listingRow
 
-    } = listing
+    }: any  = listing
+
+    listingRow.user_id =
+
+  "f274bb98-bf20-438b-b6f3-9ac4f875c26a"
 
     const {
       data: savedListing,

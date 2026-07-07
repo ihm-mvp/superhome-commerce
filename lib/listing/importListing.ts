@@ -541,52 +541,64 @@ const openHomeRegex =
   // Return
   // =====================================
 
-  return {
+return {
+
+  source_platform:
+    "Harcourts Gold",
+
+  source_listing_id:
+    listingId,
+
+  source_url:
+    url,
+
+  address,
+
+  headline:
+    title,
+
+  property_type:
+    "House",
+
+  price:
+    priceDisplay,
+
+  bedrooms,
+
+  bathrooms,
+
+  garages:
+    garage,
+
+  floor_area:
+    floorArea,
+
+  land_area:
+    landArea,
+
+  tenure:
+    null,
+
+  agent_name:
+    agentName,
+
+  agency_name:
+    "Harcourts Gold",
+
+  trademe_description:
+    description,
+
+  listing_status:
+    "Active",
+
+  property_json: {
 
     source:
       "harcourts-gold",
 
-    listing_id:
-      listingId,
-
-    trademe_id:
-      null,
-
     title,
 
-    address,
-
-    canonical_path:
-      url,
-
-    price_display:
-      priceDisplay,
-
     description,
-
-    property_type:
-      "House",
-
-    bedrooms,
-
-    bathrooms,
-
-    garage,
-
-    parking:
-      garage,
-
-    land_area:
-      landArea,
-
-    floor_area:
-      floorArea,
-
-    attributes:
-      {},
-
-    property_attributes:
-      {},
 
     photos,
 
@@ -596,33 +608,17 @@ const openHomeRegex =
     video_url:
       videoUrl,
 
-    agency_name:
-      "Harcourts Gold",
-
     office_name:
       officeName,
-
-    agent_name:
-      agentName,
 
     latitude,
 
     longitude,
 
-    suburb:
-      null,
-
-    city:
-      null,
-
-    district:
-      null,
-
-    region:
-      null,
-
     openHomes,
 
-  }
+  },
+
+}
 
 }
