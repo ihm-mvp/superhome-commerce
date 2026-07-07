@@ -84,6 +84,10 @@ export async function POST(
           })
         )
 
+console.log(
+  JSON.stringify(rows, null, 2)
+)
+
       const {
         error:
           openhomeError,
@@ -92,6 +96,10 @@ export async function POST(
           "listing_openhomes"
         )
         .insert(rows)
+
+        console.log(
+  openhomeError
+)
 
       if (
         openhomeError
