@@ -484,99 +484,19 @@ const officeName =
 
 const openHomes: any[] = []
 
-const calendarRegex =
+const hrefRegex =
 
-  /<a[^>]*class="[^"]*download-open-homes[^"]*"[^>]*href="data:text\/calendar;charset=utf8;base64,([^"]+)"/g
+  /href="data:text\/calendar;charset=utf8;base64,([^"]+)"/g
 
-let calendarMatch
+const hrefMatches =
 
-while (
+  [...html.matchAll(hrefRegex)]
 
-  (calendarMatch = calendarRegex.exec(html))
+throw new Error(
 
-  !== null
+  `Calendar Links: ${hrefMatches.length}`
 
-) {
-
-  try {
-
-    const ics =
-
-      Buffer
-
-        .from(
-
-          calendarMatch[1],
-
-          "base64"
-
-        )
-
-        .toString("utf8")
-
-    const start =
-
-      ics.match(
-
-        /DTSTART:([^\r\n]+)/
-
-      )
-
-    const end =
-
-      ics.match(
-
-        /DTEND:([^\r\n]+)/
-
-      )
-
-    const location =
-
-      ics.match(
-
-        /LOCATION:([^\r\n]+)/
-
-      )
-
-    openHomes.push({
-
-      start_time:
-
-        start
-
-          ? start[1]
-
-          : null,
-
-      end_time:
-
-        end
-
-          ? end[1]
-
-          : null,
-
-      location:
-
-        location
-
-          ? location[1]
-
-          : null,
-
-      raw_ics:
-
-        ics,
-
-    })
-
-  }
-
-  catch {
-
-  }
-
-}
+)
 
   // =====================================
   // Listing Id
