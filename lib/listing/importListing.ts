@@ -587,12 +587,6 @@ for (const match of hrefMatches) {
       ? listingIdMatch[1]
       : null
 
-  // =====================================
-  // Return
-  // =====================================
-
-console.log(hrefMatches)
-  
 return {
 
   source_platform:
@@ -635,13 +629,16 @@ return {
     agentName,
 
   agency_name:
-    agentName,
+    officeName,
 
   trademe_description:
     description,
 
   listing_status:
     "Active",
+
+  // ⭐ 新增，放到顶层
+  openHomes,
 
   property_json: {
 
@@ -667,10 +664,6 @@ return {
 
     longitude,
 
-    openHomes,
-
   },
-
-}
 
 }
