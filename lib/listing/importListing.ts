@@ -364,36 +364,34 @@ if (
       ? landMatch[1]
 
       : ""
-        // =====================================
-  // Photos
-  // =====================================
 
-  const photos =
-    extractAll(
+      // =====================================
+// Photos
+// =====================================
 
-      html,
+const photos: string[] = []
 
-      '"url":"',
+const photoRegex =
 
-      '"'
+  /data-src="(https:\/\/listings-photos[^"]+\/1448x912)"/g
 
-    ).filter(
+let photoMatch
 
-      (p) =>
+while (
 
-        p.includes(
-          "cloudfront.net"
-        ) ||
+  (photoMatch = photoRegex.exec(html))
 
-        p.includes(
-          "resizer"
-        ) ||
+  !== null
 
-        p.includes(
-          ".jpg"
-        )
+) {
 
-    )
+  photos.push(
+
+    photoMatch[1]
+
+  )
+
+}
 
   // =====================================
   // Floor Plan
