@@ -41,11 +41,11 @@ export async function POST(
 
       ...listingRow
 
-    }: any  = listing
+    }: any = listing
 
     listingRow.user_id =
 
-  "f274bb98-bf20-438b-b6f3-9ac4f875c26a"
+      "f274bb98-bf20-438b-b6f3-9ac4f875c26a"
 
     const {
       data: savedListing,
@@ -84,9 +84,15 @@ export async function POST(
           })
         )
 
-console.log(
-  JSON.stringify(rows, null, 2)
-)
+      console.log(
+        "OPENHOMES COUNT",
+        openHomes.length
+      )
+
+      console.log(
+        "ROWS",
+        rows
+      )
 
       const {
         error:
@@ -97,9 +103,10 @@ console.log(
         )
         .insert(rows)
 
-        console.log(
-  openhomeError
-)
+      console.log(
+        "OPENHOME ERROR",
+        openhomeError
+      )
 
       if (
         openhomeError
