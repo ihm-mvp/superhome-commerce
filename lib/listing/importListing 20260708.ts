@@ -1,7 +1,5 @@
 // lib/listing/importListing.ts
 
-import { generateMarketingAssets } from "@/lib/listing/ai/generateMarketingAssets"
-
 export async function importListing(
   url: string
 ) {
@@ -729,40 +727,6 @@ for (const match of hrefMatches) {
   // =====================================
 
 console.log(hrefMatches)
-
-const aiContent =
-
-  await generateMarketingAssets({
-
-    address,
-
-    headline: title,
-
-    trademe_description:
-      description,
-
-    property_type:
-      "House",
-
-    price:
-      priceDisplay,
-
-    bedrooms,
-
-    bathrooms,
-
-    garages:
-      garage,
-
-    floor_area:
-      floorArea,
-
-    land_area:
-      landArea,
-
-    openHomes,
-
-  })
   
 return {
 
@@ -842,9 +806,6 @@ return {
     longitude,
 
   },
-
-  ai_content:
-  aiContent,
 
 }
 
