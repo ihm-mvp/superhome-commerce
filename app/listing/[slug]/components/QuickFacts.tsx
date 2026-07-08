@@ -12,35 +12,45 @@ export default function QuickFacts({
 
     <section className="bg-white px-5 py-5">
 
-      <h3 className="mb-4 text-lg font-semibold text-gray-900">
+      <h3 className="text-lg font-semibold text-gray-900">
+
+        房屋信息
+
+      </h3>
+
+      <div className="mb-4 text-sm text-gray-400">
 
         Property Snapshot
 
-      </h3>
+      </div>
 
       <div className="grid grid-cols-2 gap-4">
 
         <FactCard
           icon="🛏"
-          label="Bedrooms"
+          label="卧室"
+          subLabel="Bedrooms"
           value={listing.bedrooms}
         />
 
         <FactCard
           icon="🛁"
-          label="Bathrooms"
+          label="卫生间"
+          subLabel="Bathrooms"
           value={listing.bathrooms}
         />
 
         <FactCard
           icon="🚗"
-          label="Garages"
+          label="车库"
+          subLabel="Garages"
           value={listing.garages}
         />
 
         <FactCard
           icon="📐"
-          label="Floor Area"
+          label="室内面积"
+          subLabel="Floor Area"
           value={
             listing.floor_area
               ? `${listing.floor_area}㎡`
@@ -50,7 +60,8 @@ export default function QuickFacts({
 
         <FactCard
           icon="🌳"
-          label="Land Area"
+          label="土地面积"
+          subLabel="Land Area"
           value={
             listing.land_area
               ? `${listing.land_area}㎡`
@@ -72,6 +83,8 @@ function FactCard({
 
   label,
 
+  subLabel,
+
   value,
 
 }: any) {
@@ -86,13 +99,19 @@ function FactCard({
 
       </div>
 
-      <div className="mt-2 text-sm text-gray-500">
+      <div className="mt-3 text-sm font-medium text-gray-700">
 
         {label}
 
       </div>
 
-      <div className="mt-1 text-xl font-semibold text-gray-900">
+      <div className="text-xs text-gray-400">
+
+        {subLabel}
+
+      </div>
+
+      <div className="mt-2 text-2xl font-semibold text-gray-900">
 
         {value ?? "-"}
 

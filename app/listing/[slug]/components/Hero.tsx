@@ -62,7 +62,7 @@ export default function Hero({
 
                     <span className="rounded-full bg-green-600 px-3 py-1 text-sm font-semibold text-white">
 
-                      For Sale
+                      在售 · For Sale
 
                     </span>
 
@@ -88,19 +88,25 @@ export default function Hero({
 
       <div className="px-5 py-6">
 
-        <div className="text-sm font-medium uppercase tracking-wide text-gray-500">
+        <div className="text-sm font-medium text-gray-500">
+
+          售价
+
+        </div>
+
+        <div className="text-xs text-gray-400">
 
           Asking Price
 
         </div>
 
-        <h1 className="mt-1 text-4xl font-bold text-gray-900">
+        <h1 className="mt-2 text-4xl font-bold text-gray-900">
 
           {listing.price}
 
         </h1>
 
-        <h2 className="mt-4 text-xl font-semibold leading-snug text-gray-900">
+        <h2 className="mt-5 text-xl font-semibold leading-snug text-gray-900">
 
           {listing.address}
 

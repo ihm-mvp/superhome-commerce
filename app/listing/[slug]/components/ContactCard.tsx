@@ -1,3 +1,5 @@
+// app/listing/[slug]/components/ContactCard.tsx
+
 type Props = {
   listing: any
 }
@@ -10,26 +12,50 @@ export default function ContactCard({
 
     <section className="bg-white px-5 py-6">
 
-      <h3 className="mb-4 text-lg font-semibold text-gray-900">
-        Contact Agent
+      <h3 className="text-lg font-semibold text-gray-900">
+
+        联系中介
+
       </h3>
+
+      <div className="mb-4 text-sm text-gray-400">
+
+        Contact Agent
+
+      </div>
 
       <div className="rounded-2xl border border-gray-200 p-5">
 
         <div className="text-xl font-semibold text-gray-900">
+
           {listing.agent_name || "Agent"}
+
         </div>
 
         <div className="mt-1 text-gray-500">
+
           {listing.property_json?.office_name || ""}
+
         </div>
 
         <div className="mt-6">
 
           <button
-            className="w-full rounded-xl bg-black py-3 font-semibold text-white"
+            className="w-full rounded-xl bg-black py-3 text-white"
           >
-            Contact Agent
+
+            <div className="font-semibold">
+
+              联系中介
+
+            </div>
+
+            <div className="text-xs text-gray-300">
+
+              Contact Agent
+
+            </div>
+
           </button>
 
         </div>
