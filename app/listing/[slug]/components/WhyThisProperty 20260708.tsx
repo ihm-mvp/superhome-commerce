@@ -8,8 +8,39 @@ export default function WhyThisProperty({
   listing,
 }: Props) {
 
-  const highlights =
-    listing.ai_content?.slug_highlights || []
+  const highlights = [
+
+    {
+      icon: "☀️",
+      zh: "明亮朝北客厅，采光充足",
+      en: "Bright north-facing living area",
+    },
+
+    {
+      icon: "🏡",
+      zh: "四房家庭布局，适合成长型家庭",
+      en: "Four-bedroom family layout",
+    },
+
+    {
+      icon: "🎓",
+      zh: "优质学区，生活便利",
+      en: "Excellent school zoning",
+    },
+
+    {
+      icon: "🛍️",
+      zh: "靠近商圈与生活配套",
+      en: "Close to shopping and amenities",
+    },
+
+    {
+      icon: "🔑",
+      zh: "即可入住，省时省心",
+      en: "Move-in ready",
+    },
+
+  ]
 
   return (
 
@@ -32,8 +63,8 @@ export default function WhyThisProperty({
         {highlights.map(
 
           (
-            item: any,
-            index: number
+            item,
+            index
           ) => (
 
             <div
