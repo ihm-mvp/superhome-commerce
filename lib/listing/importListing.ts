@@ -763,8 +763,17 @@ const aiContent =
     openHomes,
 
   })
+
+  const slug =
+
+  address
+    .toLowerCase()
+    .replace(/,/g, "")
+    .replace(/\s+/g, "-")
   
-return {
+console.log(aiContent)
+
+    return {
 
   source_platform:
     "Harcourts Gold",
@@ -775,7 +784,9 @@ return {
   source_url:
     url,
 
-  address,
+  slug,
+
+    address,
 
   headline:
     title,
