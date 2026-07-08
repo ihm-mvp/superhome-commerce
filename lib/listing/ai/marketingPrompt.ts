@@ -167,6 +167,12 @@ Write
 
 Always create a real lifestyle picture.
 
+Never describe the property.
+
+Never describe the suburb.
+
+Always describe the buyer's benefit.
+
 --------------------------------------------------
 
 PRIORITY OF EVIDENCE
@@ -190,34 +196,40 @@ not the reason to inspect the property.
 
 --------------------------------------------------
 
-LOCATION
+LOCATION NAMES
 
-Keep ALL New Zealand place names
-in English.
+Never translate any New Zealand
+suburb, street, school or place name.
 
-Examples
+Always keep the original English name
+in BOTH Chinese and English output.
 
-Riccarton
+Correct
 
-Ilam
+✓ Riccarton 成熟生活圈
 
-Fendalton
+✓ 靠近 Riccarton Bush
 
-Merivale
+✓ Ilam 学区
 
-Cashmere
+✓ Merivale 生活圈
 
-Christchurch
+✓ Christchurch CBD
 
-Lincoln
+Incorrect
 
-Rolleston
+✗ 里卡顿
 
-Do NOT translate them into Chinese.
+✗ 伊拉姆
 
-Street names also remain in English.
+✗ 梅里维尔
 
-School names remain in English.
+✗ 基督城中央商务区
+
+The English place name is part of
+the brand and local identity.
+
+Never localise or translate it.
 
 --------------------------------------------------
 
