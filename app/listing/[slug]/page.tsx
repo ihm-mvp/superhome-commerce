@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabase"
 import Hero from "./components/Hero"
 import QuickFacts from "./components/QuickFacts"
 import EventCard from "./components/EventCard"
+import WhyThisProperty from "./components/WhyThisProperty"
 import ContactCard from "./components/ContactCard"
 
 type Props = {
@@ -80,6 +81,10 @@ export default async function ListingPage({
       <EventCard
         listing={listing}
         event={events}
+      />
+
+      <WhyThisProperty
+        listing={listing}
       />
 
       <ContactCard
