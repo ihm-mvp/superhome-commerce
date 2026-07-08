@@ -10,6 +10,8 @@ export default function EventCard({
   event,
 }: Props) {
 
+  const events = event || []
+
   return (
 
     <section className="bg-white px-5 py-5">
@@ -20,78 +22,91 @@ export default function EventCard({
 
       </h3>
 
-      <div className="rounded-2xl border border-gray-200 p-5">
+      {events.length > 0 ? (
 
-        {event ? (
+        <div className="space-y-4">
 
-          <>
+          {events.map(
+            (
+              item: any,
+              index: number
+            ) => (
 
-            <div className="text-sm text-gray-500">
+              <div
+                key={index}
+                className="rounded-2xl border border-gray-200 p-5"
+              >
 
-              Open Home
+                <div className="text-sm text-gray-500">
 
-            </div>
+                  Open Home
 
-            <div className="mt-2 text-2xl font-bold">
+                </div>
 
-              {formatDate(
-                event.openhome_date
-              )}
+                <div className="mt-2 text-2xl font-bold">
 
-            </div>
+                  {formatDate(
+                    item.openhome_date
+                  )}
 
-            <div className="mt-1 text-lg">
+                </div>
 
-              {formatTime(
-                event.start_time
-              )}
+                <div className="mt-1 text-lg">
 
-              {" - "}
+                  {formatTime(
+                    item.start_time
+                  )}
 
-              {formatTime(
-                event.end_time
-              )}
+                  {" - "}
 
-            </div>
+                  {formatTime(
+                    item.end_time
+                  )}
 
-            <button
-              className="mt-5 w-full rounded-xl bg-black py-3 text-white font-semibold"
-            >
+                </div>
 
-              Add to Calendar
+                <button
+                  className="mt-5 w-full rounded-xl bg-black py-3 font-semibold text-white"
+                >
 
-            </button>
+                  Add to Calendar
 
-          </>
+                </button>
 
-        ) : (
+              </div>
 
-          <>
+            )
 
-            <div className="text-sm text-gray-500">
+          )}
 
-              Viewing
+        </div>
 
-            </div>
+      ) : (
 
-            <div className="mt-2 text-2xl font-bold">
+        <div className="rounded-2xl border border-gray-200 p-5">
 
-              By Appointment
+          <div className="text-sm text-gray-500">
 
-            </div>
+            Viewing
 
-            <div className="mt-5 text-gray-600">
+          </div>
 
-              Please contact the agent to arrange
-              a private viewing.
+          <div className="mt-2 text-2xl font-bold">
 
-            </div>
+            By Appointment
 
-          </>
+          </div>
 
-        )}
+          <div className="mt-5 text-gray-600">
 
-      </div>
+            Please contact the agent to arrange
+            a private viewing.
+
+          </div>
+
+        </div>
+
+      )}
 
     </section>
 
@@ -124,6 +139,6 @@ function formatTime(
   value: string
 ) {
 
-  return value.slice(0,5)
+  return value.slice(0, 5)
 
 }

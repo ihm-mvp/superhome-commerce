@@ -40,7 +40,7 @@ export default async function ListingPage({
   }
 
   const {
-    data: nextOpenHome,
+    data: events,
   } = await supabase
     .from("listing_openhomes")
     .select("*")
@@ -64,8 +64,6 @@ export default async function ListingPage({
         ascending: true,
       }
     )
-    .limit(1)
-    .maybeSingle()
 
   return (
 
@@ -81,7 +79,7 @@ export default async function ListingPage({
 
       <EventCard
         listing={listing}
-        event={nextOpenHome}
+        event={events}
       />
 
       <ContactCard
