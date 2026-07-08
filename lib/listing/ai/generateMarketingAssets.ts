@@ -138,8 +138,6 @@ ${JSON.stringify(
       model:
         "gpt-5.5",
 
-      temperature: 0.5,
-
       response_format: {
 
         type:
