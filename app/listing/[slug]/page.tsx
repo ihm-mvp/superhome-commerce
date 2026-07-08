@@ -8,6 +8,7 @@ import Hero from "./components/Hero"
 import QuickFacts from "./components/QuickFacts"
 import EventCard from "./components/EventCard"
 import WhyThisProperty from "./components/WhyThisProperty"
+
 import ContactCard from "./components/ContactCard"
 
 type Props = {
