@@ -1,17 +1,29 @@
 // lib/listing/ai/generateMarketingAssets.ts
 
-import OpenAI from "openai"
-
-const client = new OpenAI({
-
-  apiKey:
-    process.env.OPENAI_API_KEY,
-
-})
-
 export async function generateMarketingAssets(
   listing: any
 ) {
+
+  if (
+    !process.env.OPENAI_API_KEY
+  ) {
+
+    throw new Error(
+      "OPENAI_API_KEY not configured"
+    )
+
+  }
+
+  const {
+    default: OpenAI,
+  } = await import("openai")
+
+  const client = new OpenAI({
+
+    apiKey:
+      process.env.OPENAI_API_KEY,
+
+  })
 
   const prompt = `
 
