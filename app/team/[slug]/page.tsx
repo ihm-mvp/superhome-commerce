@@ -32,6 +32,8 @@ type Listing = {
 
   listing_status: string | null
 
+  qrcode_url: string | null
+
   property_json: any
 
 }
