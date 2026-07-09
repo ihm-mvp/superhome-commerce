@@ -462,57 +462,63 @@ export default function TeamPage({
 
                     )}
 
-                    <div className="mt-6 space-y-3">
+<div className="mt-6 space-y-3">
 
-                      <button
+  <button
 
-                        onClick={() =>
-                          alert(
-                            "Coming Soon"
-                          )
-                        }
+    onClick={() =>
 
-                        className="w-full rounded-xl bg-black py-3 font-semibold text-white"
+      window.location.href =
 
-                      >
+      `/team/${team.team_slug}/wechatmoments/${listing.id}`
 
-                        📱 朋友圈九宫格
+    }
 
-                      </button>
+    className="w-full rounded-xl bg-black py-3 font-semibold text-white"
 
-                      <button
+  >
 
-                        onClick={() =>
-                          alert(
-                            "Coming Soon"
-                          )
-                        }
+    📱 朋友圈九宫格
 
-                        className="w-full rounded-xl border py-3 font-semibold"
+  </button>
 
-                      >
+  <button
 
-                        ✍️ 公众号推文
+    onClick={() =>
 
-                      </button>
+      window.location.href =
 
-                      <button
+      `/team/${team.team_slug}/wechatofficialaccounts/${listing.id}`
 
-                        onClick={() =>
-                          alert(
-                            "Coming Soon"
-                          )
-                        }
+    }
 
-                        className="w-full rounded-xl border py-3 font-semibold"
+    className="w-full rounded-xl border py-3 font-semibold"
 
-                      >
+  >
 
-                        🔗 QR Code
+    ✍️ 公众号推文
 
-                      </button>
+  </button>
 
-                    </div>
+  <button
+
+    onClick={() =>
+
+      window.location.href =
+
+      `/team/${team.team_slug}/qrcode/${listing.id}`
+
+    }
+
+    className="w-full rounded-xl border py-3 font-semibold"
+
+  >
+
+    🔗 Listing QR Code
+
+  </button>
+
+</div>
 
                   </div>
 
