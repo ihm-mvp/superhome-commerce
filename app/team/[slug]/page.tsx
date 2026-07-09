@@ -476,7 +476,7 @@ export default function TeamPage({
 
                       >
 
-                        📱 九宫格
+                        📱 朋友圈九宫格
 
                       </button>
 
@@ -492,7 +492,7 @@ export default function TeamPage({
 
                       >
 
-                        ✍️ 微信推文
+                        ✍️ 公众号推文
 
                       </button>
 
