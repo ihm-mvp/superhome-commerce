@@ -218,7 +218,7 @@ export default function WechatMomentsPage({
 
         <h1 className="text-2xl font-bold">
 
-          WeChat Moments
+          朋友圈九宫格 · 点击下载
 
         </h1>
 
@@ -328,7 +328,7 @@ export default function WechatMomentsPage({
 
           <div className="text-lg font-semibold">
 
-            朋友圈文案
+            朋友圈文案 · 点击复制
 
           </div>
 
