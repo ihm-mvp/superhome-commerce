@@ -260,7 +260,7 @@ export default function WechatOfficialAccountsPage({
 
           <div className="mt-10">
 
-            <div className="text-lg font-semibold">
+            <div className="text-lg font-semibold justify-center">
 
               Listing QR Code
 
@@ -303,7 +303,7 @@ export default function WechatOfficialAccountsPage({
 
           >
 
-            复制公众号文章
+            复制公众号推文
 
           </button>
 

@@ -500,23 +500,50 @@ export default function TeamPage({
 
   </button>
 
-  <button
+<div className="mt-6 rounded-2xl border bg-white p-5">
 
-    onClick={() =>
+  <div className="text-center">
 
-      window.location.href =
+    <div className="text-lg font-semibold">
 
-      `/team/${team.team_slug}/qrcode/${listing.id}`
+      Listing QR Code
 
-    }
+    </div>
 
-    className="w-full rounded-xl border py-3 font-semibold"
+    <div className="mt-2 text-sm text-gray-500">
 
-  >
+      Long press to save
 
-    🔗 Listing QR Code
+    </div>
 
-  </button>
+  </div>
+
+  <div className="mt-5 flex justify-center">
+
+    <img
+
+      src={
+        listing.qrcode_url ||
+        ""
+      }
+
+      alt="Listing QR Code"
+
+      onClick={() =>
+        window.open(
+          listing.qrcode_url ||
+            "",
+          "_blank"
+        )
+      }
+
+      className="w-52 rounded-xl border bg-white p-3"
+
+    />
+
+  </div>
+
+</div>
 
 </div>
 
