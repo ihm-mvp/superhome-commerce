@@ -370,7 +370,7 @@ export default function AdminDashboard() {
             mb-4
           "
         >
-          Builder Hub
+          Link Hub
         </h2>
 
         <div
@@ -643,6 +643,70 @@ export default function AdminDashboard() {
             </div>
 
           </Link>
+
+          <Link
+            href="../listing"
+            className="
+              border
+              rounded-xl
+              p-6
+              hover:shadow-md
+              transition
+              bg-white
+            "
+          >
+
+            <div
+              className="
+                font-semibold
+                mb-2
+              "
+            >
+              Listing Import
+            </div>
+
+            <div
+              className="
+                text-sm
+                text-gray-500
+              "
+            >
+              Listing Import by one URL
+            </div>
+
+          </Link>
+
+                    <Link
+            href="/admin/list"
+            className="
+              border
+              rounded-xl
+              p-6
+              hover:shadow-md
+              transition
+              bg-white
+            "
+          >
+
+            <div
+              className="
+                font-semibold
+                mb-2
+              "
+            >
+              Listing Sync
+            </div>
+
+            <div
+              className="
+                text-sm
+                text-gray-500
+              "
+            >
+              Auto Listing Import
+            </div>
+
+          </Link>          
 
         </div>
 

@@ -766,12 +766,25 @@ const aiContent =
 
   })
 
-  const slug =
+const slug =
 
   address
+
     .toLowerCase()
+
+    .replace(/\//g, "-")
+
     .replace(/,/g, "")
+
+    .replace(/\./g, "")
+
     .replace(/\s+/g, "-")
+
+    .replace(/-+/g, "-")
+
+    .replace(/^-|-$/g, "")
+
+    .replace(/[^a-z0-9-]/g, "")
 
     const qrcode_url =
 
