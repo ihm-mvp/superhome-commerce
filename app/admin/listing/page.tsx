@@ -477,6 +477,22 @@ export default function ListingAdminPage() {
 
   <div className="text-sm text-gray-500">
 
+    Skipped
+
+  </div>
+
+  <div className="mt-1 text-2xl font-bold text-amber-600">
+
+    {result.skippedCount}
+
+  </div>
+
+</div>
+
+<div className="rounded-xl border bg-white p-4">
+
+  <div className="text-sm text-gray-500">
+
     Failed
 
   </div>

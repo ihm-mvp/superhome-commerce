@@ -136,6 +136,8 @@ let importedCount = 0
 
 let failedCount = 0
 
+let skippedCount = 0
+
     if (
 
       result.removedListings.length > 0
@@ -213,6 +215,18 @@ for (
         newListing.source_url
 
       )
+
+      if (
+
+  !listing
+
+) {
+
+  skippedCount++
+
+  continue
+
+}
 
     const {
 
@@ -386,7 +400,9 @@ for (
 
       importedCount,
 
-failedCount,
+      skippedCount,
+
+      failedCount,
 
       newListings:
 
