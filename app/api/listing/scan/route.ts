@@ -194,13 +194,11 @@ let failedCount = 0
 
     }
 
-for (
+  const newListing =
 
-  const newListing of
+  result.newListings[0]
 
-  result.newListings
-
-) {
+{
 
   try {
 
