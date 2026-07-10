@@ -4,6 +4,8 @@ import { supabase } from "@/lib/supabase"
 
 import { scanAgent } from "@/lib/listing/scanAgent"
 
+import { compareAgent } from "@/lib/listing/compareAgent"
+
 export async function POST(
   req: Request
 ) {
@@ -16,11 +18,7 @@ export async function POST(
 
     } = await req.json()
 
-    if (
-
-      !teamId
-
-    ) {
+    if (!teamId) {
 
       return NextResponse.json(
 
@@ -68,21 +66,13 @@ export async function POST(
 
       .single()
 
-    if (
-
-      error
-
-    ) {
+    if (error) {
 
       throw error
 
     }
 
-    if (
-
-      !team
-
-    ) {
+    if (!team) {
 
       throw new Error(
 
@@ -92,11 +82,7 @@ export async function POST(
 
     }
 
-    if (
-
-      !team.listing_index_url
-
-    ) {
+    if (!team.listing_index_url) {
 
       throw new Error(
 
@@ -106,21 +92,11 @@ export async function POST(
 
     }
 
-    console.log(
-      "========== SCAN AGENT =========="
-    )
+    // ----------------------------------
+    // S4-1 Scan Agent
+    // ----------------------------------
 
-    console.log(
-      "Team:",
-      team.team_name
-    )
-
-    console.log(
-      "URL:",
-      team.listing_index_url
-    )
-
-    const listings =
+    const scannedListings =
 
       await scanAgent(
 
@@ -128,13 +104,84 @@ export async function POST(
 
       )
 
-    console.log(
+    // ----------------------------------
+    // S4-2 Compare Agent
+    // ----------------------------------
 
-      "Found Listings:",
+    const result =
 
-      listings.length
+      await compareAgent(
 
-    )
+        team.id,
+
+        scannedListings
+
+      )
+
+    // ----------------------------------
+    // S4-2 Action
+    // Removed → Inactive
+    // ----------------------------------
+
+    let removedUpdated = 0
+
+    if (
+
+      result.removedListings.length > 0
+
+    ) {
+
+      const ids =
+
+        result.removedListings.map(
+
+          listing => listing.id
+
+        )
+
+      const {
+
+        error: updateError,
+
+      } = await supabase
+
+        .from(
+
+          "listing_listings"
+
+        )
+
+        .update({
+
+          listing_status:
+
+            "Inactive",
+
+        })
+
+        .in(
+
+          "id",
+
+          ids
+
+        )
+
+      if (
+
+        updateError
+
+      ) {
+
+        throw updateError
+
+      }
+
+      removedUpdated =
+
+        ids.length
+
+    }
 
     return NextResponse.json({
 
@@ -160,11 +207,35 @@ export async function POST(
 
         team.listing_index_url,
 
-      count:
+      scanCount:
 
-        listings.length,
+        scannedListings.length,
 
-      listings,
+      newCount:
+
+        result.newListings.length,
+
+      existingCount:
+
+        result.existingListings.length,
+
+      removedCount:
+
+        result.removedListings.length,
+
+      removedUpdated,
+
+      newListings:
+
+        result.newListings,
+
+      existingListings:
+
+        result.existingListings,
+
+      removedListings:
+
+        result.removedListings,
 
     })
 

@@ -66,7 +66,11 @@ export default function ListingAdminPage() {
 
     } = await supabase
 
-      .from("team_accounts")
+      .from(
+
+        "team_accounts"
+
+      )
 
       .select(
 
@@ -94,7 +98,11 @@ export default function ListingAdminPage() {
 
     ) {
 
-      alert(error.message)
+      alert(
+
+        error.message
+
+      )
 
       return
 
@@ -142,9 +150,17 @@ export default function ListingAdminPage() {
 
     }
 
-    setLoading(true)
+    setLoading(
 
-    setResult(null)
+      true
+
+    )
+
+    setResult(
+
+      null
+
+    )
 
     try {
 
@@ -156,7 +172,9 @@ export default function ListingAdminPage() {
 
           {
 
-            method: "POST",
+            method:
+
+              "POST",
 
             headers: {
 
@@ -182,7 +200,11 @@ export default function ListingAdminPage() {
 
         await res.json()
 
-      setResult(json)
+      setResult(
+
+        json
+
+      )
 
     }
 
@@ -206,7 +228,11 @@ export default function ListingAdminPage() {
 
     finally {
 
-      setLoading(false)
+      setLoading(
+
+        false
+
+      )
 
     }
 
@@ -214,7 +240,7 @@ export default function ListingAdminPage() {
 
   return (
 
-    <main className="mx-auto max-w-5xl px-6 py-10">
+    <main className="mx-auto max-w-6xl px-6 py-10">
 
       <h1 className="text-3xl font-semibold">
 
@@ -282,9 +308,17 @@ export default function ListingAdminPage() {
 
       <button
 
-        onClick={runSync}
+        onClick={
 
-        disabled={loading}
+          runSync
+
+        }
+
+        disabled={
+
+          loading
+
+        }
 
         className="mt-8 w-full rounded-xl bg-black py-4 font-semibold text-white disabled:opacity-50"
 
@@ -301,20 +335,19 @@ export default function ListingAdminPage() {
         }
 
       </button>
-
-      {result && (
+            {result && (
 
         <div className="mt-10 rounded-2xl border bg-gray-50 p-6">
 
           <h2 className="text-xl font-semibold">
 
-            S4-1 Scan Agent Result
+            S4 Development Console
 
           </h2>
 
           {!result.success && (
 
-            <div className="mt-4 text-red-600">
+            <div className="mt-4 rounded-xl bg-red-100 p-4 text-red-700">
 
               {result.error}
 
@@ -326,103 +359,259 @@ export default function ListingAdminPage() {
 
             <>
 
-              <div className="mt-4">
+              <div className="mt-6 grid gap-4 md:grid-cols-2">
 
-                <div>
+                <div className="rounded-xl border bg-white p-4">
 
-                  <span className="font-semibold">
+                  <div className="text-sm text-gray-500">
 
-                    Team：
+                    Team
 
-                  </span>
+                  </div>
 
-                  {result.team.name}
+                  <div className="mt-1 font-semibold">
 
-                </div>
+                    {result.team.name}
 
-                <div className="mt-1">
-
-                  <span className="font-semibold">
-
-                    Listing Index：
-
-                  </span>
-
-                  <span className="break-all">
-
-                    {result.listingIndexUrl}
-
-                  </span>
+                  </div>
 
                 </div>
 
-                <div className="mt-1">
+                <div className="rounded-xl border bg-white p-4">
 
-                  <span className="font-semibold">
+                  <div className="text-sm text-gray-500">
 
-                    Listings Found：
+                    Agent Scan
 
-                  </span>
+                  </div>
 
-                  {result.count}
+                  <div className="mt-1 text-2xl font-bold">
+
+                    {result.scanCount}
+
+                  </div>
+
+                </div>
+
+                <div className="rounded-xl border bg-white p-4">
+
+                  <div className="text-sm text-gray-500">
+
+                    New
+
+                  </div>
+
+                  <div className="mt-1 text-2xl font-bold text-green-600">
+
+                    {result.newCount}
+
+                  </div>
+
+                </div>
+
+                <div className="rounded-xl border bg-white p-4">
+
+                  <div className="text-sm text-gray-500">
+
+                    Existing
+
+                  </div>
+
+                  <div className="mt-1 text-2xl font-bold text-blue-600">
+
+                    {result.existingCount}
+
+                  </div>
+
+                </div>
+
+                <div className="rounded-xl border bg-white p-4">
+
+                  <div className="text-sm text-gray-500">
+
+                    Removed
+
+                  </div>
+
+                  <div className="mt-1 text-2xl font-bold text-red-600">
+
+                    {result.removedCount}
+
+                  </div>
+
+                </div>
+
+                <div className="rounded-xl border bg-white p-4">
+
+                  <div className="text-sm text-gray-500">
+
+                    Inactive Updated
+
+                  </div>
+
+                  <div className="mt-1 text-2xl font-bold">
+
+                    {result.removedUpdated}
+
+                  </div>
 
                 </div>
 
               </div>
 
-              <div className="mt-6 space-y-3">
+              <div className="mt-8">
 
-                {result.listings.map(
+                <div className="text-lg font-semibold">
 
-                  (
+                  New Queue
 
-                    listing: any,
+                </div>
 
-                    index: number
+                <div className="mt-3 space-y-3">
 
-                  ) => (
+                  {result.newListings.map(
 
-                    <div
+                    (
 
-                      key={
+                      listing: any,
 
-                        listing.source_listing_id
+                      index: number
 
-                      }
+                    ) => (
 
-                      className="rounded-xl border bg-white p-4"
+                      <div
 
-                    >
+                        key={listing.source_listing_id}
 
-                      <div className="font-semibold">
+                        className="rounded-xl border bg-white p-4"
 
-                        {index + 1}.
+                      >
 
-                        {" "}
+                        <div className="font-semibold">
 
-                        {
+                          {index + 1}. {listing.source_listing_id}
 
-                          listing.source_listing_id
+                        </div>
 
-                        }
+                        <div className="mt-2 break-all text-sm text-gray-500">
 
-                      </div>
+                          {listing.source_url}
 
-                      <div className="mt-2 break-all text-sm text-gray-500">
-
-                        {
-
-                          listing.source_url
-
-                        }
+                        </div>
 
                       </div>
 
-                    </div>
+                    )
 
-                  )
+                  )}
 
-                )}
+                </div>
+
+              </div>
+
+              <div className="mt-8">
+
+                <div className="text-lg font-semibold">
+
+                  Existing Queue
+
+                </div>
+
+                <div className="mt-3 space-y-3">
+
+                  {result.existingListings.map(
+
+                    (
+
+                      listing: any,
+
+                      index: number
+
+                    ) => (
+
+                      <div
+
+                        key={listing.source_listing_id}
+
+                        className="rounded-xl border bg-white p-4"
+
+                      >
+
+                        <div className="font-semibold">
+
+                          {index + 1}. {listing.source_listing_id}
+
+                        </div>
+
+                        <div className="mt-2 break-all text-sm text-gray-500">
+
+                          {listing.source_url}
+
+                        </div>
+
+                      </div>
+
+                    )
+
+                  )}
+
+                </div>
+
+              </div>
+
+              <div className="mt-8">
+
+                <div className="text-lg font-semibold">
+
+                  Removed Queue
+
+                </div>
+
+                <div className="mt-3 space-y-3">
+
+                  {result.removedListings.map(
+
+                    (
+
+                      listing: any,
+
+                      index: number
+
+                    ) => (
+
+                      <div
+
+                        key={listing.id}
+
+                        className="rounded-xl border bg-white p-4"
+
+                      >
+
+                        <div className="font-semibold">
+
+                          {index + 1}. {listing.source_listing_id}
+
+                        </div>
+
+                        <div className="mt-2 break-all text-sm text-gray-500">
+
+                          {listing.source_url}
+
+                        </div>
+
+                        <div className="mt-2 text-sm text-red-600">
+
+                          → listing_status updated to Inactive
+
+                        </div>
+
+                      </div>
+
+                    )
+
+                  )}
+
+                </div>
 
               </div>
 
