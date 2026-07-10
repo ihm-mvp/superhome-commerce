@@ -2,8 +2,6 @@
 
 import { generateMarketingAssets } from "@/lib/listing/ai/generateMarketingAssets"
 
-import { generateQrCode } from "@/lib/listing/generateQrCode"
-
 export async function importListing(
   url: string
 ) {
@@ -772,12 +770,6 @@ const aiContent =
     .toLowerCase()
     .replace(/,/g, "")
     .replace(/\s+/g, "-")
-
-    const qrcode_url =
-
-  await generateQrCode(
-    slug
-  )
   
 console.log(aiContent)
 
@@ -793,8 +785,6 @@ console.log(aiContent)
     url,
 
   slug,
-
-  qrcode_url,
 
     address,
 
