@@ -6,6 +6,8 @@ import { scanAgent } from "@/lib/listing/scanAgent"
 
 import { compareAgent } from "@/lib/listing/compareAgent"
 
+import { importListing } from "@/lib/listing/importListing"
+
 export async function POST(
   req: Request
 ) {
@@ -125,6 +127,15 @@ export async function POST(
 
     let removedUpdated = 0
 
+    // ----------------------------------
+// S4-3 Action
+// Import New Listings
+// ----------------------------------
+
+let importedCount = 0
+
+let failedCount = 0
+
     if (
 
       result.removedListings.length > 0
@@ -182,6 +193,148 @@ export async function POST(
         ids.length
 
     }
+
+for (
+
+  const newListing of
+
+  result.newListings
+
+) {
+
+  try {
+
+    const listing =
+
+      await importListing(
+
+        newListing.source_url
+
+      )
+
+    const {
+
+      openHomes,
+
+      ...listingRow
+
+    }: any = listing
+
+    listingRow.team_id =
+
+      team.id
+
+    const {
+
+      data: savedListing,
+
+      error: listingError,
+
+    } = await supabase
+
+      .from(
+
+        "listing_listings"
+
+      )
+
+      .insert(
+
+        listingRow
+
+      )
+
+      .select("id")
+
+      .single()
+
+    if (
+
+      listingError
+
+    ) {
+
+      throw listingError
+
+    }
+
+    if (
+
+      openHomes?.length
+
+    ) {
+
+      const rows =
+
+        openHomes.map(
+
+          (o: any) => ({
+
+            listing_id:
+
+              savedListing.id,
+
+            ...o,
+
+          })
+
+        )
+
+      const {
+
+        error:
+
+          openhomeError,
+
+      } = await supabase
+
+        .from(
+
+          "listing_openhomes"
+
+        )
+
+        .insert(
+
+          rows
+
+        )
+
+      if (
+
+        openhomeError
+
+      ) {
+
+        throw openhomeError
+
+      }
+
+    }
+
+    importedCount++
+
+  }
+
+  catch (
+
+    error
+
+  ) {
+
+    console.error(
+
+      newListing.source_url,
+
+      error
+
+    )
+
+    failedCount++
+
+  }
+
+}
 
     return NextResponse.json({
 
