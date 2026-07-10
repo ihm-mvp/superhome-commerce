@@ -1,8 +1,11 @@
 "use client"
 
 import {
+  useEffect,
   useState,
 } from "react"
+
+import { supabase } from "@/lib/supabase"
 
 export default function ListingPage() {
 
@@ -89,48 +92,6 @@ async function loadTeams() {
 
 }
 
-<select
-
-  value={teamId}
-
-  onChange={
-
-    e =>
-
-      setTeamId(
-
-        e.target.value
-
-      )
-
-  }
-
-  className="w-full border rounded-lg px-4 py-3"
-
->
-
-  {teams.map(
-
-    team => (
-
-      <option
-
-        key={team.id}
-
-        value={team.id}
-
-      >
-
-        {team.team_name}
-
-      </option>
-
-    )
-
-  )}
-
-</select>
-
   async function importListing() {
 
     if (!url) {
@@ -208,6 +169,52 @@ JSON.stringify({
       >
         Import a property listing from a supported website to MIR.
       </div>
+
+      <select
+
+  value={teamId}
+
+  onChange={(e) =>
+
+    setTeamId(
+
+      e.target.value
+
+    )
+
+  }
+
+  className="
+    w-full
+    border
+    rounded-lg
+    px-4
+    py-3
+  "
+
+>
+
+  {teams.map(
+
+    (team) => (
+
+      <option
+
+        key={team.id}
+
+        value={team.id}
+
+      >
+
+        {team.team_name}
+
+      </option>
+
+    )
+
+  )}
+
+</select>
 
       <input
         type="text"
