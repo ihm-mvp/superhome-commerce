@@ -209,6 +209,50 @@ if (
 
     )
 
+    // =====================================
+// Property Type Validation
+// =====================================
+
+const allowedPropertyTypes = [
+
+  "House",
+
+  "Townhouse",
+
+  "Unit",
+
+  "Apartment",
+
+]
+
+const propertyType =
+
+  allowedPropertyTypes.find(
+
+    type =>
+
+      title.includes(
+
+        `- ${type} for Sale`
+
+      )
+
+  )
+
+if (
+
+  !propertyType
+
+) {
+
+  throw new Error(
+
+    "Unsupported property type."
+
+  )
+
+}
+
   const description =
     extractBetween(
 
@@ -744,7 +788,7 @@ const aiContent =
       description,
 
     property_type:
-      "House",
+      propertyType,
 
     price:
       priceDisplay,
@@ -815,7 +859,7 @@ console.log(aiContent)
     title,
 
   property_type:
-    "House",
+    propertyType,
 
   price:
     priceDisplay,

@@ -384,6 +384,10 @@ for (
 
       removedUpdated,
 
+      importedCount,
+
+failedCount,
+
       newListings:
 
         result.newListings,
