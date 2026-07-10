@@ -42,6 +42,14 @@ export default function ListingAdminPage() {
 
   ] = useState(false)
 
+  const [
+
+    result,
+
+    setResult,
+
+  ] = useState<any>(null)
+
   useEffect(() => {
 
     loadTeams()
@@ -58,11 +66,7 @@ export default function ListingAdminPage() {
 
     } = await supabase
 
-      .from(
-
-        "team_accounts"
-
-      )
+      .from("team_accounts")
 
       .select(
 
@@ -90,11 +94,7 @@ export default function ListingAdminPage() {
 
     ) {
 
-      alert(
-
-        error.message
-
-      )
+      alert(error.message)
 
       return
 
@@ -142,11 +142,9 @@ export default function ListingAdminPage() {
 
     }
 
-    setLoading(
+    setLoading(true)
 
-      true
-
-    )
+    setResult(null)
 
     try {
 
@@ -158,9 +156,7 @@ export default function ListingAdminPage() {
 
           {
 
-            method:
-
-              "POST",
+            method: "POST",
 
             headers: {
 
@@ -186,25 +182,31 @@ export default function ListingAdminPage() {
 
         await res.json()
 
-      alert(
+      setResult(json)
 
-        json.message ||
+    }
 
-        json.error ||
+    catch (
 
-        "Finished."
+      error: any
 
-      )
+    ) {
+
+      setResult({
+
+        success: false,
+
+        error:
+
+          error.message,
+
+      })
 
     }
 
     finally {
 
-      setLoading(
-
-        false
-
-      )
+      setLoading(false)
 
     }
 
@@ -212,7 +214,7 @@ export default function ListingAdminPage() {
 
   return (
 
-    <main className="mx-auto max-w-xl px-6 py-10">
+    <main className="mx-auto max-w-5xl px-6 py-10">
 
       <h1 className="text-3xl font-semibold">
 
@@ -222,7 +224,7 @@ export default function ListingAdminPage() {
 
       <p className="mt-2 text-gray-500">
 
-        Scan Agent and sync Listings.
+        S4 Development Console
 
       </p >
 
@@ -280,17 +282,9 @@ export default function ListingAdminPage() {
 
       <button
 
-        onClick={
+        onClick={runSync}
 
-          runSync
-
-        }
-
-        disabled={
-
-          loading
-
-        }
+        disabled={loading}
 
         className="mt-8 w-full rounded-xl bg-black py-4 font-semibold text-white disabled:opacity-50"
 
@@ -307,6 +301,138 @@ export default function ListingAdminPage() {
         }
 
       </button>
+
+      {result && (
+
+        <div className="mt-10 rounded-2xl border bg-gray-50 p-6">
+
+          <h2 className="text-xl font-semibold">
+
+            S4-1 Scan Agent Result
+
+          </h2>
+
+          {!result.success && (
+
+            <div className="mt-4 text-red-600">
+
+              {result.error}
+
+            </div>
+
+          )}
+
+          {result.success && (
+
+            <>
+
+              <div className="mt-4">
+
+                <div>
+
+                  <span className="font-semibold">
+
+                    Team：
+
+                  </span>
+
+                  {result.team.name}
+
+                </div>
+
+                <div className="mt-1">
+
+                  <span className="font-semibold">
+
+                    Listing Index：
+
+                  </span>
+
+                  <span className="break-all">
+
+                    {result.listingIndexUrl}
+
+                  </span>
+
+                </div>
+
+                <div className="mt-1">
+
+                  <span className="font-semibold">
+
+                    Listings Found：
+
+                  </span>
+
+                  {result.count}
+
+                </div>
+
+              </div>
+
+              <div className="mt-6 space-y-3">
+
+                {result.listings.map(
+
+                  (
+
+                    listing: any,
+
+                    index: number
+
+                  ) => (
+
+                    <div
+
+                      key={
+
+                        listing.source_listing_id
+
+                      }
+
+                      className="rounded-xl border bg-white p-4"
+
+                    >
+
+                      <div className="font-semibold">
+
+                        {index + 1}.
+
+                        {" "}
+
+                        {
+
+                          listing.source_listing_id
+
+                        }
+
+                      </div>
+
+                      <div className="mt-2 break-all text-sm text-gray-500">
+
+                        {
+
+                          listing.source_url
+
+                        }
+
+                      </div>
+
+                    </div>
+
+                  )
+
+                )}
+
+              </div>
+
+            </>
+
+          )}
+
+        </div>
+
+      )}
 
     </main>
 
