@@ -218,6 +218,10 @@ let failedCount = 0
 
     }: any = listing
 
+    listingRow.user_id =
+
+  "f274bb98-bf20-438b-b6f3-9ac4f875c26a"
+
     listingRow.team_id =
 
       team.id
