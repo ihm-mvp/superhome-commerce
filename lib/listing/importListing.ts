@@ -231,11 +231,7 @@ const propertyType =
 
     type =>
 
-      title.includes(
-
-        `- ${type} for Sale`
-
-      )
+      title.includes(type)
 
   )
 
