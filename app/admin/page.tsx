@@ -677,7 +677,7 @@ export default function AdminDashboard() {
           </Link>
 
                     <Link
-            href="/admin/list"
+            href="/admin/listing"
             className="
               border
               rounded-xl
