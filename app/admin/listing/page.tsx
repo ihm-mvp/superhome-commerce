@@ -449,11 +449,43 @@ export default function ListingAdminPage() {
 
                   </div>
 
-                  <div className="mt-1 text-2xl font-bold">
+<div className="mt-1 text-2xl font-bold">
 
-                    {result.removedUpdated}
+  {result.removedUpdated}
 
-                  </div>
+</div>
+
+</div>
+
+<div className="rounded-xl border bg-white p-4">
+
+  <div className="text-sm text-gray-500">
+
+    Imported
+
+  </div>
+
+  <div className="mt-1 text-2xl font-bold text-green-600">
+
+    {result.importedCount}
+
+  </div>
+
+</div>
+
+<div className="rounded-xl border bg-white p-4">
+
+  <div className="text-sm text-gray-500">
+
+    Failed
+
+  </div>
+
+  <div className="mt-1 text-2xl font-bold text-red-600">
+
+    {result.failedCount}
+
+  </div>
 
                 </div>
 

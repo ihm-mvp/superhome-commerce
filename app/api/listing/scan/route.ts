@@ -194,9 +194,13 @@ let failedCount = 0
 
     }
 
-  const newListing =
+for (
 
-  result.newListings[0]
+  const newListing of
+
+  result.newListings
+
+)
 
 {
 
