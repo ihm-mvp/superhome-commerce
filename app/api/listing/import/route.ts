@@ -16,9 +16,10 @@ export async function POST(
 
     const {
       url,
+      teamId,
     } = await req.json()
 
-    if (!url) {
+    if (!url || !teamId) {
 
       return NextResponse.json(
         {
@@ -54,9 +55,9 @@ export async function POST(
       openHomes
     )
 
-    listingRow.user_id =
+    listingRow.team_id =
 
-      "f274bb98-bf20-438b-b6f3-9ac4f875c26a"
+teamId
 
     const {
       data: savedListing,

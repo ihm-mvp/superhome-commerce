@@ -12,6 +12,16 @@ export default function ListingPage() {
   ] = useState("")
 
   const [
+  teamId,
+  setTeamId,
+] = useState("")
+
+const [
+  teams,
+  setTeams,
+] = useState<any[]>([])
+
+  const [
     loading,
     setLoading,
   ] = useState(false)
@@ -20,6 +30,106 @@ export default function ListingPage() {
     result,
     setResult,
   ] = useState<any>(null)
+
+  useEffect(() => {
+
+  loadTeams()
+
+}, [])
+
+async function loadTeams() {
+
+  const {
+
+    data,
+
+  } = await supabase
+
+    .from("team_accounts")
+
+    .select(
+
+      "id, team_name"
+
+    )
+
+    .eq(
+
+      "status",
+
+      "Active"
+
+    )
+
+    .order(
+
+      "team_name"
+
+    )
+
+  setTeams(
+
+    data || []
+
+  )
+
+  if (
+
+    data?.length
+
+  ) {
+
+    setTeamId(
+
+      data[0].id
+
+    )
+
+  }
+
+}
+
+<select
+
+  value={teamId}
+
+  onChange={
+
+    e =>
+
+      setTeamId(
+
+        e.target.value
+
+      )
+
+  }
+
+  className="w-full border rounded-lg px-4 py-3"
+
+>
+
+  {teams.map(
+
+    team => (
+
+      <option
+
+        key={team.id}
+
+        value={team.id}
+
+      >
+
+        {team.team_name}
+
+      </option>
+
+    )
+
+  )}
+
+</select>
 
   async function importListing() {
 
@@ -48,12 +158,15 @@ export default function ListingPage() {
               "application/json",
           },
 
-          body:
-            JSON.stringify({
+body:
 
-              url,
+JSON.stringify({
 
-            }),
+  url,
+
+  teamId,
+
+}),
 
         }
       )
