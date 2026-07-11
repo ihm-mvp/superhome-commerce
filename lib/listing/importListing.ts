@@ -241,11 +241,9 @@ if (
 
 ) {
 
-  throw new Error(
+  console.log("SKIPPED")
 
-    "Unsupported property type."
-
-  )
+  return null
 
 }
 
