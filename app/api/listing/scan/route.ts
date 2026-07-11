@@ -352,7 +352,7 @@ continue
 
   catch (
 
-    error
+    error: any
 
   ) {
 
@@ -364,15 +364,19 @@ continue
 
     )
 
-    failedCount++
+failedCount++
 
-    failedListings.push({
+failedListings.push({
 
   ...newListing,
 
   error:
 
-    error.message,
+    error instanceof Error
+
+      ? error.message
+
+      : String(error),
 
 })
 
