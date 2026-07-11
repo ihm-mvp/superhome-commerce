@@ -1,6 +1,48 @@
+export type ParsedListing = {
+
+  listingId: string | null
+
+  address: string
+
+  title: string
+
+  description: string
+
+  ogImage: string
+
+  priceDisplay: string
+
+  bedrooms: number | null
+
+  bathrooms: number | null
+
+  garage: number | null
+
+  landArea: string | null
+
+  floorArea: string | null
+
+  photos: string[]
+
+  floorplanImage: string
+
+  videoUrl: string
+
+  agentName: string | null
+
+  officeName: string | null
+
+  latitude: number | null
+
+  longitude: number | null
+
+  openHomes: any[]
+
+}
+
 export async function parseHarcourtsGold(
   url: string
-) {
+): Promise<ParsedListing> {
 
   // =====================================
   // Fetch HTML
@@ -705,8 +747,6 @@ for (const match of hrefMatches) {
 return {
 
   listingId,
-
-  propertyYpte: null,
 
   address,
 
