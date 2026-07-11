@@ -61,7 +61,9 @@ export async function generateMarketingAssets(
 
     })
 
-  return JSON.parse(
+const ai_content =
+
+  JSON.parse(
 
     response
       .choices[0]
@@ -69,5 +71,11 @@ export async function generateMarketingAssets(
       .content || "{}"
 
   )
+
+return {
+
+  ai_content,
+
+}
 
 }

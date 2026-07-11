@@ -1,32 +1,4 @@
-// lib/listing/importListing.ts
-
-import { generateMarketingAssets } from "@/lib/listing/ai/generateMarketingAssets"
-
-import { generateQrCode } from "@/lib/listing/generateQrCode"
-
-export async function importListing(
-  url: string
-) {
-
-  if (
-    url.includes(
-      "harcourtsgold.co.nz"
-    )
-  ) {
-
-    return await parseHarcourtsGold(
-      url
-    )
-
-  }
-
-  throw new Error(
-    "Unsupported listing source."
-  )
-
-}
-
-async function parseHarcourtsGold(
+export async function parseHarcourtsGold(
   url: string
 ) {
 
@@ -208,44 +180,6 @@ if (
       "</title>"
 
     )
-
-    // =====================================
-// Property Type Validation
-// =====================================
-
-const allowedPropertyTypes = [
-
-  "House",
-
-  "Townhouse",
-
-  "Unit",
-
-  "Apartment",
-
-]
-
-const propertyType =
-
-  allowedPropertyTypes.find(
-
-    type =>
-
-      title.includes(type)
-
-  )
-
-if (
-
-  !propertyType
-
-) {
-
-  console.log("SKIPPED")
-
-  return null
-
-}
 
   const description =
     extractBetween(
@@ -764,160 +698,51 @@ for (const match of hrefMatches) {
       ? listingIdMatch[1]
       : null
 
-  // =====================================
+        // =====================================
   // Return
   // =====================================
 
-console.log(hrefMatches)
+return {
 
-const {
+  listingId,
 
-  ai_content,
+  propertyYpte: null,
 
-} = await generateMarketingAssets({
+  address,
 
-    address,
+  title,
 
-    headline: title,
+  description,
 
-    trademe_description:
-      description,
+  ogImage,
 
-    property_type:
-      propertyType,
-
-    price:
-      priceDisplay,
-
-    bedrooms,
-
-    bathrooms,
-
-    garages:
-      garage,
-
-    floor_area:
-      floorArea,
-
-    land_area:
-      landArea,
-
-    openHomes,
-
-  })
-
-const slug =
-
-  address
-
-    .toLowerCase()
-
-    .replace(/\//g, "-")
-
-    .replace(/,/g, "")
-
-    .replace(/\./g, "")
-
-    .replace(/\s+/g, "-")
-
-    .replace(/-+/g, "-")
-
-    .replace(/^-|-$/g, "")
-
-    .replace(/[^a-z0-9-]/g, "")
-
-const {
-
-  qrcode_url,
-
-} = await generateQrCode(
-  slug
-)
-
-    return {
-
-  source_platform:
-    "Harcourts Gold",
-
-  source_listing_id:
-    listingId,
-
-  source_url:
-    url,
-
-  slug,
-
-  qrcode_url,
-
-    address,
-
-  headline:
-    title,
-
-  property_type:
-    propertyType,
-
-  price:
-    priceDisplay,
+  priceDisplay,
 
   bedrooms,
 
   bathrooms,
 
-  garages:
-    garage,
+  garage,
 
-  floor_area:
-    floorArea,
+  landArea,
 
-  land_area:
-    landArea,
+  floorArea,
 
-  tenure:
-    null,
+  photos,
 
-  agent_name:
-    agentName,
+  floorplanImage,
 
-  agency_name:
-    officeName,
+  videoUrl,
 
-  trademe_description:
-    description,
+  agentName,
 
-  listing_status:
-    "Active",
+  officeName,
 
-  // ⭐ 新增，放到顶层
+  latitude,
+
+  longitude,
+
   openHomes,
-
-  property_json: {
-
-    source:
-      "harcourts-gold",
-
-    title,
-
-    description,
-
-    photos,
-
-    floorplan_image:
-      floorplanImage,
-
-    video_url:
-      videoUrl,
-
-    office_name:
-      officeName,
-
-    latitude,
-
-    longitude,
-
-  },
-
-  ai_content,
 
 }
 

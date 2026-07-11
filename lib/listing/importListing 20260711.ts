@@ -770,11 +770,9 @@ for (const match of hrefMatches) {
 
 console.log(hrefMatches)
 
-const {
+const aiContent =
 
-  ai_content,
-
-} = await generateMarketingAssets({
+  await generateMarketingAssets({
 
     address,
 
@@ -826,13 +824,13 @@ const slug =
 
     .replace(/[^a-z0-9-]/g, "")
 
-const {
+    const qrcode_url =
 
-  qrcode_url,
-
-} = await generateQrCode(
-  slug
-)
+  await generateQrCode(
+    slug
+  )
+  
+console.log(aiContent)
 
     return {
 
@@ -917,7 +915,8 @@ const {
 
   },
 
-  ai_content,
+  ai_content:
+  aiContent,
 
 }
 
