@@ -4,12 +4,6 @@ import { generateMarketingAssets } from "@/lib/listing/ai/generateMarketingAsset
 
 import { generateQrCode } from "@/lib/listing/generateQrCode"
 
-import { validatePropertyType } from "@/lib/listing/validatePropertyType"
-
-import {
-  parseHarcourtsGold,
-} from "@/lib/listing/parser/parseHarcourtsGold"
-
 export async function importListing(
   url: string
 ) {
@@ -32,7 +26,7 @@ export async function importListing(
 
 }
 
-async function parseHarcourtsGoldOld(
+async function parseHarcourtsGold(
   url: string
 ) {
 
@@ -219,29 +213,35 @@ if (
 // Property Type Validation
 // =====================================
 
-const {
+const allowedPropertyTypes = [
 
-  property_type,
+  "House",
 
-  supported,
+  "Townhouse",
 
-} = validatePropertyType(
+  "Unit",
 
-  title
+  "Apartment",
 
-)
+]
+
+const propertyType =
+
+  allowedPropertyTypes.find(
+
+    type =>
+
+      title.includes(type)
+
+  )
 
 if (
 
-  !supported
+  !propertyType
 
 ) {
 
-  console.log(
-
-    "SKIPPED"
-
-  )
+  console.log("SKIPPED")
 
   return null
 
@@ -770,11 +770,9 @@ for (const match of hrefMatches) {
 
 console.log(hrefMatches)
 
-const {
+const aiContent =
 
-  ai_content,
-
-} = await generateMarketingAssets({
+  await generateMarketingAssets({
 
     address,
 
@@ -783,7 +781,8 @@ const {
     trademe_description:
       description,
 
-    property_type,
+    property_type:
+      propertyType,
 
     price:
       priceDisplay,
@@ -825,13 +824,13 @@ const slug =
 
     .replace(/[^a-z0-9-]/g, "")
 
-const {
+    const qrcode_url =
 
-  qrcode_url,
-
-} = await generateQrCode(
-  slug
-)
+  await generateQrCode(
+    slug
+  )
+  
+console.log(aiContent)
 
     return {
 
@@ -852,6 +851,9 @@ const {
 
   headline:
     title,
+
+  property_type:
+    propertyType,
 
   price:
     priceDisplay,
@@ -913,7 +915,8 @@ const {
 
   },
 
-  ai_content,
+  ai_content:
+  aiContent,
 
 }
 
