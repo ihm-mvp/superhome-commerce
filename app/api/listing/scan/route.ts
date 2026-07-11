@@ -218,7 +218,7 @@ for (
 
       if (
 
-  !listing == null
+  listing == null
 
 ) {
 
