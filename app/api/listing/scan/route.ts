@@ -138,6 +138,12 @@ let failedCount = 0
 
 let skippedCount = 0
 
+const importedListings: any[] = []
+
+const skippedListings: any[] = []
+
+const failedListings: any[] = []
+
     if (
 
       result.removedListings.length > 0
@@ -222,9 +228,13 @@ for (
 
 ) {
 
-  skippedCount++
+skippedCount++
 
-  continue
+skippedListings.push(
+  newListing
+)
+
+continue
 
 }
 
@@ -334,6 +344,10 @@ for (
 
     importedCount++
 
+    importedListings.push(
+  newListing
+)
+
   }
 
   catch (
@@ -351,6 +365,16 @@ for (
     )
 
     failedCount++
+
+    failedListings.push({
+
+  ...newListing,
+
+  error:
+
+    error.message,
+
+})
 
   }
 
@@ -404,17 +428,19 @@ for (
 
       failedCount,
 
-      newListings:
+existingListings:
 
-        result.newListings,
+  result.existingListings,
 
-      existingListings:
+removedListings:
 
-        result.existingListings,
+  result.removedListings,
 
-      removedListings:
+importedListings,
 
-        result.removedListings,
+skippedListings,
+
+failedListings,
 
     })
 

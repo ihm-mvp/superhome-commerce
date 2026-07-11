@@ -509,15 +509,15 @@ export default function ListingAdminPage() {
 
               <div className="mt-8">
 
-                <div className="text-lg font-semibold">
+<div className="text-lg font-semibold">
 
-                  New Queue
+  Imported Queue
 
-                </div>
+</div>
 
                 <div className="mt-3 space-y-3">
 
-                  {result.newListings.map(
+{result.importedListings.map(
 
                     (
 
@@ -662,6 +662,118 @@ export default function ListingAdminPage() {
                 </div>
 
               </div>
+
+              <div className="mt-8">
+
+  <div className="text-lg font-semibold">
+
+    Skipped Queue
+
+  </div>
+
+  <div className="mt-3 space-y-3">
+
+    {result.skippedListings.map(
+
+      (
+
+        listing: any,
+
+        index: number
+
+      ) => (
+
+        <div
+
+          key={listing.source_listing_id}
+
+          className="rounded-xl border bg-white p-4"
+
+        >
+
+          <div className="font-semibold">
+
+            {index + 1}. {listing.source_listing_id}
+
+          </div>
+
+          <div className="mt-2 break-all text-sm text-gray-500">
+
+            {listing.source_url}
+
+          </div>
+
+          <div className="mt-2 text-sm text-amber-600">
+
+            → Unsupported Property Type
+
+          </div>
+
+        </div>
+
+      )
+
+    )}
+
+  </div>
+
+</div>
+
+<div className="mt-8">
+
+  <div className="text-lg font-semibold">
+
+    Failed Queue
+
+  </div>
+
+  <div className="mt-3 space-y-3">
+
+    {result.failedListings.map(
+
+      (
+
+        listing: any,
+
+        index: number
+
+      ) => (
+
+        <div
+
+          key={listing.source_listing_id}
+
+          className="rounded-xl border bg-white p-4"
+
+        >
+
+          <div className="font-semibold">
+
+            {index + 1}. {listing.source_listing_id}
+
+          </div>
+
+          <div className="mt-2 break-all text-sm text-gray-500">
+
+            {listing.source_url}
+
+          </div>
+
+          <div className="mt-2 text-sm text-red-600">
+
+            {listing.error}
+
+          </div>
+
+        </div>
+
+      )
+
+    )}
+
+  </div>
+
+</div>
 
             </>
 
