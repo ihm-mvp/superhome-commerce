@@ -4,6 +4,8 @@ import { generateMarketingAssets } from "@/lib/listing/ai/generateMarketingAsset
 
 import { generateQrCode } from "@/lib/listing/generateQrCode"
 
+import { validatePropertyType } from "@/lib/listing/validatePropertyType"
+
 export async function importListing(
   url: string
 ) {
@@ -213,35 +215,29 @@ if (
 // Property Type Validation
 // =====================================
 
-const allowedPropertyTypes = [
+const {
 
-  "House",
+  property_type,
 
-  "Townhouse",
+  supported,
 
-  "Unit",
+} = validatePropertyType(
 
-  "Apartment",
+  title
 
-]
-
-const propertyType =
-
-  allowedPropertyTypes.find(
-
-    type =>
-
-      title.includes(type)
-
-  )
+)
 
 if (
 
-  !propertyType
+  !supported
 
 ) {
 
-  console.log("SKIPPED")
+  console.log(
+
+    "SKIPPED"
+
+  )
 
   return null
 
@@ -783,8 +779,7 @@ const {
     trademe_description:
       description,
 
-    property_type:
-      propertyType,
+    property_type,
 
     price:
       priceDisplay,
@@ -853,9 +848,6 @@ const {
 
   headline:
     title,
-
-  property_type:
-    propertyType,
 
   price:
     priceDisplay,
