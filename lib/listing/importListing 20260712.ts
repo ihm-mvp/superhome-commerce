@@ -1,48 +1,36 @@
-export type ParsedListing = {
+// lib/listing/importListing.ts
 
-  listingId: string | null
+import { generateMarketingAssets } from "@/lib/listing/ai/generateMarketingAssets"
 
-  address: string
+import { generateQrCode } from "@/lib/listing/generateQrCode"
 
-  title: string
+import { validateResidentialListing } from "@/lib/listing/validateResidentialListing"
 
-  description: string
+export async function importListing(
+  url: string
+) {
 
-  ogImage: string
+  if (
+    url.includes(
+      "harcourtsgold.co.nz"
+    )
+  ) {
 
-  priceDisplay: string
+    return await parseHarcourtsGold(
+      url
+    )
 
-  bedrooms: number | null
+  }
 
-  bathrooms: number | null
-
-  garage: number | null
-
-  landArea: string | null
-
-  floorArea: string | null
-
-  photos: string[]
-
-  floorplanImage: string
-
-  videoUrl: string
-
-  agentName: string | null
-
-  officeName: string | null
-
-  latitude: number | null
-
-  longitude: number | null
-
-  openHomes: any[]
+  throw new Error(
+    "Unsupported listing source."
+  )
 
 }
 
-export async function parseHarcourtsGold(
+async function parseHarcourtsGold(
   url: string
-): Promise<ParsedListing> {
+) {
 
   // =====================================
   // Fetch HTML
@@ -223,6 +211,10 @@ if (
 
     )
 
+
+// =====================================
+
+
   const description =
     extractBetween(
 
@@ -339,6 +331,34 @@ const garage =
     ? Number(garageMatch[1])
 
     : null
+
+    const {
+
+  supported,
+
+} = validateResidentialListing(
+
+  bedrooms,
+
+  bathrooms,
+
+)
+
+if (
+
+  !supported
+
+) {
+
+  console.log(
+
+    "SKIPPED"
+
+  )
+
+  return null
+
+}
 
 // =====================================
 // Floor / Land Area
@@ -740,49 +760,156 @@ for (const match of hrefMatches) {
       ? listingIdMatch[1]
       : null
 
-        // =====================================
+  // =====================================
   // Return
   // =====================================
 
-return {
+console.log(hrefMatches)
 
-  listingId,
+const aiContent =
 
-  address,
+  await generateMarketingAssets({
 
-  title,
+    address,
 
-  description,
+    headline: title,
 
-  ogImage,
+    trademe_description:
+      description,
 
-  priceDisplay,
+    property_type:
+      null,
+
+    price:
+      priceDisplay,
+
+    bedrooms,
+
+    bathrooms,
+
+    garages:
+      garage,
+
+    floor_area:
+      floorArea,
+
+    land_area:
+      landArea,
+
+    openHomes,
+
+  })
+
+const slug =
+
+  address
+
+    .toLowerCase()
+
+    .replace(/\//g, "-")
+
+    .replace(/,/g, "")
+
+    .replace(/\./g, "")
+
+    .replace(/\s+/g, "-")
+
+    .replace(/-+/g, "-")
+
+    .replace(/^-|-$/g, "")
+
+    .replace(/[^a-z0-9-]/g, "")
+
+    const qrcode_url =
+
+  await generateQrCode(
+    slug
+  )
+  
+console.log(aiContent)
+
+    return {
+
+  source_platform:
+    "Harcourts Gold",
+
+  source_listing_id:
+    listingId,
+
+  source_url:
+    url,
+
+  slug,
+
+  qrcode_url,
+
+    address,
+
+  headline:
+    title,
+
+  price:
+    priceDisplay,
 
   bedrooms,
 
   bathrooms,
 
-  garage,
+  garages:
+    garage,
 
-  landArea,
+  floor_area:
+    floorArea,
 
-  floorArea,
+  land_area:
+    landArea,
 
-  photos,
+  tenure:
+    null,
 
-  floorplanImage,
+  agent_name:
+    agentName,
 
-  videoUrl,
+  agency_name:
+    officeName,
 
-  agentName,
+  trademe_description:
+    description,
 
-  officeName,
+  listing_status:
+    "Active",
 
-  latitude,
-
-  longitude,
-
+  // ⭐ 新增，放到顶层
   openHomes,
+
+  property_json: {
+
+    source:
+      "harcourts-gold",
+
+    title,
+
+    description,
+
+    photos,
+
+    floorplan_image:
+      floorplanImage,
+
+    video_url:
+      videoUrl,
+
+    office_name:
+      officeName,
+
+    latitude,
+
+    longitude,
+
+  },
+
+  ai_content:
+  aiContent,
 
 }
 

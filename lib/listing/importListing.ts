@@ -16,9 +16,80 @@ export async function importListing(
     )
   ) {
 
-    return await parseHarcourtsGold(
-      url
-    )
+const listing =
+
+  await parseHarcourtsGold(
+
+    url
+
+  )
+
+if (
+
+  !listing
+
+) {
+
+  return null
+
+}
+
+const {
+
+  supported,
+
+} = validateResidentialListing(
+
+  listing.bedrooms,
+
+  listing.bathrooms,
+
+)
+
+if (
+
+  !supported
+
+) {
+
+  return null
+
+}
+
+const aiContent =
+
+  await generateMarketingAssets({
+
+    ...listing,
+
+  })
+
+const slug =
+
+  listing.address
+
+    .toLowerCase()
+
+    .replace(/\//g, "-")
+
+    .replace(/,/g, "")
+
+    .replace(/\./g, "")
+
+    .replace(/\s+/g, "-")
+
+    .replace(/-+/g, "-")
+
+    .replace(/^-|-$/g, "")
+
+    .replace(/[^a-z0-9-]/g, "")
+
+    const qrcode_url =
+
+  await generateQrCode(
+    slug
+  )
+
 
   }
 
@@ -332,33 +403,6 @@ const garage =
 
     : null
 
-    const {
-
-  supported,
-
-} = validateResidentialListing(
-
-  bedrooms,
-
-  bathrooms,
-
-)
-
-if (
-
-  !supported
-
-) {
-
-  console.log(
-
-    "SKIPPED"
-
-  )
-
-  return null
-
-}
 
 // =====================================
 // Floor / Land Area
@@ -766,67 +810,9 @@ for (const match of hrefMatches) {
 
 console.log(hrefMatches)
 
-const aiContent =
 
-  await generateMarketingAssets({
-
-    address,
-
-    headline: title,
-
-    trademe_description:
-      description,
-
-    property_type:
-      null,
-
-    price:
-      priceDisplay,
-
-    bedrooms,
-
-    bathrooms,
-
-    garages:
-      garage,
-
-    floor_area:
-      floorArea,
-
-    land_area:
-      landArea,
-
-    openHomes,
-
-  })
-
-const slug =
-
-  address
-
-    .toLowerCase()
-
-    .replace(/\//g, "-")
-
-    .replace(/,/g, "")
-
-    .replace(/\./g, "")
-
-    .replace(/\s+/g, "-")
-
-    .replace(/-+/g, "-")
-
-    .replace(/^-|-$/g, "")
-
-    .replace(/[^a-z0-9-]/g, "")
-
-    const qrcode_url =
-
-  await generateQrCode(
-    slug
-  )
   
-console.log(aiContent)
+// console.log(aiContent)
 
     return {
 
@@ -838,10 +824,6 @@ console.log(aiContent)
 
   source_url:
     url,
-
-  slug,
-
-  qrcode_url,
 
     address,
 
@@ -907,9 +889,6 @@ console.log(aiContent)
     longitude,
 
   },
-
-  ai_content:
-  aiContent,
 
 }
 
