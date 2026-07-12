@@ -4,6 +4,8 @@ import { generateMarketingAssets } from "@/lib/listing/ai/generateMarketingAsset
 
 import { generateQrCode } from "@/lib/listing/generateQrCode"
 
+import { validateResidentialListing } from "@/lib/listing/validateResidentialListing"
+
 export async function importListing(
   url: string
 ) {
@@ -209,43 +211,9 @@ if (
 
     )
 
-    // =====================================
-// Property Type Validation
+
 // =====================================
 
-const allowedPropertyTypes = [
-
-  "House",
-
-  "Townhouse",
-
-  "Unit",
-
-  "Apartment",
-
-]
-
-const propertyType =
-
-  allowedPropertyTypes.find(
-
-    type =>
-
-      title.includes(type)
-
-  )
-
-if (
-
-  !propertyType
-
-) {
-
-  console.log("SKIPPED")
-
-  return null
-
-}
 
   const description =
     extractBetween(
@@ -363,6 +331,34 @@ const garage =
     ? Number(garageMatch[1])
 
     : null
+
+    const {
+
+  supported,
+
+} = validateResidentialListing(
+
+  bedrooms,
+
+  bathrooms,
+
+)
+
+if (
+
+  !supported
+
+) {
+
+  console.log(
+
+    "SKIPPED"
+
+  )
+
+  return null
+
+}
 
 // =====================================
 // Floor / Land Area
@@ -782,7 +778,7 @@ const aiContent =
       description,
 
     property_type:
-      propertyType,
+      null,
 
     price:
       priceDisplay,
@@ -851,9 +847,6 @@ console.log(aiContent)
 
   headline:
     title,
-
-  property_type:
-    propertyType,
 
   price:
     priceDisplay,

@@ -4,7 +4,7 @@ import { generateMarketingAssets } from "@/lib/listing/ai/generateMarketingAsset
 
 import { generateQrCode } from "@/lib/listing/generateQrCode"
 
-import { validatePropertyType } from "@/lib/listing/validatePropertyType"
+import { validatePropertyType } from "@/lib/listing/validateResidentialListingType TEMP"
 
 import {
   parseHarcourtsGold,
