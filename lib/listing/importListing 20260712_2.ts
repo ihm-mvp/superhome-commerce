@@ -6,12 +6,6 @@ import { generateQrCode } from "@/lib/listing/generateQrCode"
 
 import { validateResidentialListing } from "@/lib/listing/validateResidentialListing"
 
-import {
-
-  parseHarcourtsGold,
-
-} from "@/lib/listing/parser/parseHarcourtsGold"
-
 export async function importListing(
   url: string
 ) {
@@ -118,7 +112,7 @@ const slug =
 
 }
 
-async function parseHarcourtsGoldOld(
+async function parseHarcourtsGold(
   url: string
 ) {
 
