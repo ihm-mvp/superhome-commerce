@@ -90,6 +90,19 @@ const slug =
     slug
   )
 
+  return {
+
+  ...listing,
+
+  slug,
+
+  qrcode_url,
+
+  ai_content:
+
+    aiContent,
+
+}
 
   }
 
