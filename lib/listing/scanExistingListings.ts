@@ -1,5 +1,9 @@
 // lib/listing/scanExistingListings.ts
 
+import { supabase } from "@/lib/supabase"
+
+import { compareListing } from "@/lib/listing/compareListing"
+
 import { parseHarcourtsGold } from "@/lib/listing/parser/parseHarcourtsGold"
 
 export async function scanExistingListings(
@@ -50,7 +54,63 @@ export async function scanExistingListings(
   // Compare Listing
   // ----------------------------------
 
-  const compareResult = null
+  const {
+
+  data: dbListing,
+
+} = await supabase
+
+  .from(
+
+    "listing_listings"
+
+  )
+
+  .select("*")
+
+  .eq(
+
+    "id",
+
+    existingListing.id,
+
+  )
+
+  .single()
+
+const {
+
+  data: dbOpenHomes,
+
+} = await supabase
+
+  .from(
+
+    "listing_openhomes"
+
+  )
+
+  .select("*")
+
+  .eq(
+
+    "listing_id",
+
+    existingListing.id,
+
+  )
+  
+const compareResult =
+
+  compareListing(
+
+    dbListing,
+
+    dbOpenHomes || [],
+
+    parsedListing,
+
+  )
 
   // ----------------------------------
   // Phase 3 (Placeholder)

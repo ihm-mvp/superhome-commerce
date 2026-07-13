@@ -26,21 +26,12 @@ export async function compareAgent(
 
   } = await supabase
 
-    .from("listing_listings")
-
-    .select(
-
-      "id, source_listing_id, source_url, listing_status"
-
-    )
-
-    .eq(
-
-      "team_id",
-
-      teamId
-
-    )
+.from("listing_listings")
+.select(
+  "id, source_listing_id, source_url, listing_status"
+)
+.eq("team_id", teamId)
+.eq("listing_status", "Active")
 
   if (error) {
 
