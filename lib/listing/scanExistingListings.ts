@@ -126,16 +126,20 @@ const compareResult =
 
   const openHomeUpdated = false
 
-  return {
+return {
 
-    parsedListing,
+  parsedListing,
 
-    compareResult,
+  dbListing,
 
-    listingUpdated,
+  dbOpenHomes,
 
-    openHomeUpdated,
+  compareResult,
 
-  }
+  listingUpdated,
+
+  openHomeUpdated,
+
+}
 
 }
