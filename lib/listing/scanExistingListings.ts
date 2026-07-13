@@ -68,13 +68,13 @@ export async function scanExistingListings(
 
   .select("*")
 
-  .eq(
+.eq(
 
-    "id",
+  "source_listing_id",
 
-    existingListing.id,
+  existingListing.source_listing_id,
 
-  )
+)
 
   .single()
 
@@ -92,13 +92,13 @@ const {
 
   .select("*")
 
-  .eq(
+.eq(
 
-    "listing_id",
+  "listing_id",
 
-    existingListing.id,
+  dbListing.id,
 
-  )
+)
   
 const compareResult =
 
