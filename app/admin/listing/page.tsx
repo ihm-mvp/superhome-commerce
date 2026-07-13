@@ -673,6 +673,26 @@ export default function ListingAdminPage() {
 
                 <div className="mt-3 space-y-3">
 
+                  <div className="mt-6 text-lg font-semibold">
+
+  Parsed Listing
+
+</div>
+
+<pre className="mt-3 overflow-x-auto rounded-xl border bg-white p-4 text-xs">
+
+  {JSON.stringify(
+
+    result.existingScan?.parsedListing,
+
+    null,
+
+    2,
+
+  )}
+
+</pre>
+
 <div className="mt-6 text-lg font-semibold">
 
   Compare Result
