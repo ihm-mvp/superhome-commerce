@@ -186,7 +186,101 @@ updates[field] =
   // Update Open Homes
   // ----------------------------------
 
-  const openHomeUpdated = false
+let openHomeUpdated = false
+
+if (
+
+  compareResult.openHomeChanged
+
+) {
+
+  const {
+
+    error: deleteError,
+
+  } = await supabase
+
+    .from(
+
+      "listing_openhomes"
+
+    )
+
+    .delete()
+
+    .eq(
+
+      "listing_id",
+
+      dbListing.id,
+
+    )
+
+  if (
+
+    deleteError
+
+  ) {
+
+    throw deleteError
+
+  }
+
+  if (
+
+    parsedListing.openHomes.length > 0
+
+  ) {
+
+    const rows =
+
+      parsedListing.openHomes.map(
+
+        (home: any) => ({
+
+          listing_id:
+
+            dbListing.id,
+
+          ...home,
+
+        })
+
+      )
+
+    const {
+
+      error: insertError,
+
+    } = await supabase
+
+      .from(
+
+        "listing_openhomes"
+
+      )
+
+      .insert(
+
+        rows,
+
+      )
+
+    if (
+
+      insertError
+
+    ) {
+
+      throw insertError
+
+    }
+
+  }
+
+  openHomeUpdated = true
+
+}
 
 return {
 
