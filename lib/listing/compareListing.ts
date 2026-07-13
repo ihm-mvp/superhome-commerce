@@ -126,16 +126,22 @@ export function compareListing(
 
     parsedOpenHomeJson
 
-  return {
+return {
 
-    listingChanged:
+  changed:
 
-      listingChangedFields.length > 0,
-
-    listingChangedFields,
+    listingChangedFields.length > 0 ||
 
     openHomeChanged,
 
-  }
+  listingChanged:
+
+    listingChangedFields.length > 0,
+
+  listingChangedFields,
+
+  openHomeChanged,
+
+}
 
 }
