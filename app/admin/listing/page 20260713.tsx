@@ -663,34 +663,6 @@ export default function ListingAdminPage() {
 
               </div>
 
-                            <div className="mt-8">
-
-                <div className="text-lg font-semibold">
-
-                  S6 Existing Scan
-
-                </div>
-
-                <div className="mt-3 space-y-3">
-
-<pre className="mt-3 overflow-x-auto rounded-xl border bg-white p-4 text-xs">
-
-  {JSON.stringify(
-
-    result.existingScan?.parsedListing,
-
-    null,
-
-    2,
-
-  )}
-
-</pre>
-
-                </div>
-
-              </div>
-
               <div className="mt-8">
 
   <div className="text-lg font-semibold">
