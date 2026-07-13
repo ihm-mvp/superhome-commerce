@@ -8,6 +8,8 @@ import { compareAgent } from "@/lib/listing/compareAgent"
 
 import { importListing } from "@/lib/listing/importListing"
 
+import { scanExistingListings } from "@/lib/listing/scanExistingListings"
+
 export async function POST(
   req: Request
 ) {
@@ -384,6 +386,14 @@ failedListings.push({
 
 }
 
+const existingScan =
+
+  await scanExistingListings(
+
+    result.existingListings,
+
+  )
+
     return NextResponse.json({
 
       success: true,
@@ -445,6 +455,8 @@ importedListings,
 skippedListings,
 
 failedListings,
+
+existingScan,
 
     })
 
