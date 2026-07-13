@@ -39,6 +39,16 @@ export async function scanExistingListings(
 
 const results: any[] = []
 
+let listingChangedCount = 0
+
+let openHomeChangedCount = 0
+
+let listingUpdatedCount = 0
+
+let openHomeUpdatedCount = 0
+
+let failedCount = 0
+
 for (
 
   const existingListing of
@@ -302,13 +312,13 @@ results.push({
 
     parsedListing.address,
 
-  parsedListing,
+  listingChanged:
 
-  dbListing,
+    compareResult.listingChanged,
 
-  dbOpenHomes,
+  openHomeChanged:
 
-  compareResult,
+    compareResult.openHomeChanged,
 
   listingUpdated,
 
@@ -316,13 +326,63 @@ results.push({
 
 })
 
+if (
+
+  compareResult.listingChanged
+
+) {
+
+  listingChangedCount++
+
+}
+
+if (
+
+  compareResult.openHomeChanged
+
+) {
+
+  openHomeChangedCount++
+
+}
+
+if (
+
+  listingUpdated
+
+) {
+
+  listingUpdatedCount++
+
+}
+
+if (
+
+  openHomeUpdated
+
+) {
+
+  openHomeUpdatedCount++
+
+}
+
 }
 
 return {
 
-  total:
+  existingCount:
 
     existingListings.length,
+
+  listingChangedCount,
+
+  openHomeChangedCount,
+
+  listingUpdatedCount,
+
+  openHomeUpdatedCount,
+
+  failedCount,
 
   results,
 

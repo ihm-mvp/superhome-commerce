@@ -671,11 +671,111 @@ export default function ListingAdminPage() {
 
                 </div>
 
-                <pre className="mt-3 overflow-x-auto rounded-xl border bg-white p-4 text-xs">
+                <div className="rounded-xl border bg-white p-4">
+
+                  <div className="text-sm text-gray-500">
+
+                    Existing Scanned
+
+                  </div>
+
+                  <div className="mt-1 text-2xl font-bold">
+
+                    {result.existingScan?.existingCount}
+
+                  </div>
+
+                </div> 
+
+                <div className="rounded-xl border bg-white p-4">
+
+                  <div className="text-sm text-gray-500">
+
+                    Listing Changed
+
+                  </div>
+
+                  <div className="mt-1 text-2xl font-bold">
+
+                    {result.existingScan?.listingChangedCount}
+
+                  </div>
+
+                </div>
+
+                
+                <div className="rounded-xl border bg-white p-4">
+
+                  <div className="text-sm text-gray-500">
+
+                    OpenHome Changed
+
+                  </div>
+
+                  <div className="mt-1 text-2xl font-bold">
+
+                    {result.existingScan?.openHomeChangedCount}
+
+                  </div>
+
+                </div>
+
+
+                                <div className="rounded-xl border bg-white p-4">
+
+                  <div className="text-sm text-gray-500">
+
+                    Listing Updated
+
+                  </div>
+
+                  <div className="mt-1 text-2xl font-bold">
+
+                    {result.existingScan?.listingUpdatedCount}
+
+                  </div>
+
+                </div>
+
+
+                                <div className="rounded-xl border bg-white p-4">
+
+                  <div className="text-sm text-gray-500">
+
+                    OpenHome Updated
+
+                  </div>
+
+                  <div className="mt-1 text-2xl font-bold">
+
+                    {result.existingScan?.openHomeUpdatedCount}
+
+                  </div>
+
+                </div>
+
+
+                                <div className="rounded-xl border bg-white p-4">
+
+                  <div className="text-sm text-gray-500">
+
+                    Failed
+
+                  </div>
+
+                  <div className="mt-1 text-2xl font-bold">
+
+                    {result.existingScan?.failedCount}
+
+                  </div>
+
+                </div>
+
+<pre>
 
   {JSON.stringify(
 
-    result.existingScan,
+    result.existingScan?.results,
 
     null,
 
