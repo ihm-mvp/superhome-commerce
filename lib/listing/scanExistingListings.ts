@@ -117,7 +117,69 @@ const compareResult =
   // Update Listing
   // ----------------------------------
 
-  const listingUpdated = false
+let listingUpdated = false
+
+if (
+
+  compareResult.listingChanged
+
+) {
+
+  const updates: any = {}
+
+  for (
+
+    const field of
+
+    compareResult.listingChangedFields
+
+  ) {
+
+updates[field] =
+
+  (parsedListing as any)[field]
+
+  }
+
+  const {
+
+    error: updateError,
+
+  } = await supabase
+
+    .from(
+
+      "listing_listings"
+
+    )
+
+    .update(
+
+      updates
+
+    )
+
+    .eq(
+
+      "id",
+
+      dbListing.id,
+
+    )
+
+  if (
+
+    updateError
+
+  ) {
+
+    throw updateError
+
+  }
+
+  listingUpdated = true
+
+}
 
   // ----------------------------------
   // Phase 4 (Placeholder)
