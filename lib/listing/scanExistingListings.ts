@@ -141,6 +141,10 @@ updates[field] =
 
   }
 
+  updates.updated_at =
+
+  new Date().toISOString()
+
   const {
 
     error: updateError,
@@ -152,10 +156,6 @@ updates[field] =
       "listing_listings"
 
     )
-
-    updates.updated_at =
-
-  new Date().toISOString()
 
     .update(
 

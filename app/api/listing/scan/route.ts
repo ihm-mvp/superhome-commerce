@@ -172,13 +172,17 @@ const failedListings: any[] = []
 
         )
 
-        .update({
+.update({
 
-          listing_status:
+  listing_status:
 
-            "Inactive",
+    "Inactive",
 
-        })
+  updated_at:
+
+    new Date().toISOString(),
+
+})
 
         .in(
 
