@@ -671,11 +671,19 @@ export default function ListingAdminPage() {
 
                 </div>
 
-                <pre className="mt-3 overflow-x-auto rounded-xl border bg-white p-4 text-xs">
+                <div className="mt-3 space-y-3">
+
+                  <div className="mt-6 text-lg font-semibold">
+
+  Parsed Listing
+
+</div>
+
+<pre className="mt-3 overflow-x-auto rounded-xl border bg-white p-4 text-xs">
 
   {JSON.stringify(
 
-    result.existingScan,
+    result.existingScan?.parsedListing,
 
     null,
 
@@ -685,7 +693,65 @@ export default function ListingAdminPage() {
 
 </pre>
 
-                <div className="mt-3 space-y-3">
+<div className="mt-6 text-lg font-semibold">
+
+  Compare Result
+
+</div>
+
+<pre className="mt-3 overflow-x-auto rounded-xl border bg-white p-4 text-xs">
+
+  {JSON.stringify(
+
+    result.existingScan?.compareResult,
+
+    null,
+
+    2,
+
+  )}
+
+</pre>
+
+<div className="mt-6 text-lg font-semibold">
+
+  Database Listing
+
+</div>
+
+<pre className="mt-3 overflow-x-auto rounded-xl border bg-white p-4 text-xs">
+
+  {JSON.stringify(
+
+    result.existingScan?.dbListing,
+
+    null,
+
+    2,
+
+  )}
+
+</pre>
+
+<div className="mt-6 text-lg font-semibold">
+
+  Database Open Homes
+
+</div>
+
+<pre className="mt-3 overflow-x-auto rounded-xl border bg-white p-4 text-xs">
+
+  {JSON.stringify(
+
+    result.existingScan?.dbOpenHomes,
+
+    null,
+
+    2,
+
+  )}
+
+</pre>
 
                 </div>
 

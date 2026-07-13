@@ -37,15 +37,9 @@ export async function scanExistingListings(
   // Parse First Existing Listing
   // ----------------------------------
 
-const results: any[] = []
+  const existingListing =
 
-for (
-
-  const existingListing of
-
-  existingListings
-
-) {
+    existingListings[0]
 
   const parsedListing =
 
@@ -292,15 +286,7 @@ if (
 
 }
 
-results.push({
-
-  source_listing_id:
-
-    existingListing.source_listing_id,
-
-  address:
-
-    parsedListing.address,
+return {
 
   parsedListing,
 
@@ -313,18 +299,6 @@ results.push({
   listingUpdated,
 
   openHomeUpdated,
-
-})
-
-}
-
-return {
-
-  total:
-
-    existingListings.length,
-
-  results,
 
 }
 
