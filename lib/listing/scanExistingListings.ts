@@ -153,6 +153,10 @@ updates[field] =
 
     )
 
+    updates.updated_at =
+
+  new Date().toISOString()
+
     .update(
 
       updates
