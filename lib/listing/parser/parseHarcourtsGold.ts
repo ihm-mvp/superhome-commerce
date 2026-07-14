@@ -28,6 +28,16 @@ const response =
     }
   )
 
+  console.log(
+
+  "FETCH",
+
+  url,
+
+  response.status
+
+)
+
 if (
   !response.ok
 ) {
@@ -42,6 +52,16 @@ if (
 
   const html =
     await response.text()
+
+    console.log(
+
+  "HTML",
+
+  url,
+
+  html.length
+
+)
 
   // =====================================
   // Helpers
@@ -706,9 +726,13 @@ for (const match of hrefMatches) {
 
 console.log(hrefMatches)
 
+console.log(
 
-  
-// console.log(aiContent)
+  "PARSE OK",
+
+  address
+
+)
 
     return {
 
