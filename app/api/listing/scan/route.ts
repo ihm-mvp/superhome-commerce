@@ -362,13 +362,19 @@ continue
 
   ) {
 
-    console.error(
+console.error(
 
-      newListing.source_url,
+  "IMPORT FAILED",
 
-      error
+  newListing,
 
-    )
+  error,
+
+  error?.message,
+
+  error?.stack
+
+)
 
 failedCount++
 
