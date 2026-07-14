@@ -75,6 +75,10 @@ export default async function ListingPage({
         listing={listing}
       />
 
+            <WhyThisProperty
+        listing={listing}
+      />
+
       <QuickFacts
         listing={listing}
       />
@@ -82,10 +86,6 @@ export default async function ListingPage({
       <EventCard
         listing={listing}
         event={events}
-      />
-
-      <WhyThisProperty
-        listing={listing}
       />
 
       <ContactCard
