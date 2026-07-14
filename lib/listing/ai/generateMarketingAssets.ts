@@ -72,10 +72,6 @@ const ai_content =
 
   )
 
-return {
-
-  ai_content,
-
-}
+return ai_content
 
 }
