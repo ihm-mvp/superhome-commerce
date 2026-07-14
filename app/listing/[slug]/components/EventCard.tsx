@@ -141,6 +141,34 @@ export default function EventCard({
 
           </div>
 
+          {listing.agent_phone && (
+
+  <button
+
+    onClick={() =>
+
+      window.location.href =
+
+        `tel:${listing.agent_phone}`
+
+    }
+
+    className="mt-5 w-full rounded-xl bg-black py-3 font-semibold text-white"
+
+  >
+
+    📞 预约看房
+
+    <div className="text-xs font-normal text-gray-300">
+
+      Book Viewing
+
+    </div>
+
+  </button>
+
+)}
+
         </div>
 
       )}
