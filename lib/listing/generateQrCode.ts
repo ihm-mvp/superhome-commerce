@@ -92,12 +92,6 @@ export async function generateQrCode(
 
     )
 
-return {
-
-  qrcode_url:
-
-    data.publicUrl,
-
-}
+return data.publicUrl
 
 }
