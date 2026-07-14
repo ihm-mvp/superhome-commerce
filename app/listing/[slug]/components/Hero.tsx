@@ -112,6 +112,36 @@ export default function Hero({
 
         </h2>
 
+        {listing.ai_content?.slug_highlights?.[0] && (
+
+  <div className="mt-4 flex items-center gap-2">
+
+    <span className="text-xl">
+
+      {listing.ai_content.slug_highlights[0].icon}
+
+    </span>
+
+    <div>
+
+      <div className="font-semibold text-gray-900">
+
+        {listing.ai_content.slug_highlights[0].zh}
+
+      </div>
+
+      <div className="text-sm text-gray-500">
+
+        {listing.ai_content.slug_highlights[0].en}
+
+      </div>
+
+    </div>
+
+  </div>
+
+)}
+
       </div>
 
     </section>
