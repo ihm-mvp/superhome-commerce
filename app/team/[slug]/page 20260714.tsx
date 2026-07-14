@@ -36,8 +36,6 @@ type Listing = {
 
   property_json: any
 
-  created_at: string
-
 }
 
 type OpenHome = {
@@ -56,8 +54,7 @@ type MarketingListing = {
 
   listing: Listing
 
-  openHomes: OpenHome[]
-
+  openhome?: OpenHome
 
 }
 
@@ -179,7 +176,73 @@ export default function TeamPage({
 
         )
 
+listings.sort((a, b) => {
 
+  const aHas =
+
+    a.openHomes?.length > 0
+
+  const bHas =
+
+    b.openHomes?.length > 0
+
+  if (
+
+    aHas !== bHas
+
+  ) {
+
+    return aHas ? -1 : 1
+
+  }
+
+  if (
+
+    aHas &&
+
+    bHas
+
+  ) {
+
+    return (
+
+      new Date(
+
+        a.openHomes[0].openhome_date
+
+      ).getTime()
+
+      -
+
+      new Date(
+
+        b.openHomes[0].openhome_date
+
+      ).getTime()
+
+    )
+
+  }
+
+  return (
+
+    new Date(
+
+      b.created_at
+
+    ).getTime()
+
+    -
+
+    new Date(
+
+      a.created_at
+
+    ).getTime()
+
+  )
+
+})
 
       if (
 
@@ -292,79 +355,11 @@ openHomes:
 
       listing.id
 
-  ) || [],
+  ),
 
           })
 
         )
-
-        merged.sort((a, b) => {
-
-  const aHas =
-
-    a.openHomes?.length > 0
-
-  const bHas =
-
-    b.openHomes?.length > 0
-
-  if (
-
-    aHas !== bHas
-
-  ) {
-
-    return aHas ? -1 : 1
-
-  }
-
-  if (
-
-    aHas &&
-
-    bHas
-
-  ) {
-
-    return (
-
-      new Date(
-
-        a.openHomes[0].openhome_date
-
-      ).getTime()
-
-      -
-
-      new Date(
-
-        b.openHomes[0].openhome_date
-
-      ).getTime()
-
-    )
-
-  }
-
-  return (
-
-    new Date(
-
-      b.listing.created_at
-
-    ).getTime()
-
-    -
-
-    new Date(
-
-      a.listing.created_at
-
-    ).getTime()
-
-  )
-
-})
 
       setListings(
 
@@ -496,63 +491,35 @@ openHomes:
 
                     </div>
 
-{item.openHomes.length > 0 && (
+                    {item.openhome && (
 
-  <div className="mt-5 rounded-xl bg-gray-100 p-4">
+                      <div className="mt-5 rounded-xl bg-gray-100 p-4">
 
-    <div className="text-sm text-gray-500">
+                        <div className="text-sm text-gray-500">
 
-      Open Homes
+                          Open Home
 
-    </div>
+                        </div>
 
-    {item.openHomes
+                        <div className="mt-2 font-semibold">
 
-      .slice(0, 2)
+                          {item.openhome.openhome_date}
 
-      .map((home: OpenHome) => (
+                        </div>
 
-        <div
+                        <div className="text-gray-600">
 
-          key={`${home.openhome_date}-${home.start_time}`}
+                          {item.openhome.start_time}
 
-          className="mt-2"
+                          {" - "}
 
-        >
+                          {item.openhome.end_time}
 
-          <div className="font-semibold">
+                        </div>
 
-            • {home.openhome_date}
+                      </div>
 
-          </div>
-
-          <div className="text-gray-600">
-
-            {home.start_time}
-
-            {" - "}
-
-            {home.end_time}
-
-          </div>
-
-        </div>
-
-      ))}
-
-    {item.openHomes.length > 2 && (
-
-      <div className="mt-2 text-sm text-gray-500">
-
-        +{item.openHomes.length - 2} more
-
-      </div>
-
-    )}
-
-  </div>
-
-)}
+                    )}
 
 <div className="mt-6 space-y-3">
 
