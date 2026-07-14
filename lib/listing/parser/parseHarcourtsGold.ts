@@ -207,28 +207,25 @@ if (
 
     )
 
-  // =====================================
-  // Address
-  // =====================================
+// =====================================
+// Address
+// =====================================
 
-  let address = ""
+const match =
 
-  if (
-    title.includes(
-      " - House"
-    )
-  ) {
+  title.match(
 
-    address =
-      title.split(
-        " - House"
-      )[0]
+    /^(.+?NZ\s\d{4})/
 
-  } else {
+  )
 
-    address = title
+const address =
 
-  }
+  match
+
+    ? match[1].trim()
+
+    : title
 
 
   // =====================================
