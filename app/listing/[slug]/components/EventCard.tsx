@@ -152,15 +152,9 @@ export default function EventCard({
 
           {listing.agent_phone && (
 
-<button
-  onClick={() =>
-
-    window.location.href =
-
-      `tel:${listing.agent_phone}`
-
-  }
-  className="mt-5 w-full rounded-xl bg-black py-3 font-semibold text-white"
+<a
+  href={`tel:${listing.agent_phone}`}
+  className="mt-5 block w-full rounded-xl bg-black py-3 text-center font-semibold text-white"
 >
 
   📞 预约看房
@@ -171,7 +165,7 @@ export default function EventCard({
 
   </div>
 
-</button>
+</a>
 
 )}
 
