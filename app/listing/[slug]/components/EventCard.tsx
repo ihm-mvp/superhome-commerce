@@ -87,20 +87,6 @@ export default function EventCard({
 
                 </div>
 
-                <button
-                  className="mt-5 w-full rounded-xl bg-black py-3 font-semibold text-white"
-                >
-
-                  加入日历
-
-                  <div className="text-xs font-normal text-gray-300">
-
-                    Add to Calendar
-
-                  </div>
-
-                </button>
-
               </div>
 
             )
@@ -112,18 +98,6 @@ export default function EventCard({
       ) : (
 
         <div className="rounded-2xl border border-gray-200 p-5">
-
-          <div className="text-sm font-medium text-gray-700">
-
-            预约看房
-
-          </div>
-
-          <div className="text-xs text-gray-400">
-
-            Private Viewing
-
-          </div>
 
           <div className="mt-3 text-2xl font-bold text-gray-900">
 
@@ -137,18 +111,18 @@ export default function EventCard({
 
           </div>
 
-          <div className="mt-5 text-gray-600">
+<div className="mt-5 text-gray-600">
 
-            请联系中介预约专属看房时间。
+  请联系 {listing.agent_name} 预约专属看房时间。
 
-          </div>
+</div>
 
-          <div className="text-sm text-gray-400">
+<div className="text-sm text-gray-400">
 
-            Please contact the agent to arrange
-            a private viewing.
+  Please contact {listing.agent_name} to arrange
+  a private viewing.
 
-          </div>
+</div>
 
           {listing.agent_phone && (
 

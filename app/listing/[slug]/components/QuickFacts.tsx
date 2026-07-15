@@ -20,7 +20,7 @@ export default function QuickFacts({
 
       <div className="mb-4 text-sm text-gray-400">
 
-        Property Snapshot
+        Property Details
 
       </div>
 

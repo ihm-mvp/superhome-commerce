@@ -23,7 +23,7 @@ export default function WhyThisProperty({
 
       <div className="mb-5 text-sm text-gray-400">
 
-        Why This Property
+        Why This Home
 
       </div>
 
