@@ -41,7 +41,8 @@ export default function ContactCard({
 <div className="mt-6">
 
   <a
-    href= "block w-full rounded-xl bg-black py-3 text-center text-white"
+    href={`tel:${listing.agent_phone}`}
+    className="block w-full rounded-xl bg-black py-3 text-center text-white"
   >
 
     <div className="font-semibold">
