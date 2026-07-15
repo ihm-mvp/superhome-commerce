@@ -433,12 +433,6 @@ openHomes:
 
         </h1>
 
-        <div className="mt-2 text-gray-500">
-
-          Marketing Toolkit
-
-        </div>
-
         <div className="mt-8">
 
           <h2 className="text-xl font-semibold">
@@ -446,6 +440,22 @@ openHomes:
             Ready to Share
 
           </h2>
+
+        </div>
+
+                <div className="mt-8">
+
+          <h2 className="text-xl font-semibold">
+
+            Marketing Toolkit
+
+          </h2>
+
+        </div>
+
+                <div className="mt-2 text-gray-500">
+
+          Choose a Listing
 
         </div>
 
@@ -548,7 +558,7 @@ openHomes:
 
       <div className="mt-2 text-sm text-gray-500">
 
-        +{item.openHomes.length - 2} more
+        +{item.openHomes.length - 2} Upcoming Open Homes
 
       </div>
 
@@ -615,13 +625,7 @@ openHomes:
 
 <div className="text-lg font-semibold">
 
-  下载二维码
-
-</div>
-
-<div className="mt-1 text-sm text-gray-500">
-
-  Download QR Code
+  下载推广二维码
 
 </div>
 
