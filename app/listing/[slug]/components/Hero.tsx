@@ -2,23 +2,21 @@
 
 "use client"
 
+import { useState } from "react"
+
 type Props = {
   listing: any
 }
-
-import { useState } from "react"
 
 export default function Hero({
   listing,
 }: Props) {
 
   const photos =
-
     listing.property_json?.photos || []
 
-    const [current, setCurrent] =
-
-  useState(0)
+  const [current, setCurrent] =
+    useState(0)
 
   return (
 
@@ -26,82 +24,106 @@ export default function Hero({
 
       {/* Hero Images */}
 
-<div
-  className="
-    flex
-    overflow-x-auto
-    snap-x
-    snap-mandatory
-    scrollbar-hide
-  "
-  onScroll={(e) => {
+      <div className="relative">
 
-    const el = e.currentTarget
+        <div
+          className="
+            flex
+            overflow-x-auto
+            snap-x
+            snap-mandatory
+            scrollbar-hide
+          "
+          onScroll={(e) => {
 
-    const index = Math.round(
+            const el = e.currentTarget
 
-      el.scrollLeft /
+            const index = Math.round(
+              el.scrollLeft /
+              el.clientWidth
+            )
 
-      el.clientWidth
+            setCurrent(index)
 
-    )
+          }}
+        >
 
-    setCurrent(index)
+          {photos.length > 0 ? (
 
-  }}
->
+            photos.map(
 
-        {photos.length > 0 ? (
+              (
+                photo: string,
+                index: number
+              ) => (
 
-          photos.map(
-
-            (
-              photo: string,
-              index: number
-            ) => (
-
-              <div
-                key={index}
-                className="
-                  relative
-                  min-w-full
-                  snap-center
-                "
-              >
-
-                <img
-                  src={photo}
-                  alt={listing.address}
+                <div
+                  key={index}
                   className="
-                    w-full
-                    aspect-[16/10]
-                    object-cover
+                    relative
+                    min-w-full
+                    snap-center
                   "
-                />
+                >
 
-                {index === 0 && (
+                  <img
+                    src={photo}
+                    alt={listing.address}
+                    className="
+                      w-full
+                      aspect-[16/10]
+                      object-cover
+                    "
+                  />
 
-                  <div className="absolute top-4 left-4">
+                  {index === 0 && (
 
-                    <span className="rounded-full bg-green-600 px-3 py-1 text-sm font-semibold text-white">
+                    <div className="absolute top-4 left-4">
 
-                      在售 · For Sale
+                      <span className="rounded-full bg-green-600 px-3 py-1 text-sm font-semibold text-white">
 
-                    </span>
+                        在售 · For Sale
 
-                  </div>
+                      </span>
 
-                )}
+                    </div>
 
-              </div>
+                  )}
+
+                </div>
+
+              )
 
             )
 
-          )
+          ) : (
 
-        ) : (
+            <div className="w-full aspect-[16/10] bg-gray-200" />
 
-          <div className="w-full aspect-[16/10] bg-gray-200" />
+          )}
+
+        </div>
+
+        {photos.length > 1 && (
+
+          <div
+            className="
+              absolute
+              bottom-4
+              right-4
+              rounded-full
+              bg-black/70
+              px-3
+              py-1
+              text-sm
+              font-semibold
+              text-white
+            "
+          >
+
+            {current + 1} / {photos.length}
+
+          </div>
 
         )}
 

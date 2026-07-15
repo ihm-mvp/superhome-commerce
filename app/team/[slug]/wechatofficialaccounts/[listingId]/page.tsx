@@ -258,41 +258,6 @@ export default function WechatOfficialAccountsPage({
 
           </div>
 
-          <div className="mt-10">
-
-            <div className="text-lg font-semibold justify-center">
-
-              Listing QR Code
-
-            </div>
-
-            <div className="mt-4 flex justify-center">
-
-              <img
-
-                src={
-                  listing.qrcode_url ||
-                  ""
-                }
-
-                alt="QR Code"
-
-                onClick={() =>
-                  window.open(
-                    listing.qrcode_url ||
-                      "",
-                    "_blank"
-                  )
-                }
-
-                className="w-56 rounded-xl border bg-white p-3"
-
-              />
-
-            </div>
-
-          </div>
-
           <button
 
             onClick={
