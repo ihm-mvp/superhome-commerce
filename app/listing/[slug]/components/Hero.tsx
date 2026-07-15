@@ -1,8 +1,12 @@
 // app/listing/[slug]/components/Hero.tsx
 
+"use client"
+
 type Props = {
   listing: any
 }
+
+import { useState } from "react"
 
 export default function Hero({
   listing,
@@ -12,21 +16,40 @@ export default function Hero({
 
     listing.property_json?.photos || []
 
+    const [current, setCurrent] =
+
+  useState(0)
+
   return (
 
     <section className="bg-white">
 
       {/* Hero Images */}
 
-      <div
-        className="
-          flex
-          overflow-x-auto
-          snap-x
-          snap-mandatory
-          scrollbar-hide
-        "
-      >
+<div
+  className="
+    flex
+    overflow-x-auto
+    snap-x
+    snap-mandatory
+    scrollbar-hide
+  "
+  onScroll={(e) => {
+
+    const el = e.currentTarget
+
+    const index = Math.round(
+
+      el.scrollLeft /
+
+      el.clientWidth
+
+    )
+
+    setCurrent(index)
+
+  }}
+>
 
         {photos.length > 0 ? (
 
@@ -59,6 +82,12 @@ export default function Hero({
                 {index === 0 && (
 
                   <div className="absolute top-4 left-4">
+
+                    <div className="absolute top-4 right-4 rounded-full bg-black/60 px-3 py-1 text-sm font-semibold text-white">
+
+  {current + 1} / {photos.length}
+
+</div>
 
                     <span className="rounded-full bg-green-600 px-3 py-1 text-sm font-semibold text-white">
 
