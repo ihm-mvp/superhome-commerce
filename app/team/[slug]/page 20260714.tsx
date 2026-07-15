@@ -34,8 +34,6 @@ type Listing = {
 
   qrcode_url: string | null
 
-  slug: string
-
   property_json: any
 
   created_at: string
@@ -70,73 +68,6 @@ type Props = {
     slug: string
 
   }>
-
-}
-
-import type { Metadata } from "next"
-
-export async function generateMetadata(
-  {
-    params,
-  }: Props
-): Promise<Metadata> {
-
-  const {
-    slug,
-  } = await params
-
-  const {
-    data: team,
-  } = await supabase
-
-    .from("team_accounts")
-
-    .select("team_name")
-
-    .eq(
-      "team_slug",
-      slug
-    )
-
-    .single()
-
-  return {
-
-    title:
-
-      team?.team_name ||
-
-      "MoveInReady",
-
-    description:
-
-      "Ready to Share · Marketing Toolkit",
-
-    openGraph: {
-
-      title:
-
-        team?.team_name ||
-
-        "MoveInReady",
-
-      description:
-
-        "Ready to Share · Marketing Toolkit",
-
-      images: [
-
-        "https://www.moveinready.co.nz/listing/team-cover.jpg",
-
-      ],
-
-      type:
-
-        "website",
-
-    },
-
-  }
 
 }
 
@@ -500,27 +431,19 @@ openHomes:
 
         </h1>
 
+        <div className="mt-2 text-gray-500">
+
+          Marketing Toolkit
+
+        </div>
+
         <div className="mt-8">
 
           <h2 className="text-xl font-semibold">
 
             Ready to Share
 
-</h2>
-</div>
-
-        <div className="mt-8">
-
-          <h2 className="text-xl font-semibold">
-            Marketing Toolkit
-
           </h2>
-
-        </div>
-
-                <div className="mt-2 text-gray-500">
-
-          Choose a Listing
 
         </div>
 
@@ -623,7 +546,7 @@ openHomes:
 
       <div className="mt-2 text-sm text-gray-500">
 
-        +{item.openHomes.length - 2} Upcoming Open Homes
+        +{item.openHomes.length - 2} more
 
       </div>
 
@@ -671,28 +594,21 @@ openHomes:
 
   </button>
 
-  <button
-  onClick={() =>
-    window.open(
-      `/listing/${listing.slug}`,
-      "_blank"
-    )
-  }
-  className="w-full rounded-xl border py-3 font-semibold"
->
-  💬 微信分享
-
-</button>
-
 <div className="mt-6 rounded-2xl border bg-white p-5">
 
   <div className="text-center">
 
-<div className="text-lg font-semibold">
+    <div className="text-lg font-semibold">
 
-  下载推广二维码
+      Listing QR Code
 
-</div>
+    </div>
+
+    <div className="mt-2 text-sm text-gray-500">
+
+      Long press to save
+
+    </div>
 
   </div>
 
