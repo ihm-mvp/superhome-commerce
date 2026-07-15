@@ -51,7 +51,7 @@ export default function Hero({
                   alt={listing.address}
                   className="
                     w-full
-                    aspect-[3/2]
+                    aspect-[16/10]
                     object-cover
                   "
                 />
@@ -78,7 +78,7 @@ export default function Hero({
 
         ) : (
 
-          <div className="w-full aspect-[3/2] bg-gray-200" />
+          <div className="w-full aspect-[16/10] bg-gray-200" />
 
         )}
 
