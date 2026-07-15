@@ -38,27 +38,27 @@ export default function ContactCard({
 
         </div>
 
-        <div className="mt-6">
+<div className="mt-6">
 
-          <button
-            className="w-full rounded-xl bg-black py-3 text-white"
-          >
+  <a
+    href= "block w-full rounded-xl bg-black py-3 text-center text-white"
+  >
 
-            <div className="font-semibold">
+    <div className="font-semibold">
 
-              联系中介
+      📞 联系 {listing.agent_name}
 
-            </div>
+    </div>
 
-            <div className="text-xs text-gray-300">
+    <div className="text-xs text-gray-300">
 
-              Contact Agent
+      Contact {listing.agent_name}
 
-            </div>
+    </div>
 
-          </button>
+  </a >
 
-        </div>
+</div>
 
       </div>
 
