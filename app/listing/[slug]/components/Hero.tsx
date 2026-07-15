@@ -83,12 +83,6 @@ export default function Hero({
 
                   <div className="absolute top-4 left-4">
 
-                    <div className="absolute top-4 right-4 rounded-full bg-black/60 px-3 py-1 text-sm font-semibold text-white">
-
-  {current + 1} / {photos.length}
-
-</div>
-
                     <span className="rounded-full bg-green-600 px-3 py-1 text-sm font-semibold text-white">
 
                       在售 · For Sale
@@ -140,36 +134,6 @@ export default function Hero({
           {listing.address}
 
         </h2>
-
-        {listing.ai_content?.slug_highlights?.[0] && (
-
-  <div className="mt-4 flex items-center gap-2">
-
-    <span className="text-xl">
-
-      {listing.ai_content.slug_highlights[0].icon}
-
-    </span>
-
-    <div>
-
-      <div className="font-semibold text-gray-900">
-
-        {listing.ai_content.slug_highlights[0].zh}
-
-      </div>
-
-      <div className="text-sm text-gray-500">
-
-        {listing.ai_content.slug_highlights[0].en}
-
-      </div>
-
-    </div>
-
-  </div>
-
-)}
 
       </div>
 

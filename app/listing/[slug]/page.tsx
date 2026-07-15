@@ -11,10 +11,96 @@ import WhyThisProperty from "./components/WhyThisProperty"
 
 import ContactCard from "./components/ContactCard"
 
+import type { Metadata } from "next"
+
 type Props = {
   params: Promise<{
     slug: string
   }>
+}
+
+export async function generateMetadata(
+  {
+    params,
+  }: Props
+): Promise<Metadata> {
+
+  const { slug } = await params
+
+  const {
+    data: listing,
+  } = await supabase
+
+    .from("listing_listings")
+
+    .select("*")
+
+    .eq("slug", slug)
+
+    .single()
+
+  if (!listing) {
+
+    return {
+
+      title: "MoveInReady",
+
+    }
+
+  }
+
+  const image =
+
+    listing.property_json?.photos?.[0] ||
+
+    ""
+
+  return {
+
+    title:
+
+      listing.address,
+
+    description:
+
+      listing.ai_content
+
+        ?.wechat_caption ||
+
+      listing.price ||
+
+      "MoveInReady",
+
+    openGraph: {
+
+      title:
+
+        listing.address,
+
+      description:
+
+        listing.ai_content
+
+          ?.wechat_caption ||
+
+        listing.price ||
+
+        "",
+
+      images: [
+
+        image,
+
+      ],
+
+      type:
+
+        "website",
+
+    },
+
+  }
+
 }
 
 export default async function ListingPage({
