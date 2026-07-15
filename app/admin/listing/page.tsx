@@ -785,6 +785,34 @@ export default function ListingAdminPage() {
 
 </pre>
 
+{result.failedListings?.length > 0 && (
+
+  <div className="mt-8 rounded-xl border border-red-300 bg-red-50 p-5">
+
+    <div className="mb-4 text-lg font-semibold text-red-700">
+
+      Failed Imports
+
+    </div>
+
+    <pre className="overflow-auto text-xs whitespace-pre-wrap">
+
+      {JSON.stringify(
+
+        result.failedListings,
+
+        null,
+
+        2
+
+      )}
+
+    </pre>
+
+  </div>
+
+)}
+
                 <div className="mt-3 space-y-3">
 
                 </div>
