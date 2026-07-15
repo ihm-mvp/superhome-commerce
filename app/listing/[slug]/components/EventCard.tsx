@@ -12,6 +12,15 @@ export default function EventCard({
 
   const events = event || []
 
+  console.log(
+  "EVENT CARD",
+  {
+    events: events.length,
+    agent_phone: listing.agent_phone,
+    type: typeof listing.agent_phone,
+  }
+)
+
   return (
 
     <section className="bg-white px-5 py-5">
