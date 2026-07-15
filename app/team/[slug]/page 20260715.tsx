@@ -34,8 +34,6 @@ type Listing = {
 
   qrcode_url: string | null
 
-  slug: string
-
   property_json: any
 
   created_at: string
@@ -596,34 +594,21 @@ openHomes:
 
   </button>
 
-  <button
-  onClick={() =>
-    window.open(
-      `/listing/${listing.slug}`,
-      "_blank"
-    )
-  }
-  className="w-full rounded-xl border py-3 font-semibold"
->
-  💬 微信分享
-
-</button>
-
 <div className="mt-6 rounded-2xl border bg-white p-5">
 
   <div className="text-center">
 
-<div className="text-lg font-semibold">
+    <div className="text-lg font-semibold">
 
-  下载二维码
+      Listing QR Code
 
-</div>
+    </div>
 
-<div className="mt-1 text-sm text-gray-500">
+    <div className="mt-2 text-sm text-gray-500">
 
-  Download QR Code
+      Long press to save
 
-</div>
+    </div>
 
   </div>
 
