@@ -726,6 +726,178 @@ for (const match of hrefMatches) {
 
 }
 
+// =====================================
+// Auctions
+// =====================================
+
+const auctions: any[] = []
+
+const auctionBlocks = [
+
+  ...html.matchAll(
+
+    /Upcoming Auctions[\s\S]*?<li class="list-item[\s\S]*?<\/li>/g
+
+  ),
+
+]
+
+for (
+
+  const block of auctionBlocks
+
+) {
+
+  const text =
+
+    block[0]
+
+  const dateMatch =
+
+    text.match(
+
+      /([0-9]{2}\s+[A-Za-z]+,\s+[0-9]{4})\s+—\s+([0-9]{1,2}:[0-9]{2}\s+[AP]M)/
+
+    )
+
+  if (
+
+    !dateMatch
+
+  ) {
+
+    continue
+
+  }
+
+const venueMatch =
+
+  text.match(
+
+    /<p class="mb-0 lh-base">([\s\S]*?)<\/p>/
+
+  )
+
+  const hrefMatch =
+
+    text.match(
+
+      /href="data:text\/calendar;charset=utf8;base64,([^"]+)"/
+
+    )
+
+  let endTime: string | null = null
+
+  if (
+
+    hrefMatch
+
+  ) {
+
+    const ics =
+
+      Buffer
+
+        .from(
+
+          hrefMatch[1],
+
+          "base64"
+
+        )
+
+        .toString("utf8")
+
+    const end =
+
+      ics.match(
+
+        /DTEND:(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z/
+
+      )
+
+    if (
+
+      end
+
+    ) {
+
+      const endUtc =
+
+        new Date(
+
+          Date.UTC(
+
+            Number(end[1]),
+
+            Number(end[2]) - 1,
+
+            Number(end[3]),
+
+            Number(end[4]),
+
+            Number(end[5]),
+
+            Number(end[6])
+
+          )
+
+        )
+
+      endTime =
+
+        toNzParts(
+
+          endUtc
+
+        ).time
+
+    }
+
+  }
+
+  const start =
+
+    new Date(
+
+      `${dateMatch[1]} ${dateMatch[2]} NZST`
+
+    )
+
+  const startNz =
+
+    toNzParts(
+
+      start
+
+    )
+
+  auctions.push({
+
+    auction_date:
+
+      startNz.openhome_date,
+
+    start_time:
+
+      startNz.time,
+
+    end_time:
+
+      endTime,
+
+    venue:
+
+      venueMatch
+
+        ? venueMatch[1].trim()
+
+        : null,
+
+  })
+
+}
+
   // =====================================
   // Listing Id
   // =====================================
@@ -808,6 +980,8 @@ console.log(
 
   // ⭐ 新增，放到顶层
   openHomes,
+
+  auctions,
 
   property_json: {
 
