@@ -850,31 +850,104 @@ const venueMatch =
 
   }
 
-  const start =
+const dateText =
 
-    new Date(
+  dateMatch[1]
 
-      `${dateMatch[1]} ${dateMatch[2]} NZST`
+const timeText =
 
-    )
+  dateMatch[2]
 
-  const startNz =
+const months: Record<string, number> = {
 
-    toNzParts(
+  January: 1,
+  February: 2,
+  March: 3,
+  April: 4,
+  May: 5,
+  June: 6,
+  July: 7,
+  August: 8,
+  September: 9,
+  October: 10,
+  November: 11,
+  December: 12,
 
-      start
+}
 
-    )
+const parts =
+
+  dateText.match(
+
+    /(\d{2})\s+([A-Za-z]+),\s+(\d{4})/
+
+  )
+
+if (
+
+  !parts
+
+) {
+
+  continue
+
+}
+
+const auctionDate =
+
+  `${parts[3]}-${String(months[parts[2]]).padStart(2,"0")}-${parts[1]}`
+
+const t =
+
+  timeText.match(
+
+    /(\d{1,2}):(\d{2})\s+(AM|PM)/
+
+  )
+
+if (
+
+  !t
+
+) {
+
+  continue
+
+}
+
+let hour =
+
+  Number(t[1])
+
+if (
+
+  t[3] === "PM" && hour < 12
+
+)
+
+  hour += 12
+
+if (
+
+  t[3] === "AM" && hour === 12
+
+)
+
+  hour = 0
+
+const startTime =
+
+  `${String(hour).padStart(2,"0")}:${t[2]}:00`
 
   auctions.push({
 
-    auction_date:
+auction_date:
 
-      startNz.openhome_date,
+  auctionDate,
 
-    start_time:
+start_time:
 
-      startNz.time,
+  startTime,
 
     end_time:
 
