@@ -324,41 +324,37 @@ const garage =
 // Floor / Land Area
 // =====================================
 
-const matches = [
+const landMatch =
 
-  ...html.matchAll(
+  html.match(
 
-    /square-meters-container[\s\S]{0,300}/g
+    /<span>\s*(\d+)\s*<i class="mini-icn icon-square-meters"><\/i>/i
 
-  ),
+  )
 
-]
+const floorMatch =
 
-console.log(
+  html.match(
 
-  "AREA MATCH COUNT:",
+    /<span>\s*(\d+)\s*<i class="mini-icn icon-floorarea"><\/i>/i
 
-  matches.length
+  )
 
-)
+const landArea =
 
-matches.forEach(
+  landMatch
 
-  (m, i) =>
+    ? landMatch[1]
 
-    console.log(
+    : null
 
-      `AREA ${i}:`,
+const floorArea =
 
-      m[0]
+  floorMatch
 
-    )
+    ? floorMatch[1]
 
-)
-
-const landArea = null
-
-const floorArea = null
+    : null
 
 // =====================================
 // Photos
