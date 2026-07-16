@@ -244,15 +244,13 @@ continue
 
 }
 
-const {
+    const {
 
-  openHomes,
+      openHomes,
 
-  auctions,
+      ...listingRow
 
-  ...listingRow
-
-}: any = listing
+    }: any = listing
 
     // listingRow.user_id =
 
@@ -349,60 +347,6 @@ const {
       }
 
     }
-
-    if (
-
-  auctions?.length
-
-) {
-
-  const rows =
-
-    auctions.map(
-
-      (a: any) => ({
-
-        listing_id:
-
-          savedListing.id,
-
-        ...a,
-
-      })
-
-    )
-
-  const {
-
-    error:
-
-      auctionError,
-
-  } = await supabase
-
-    .from(
-
-      "listing_auctions"
-
-    )
-
-    .insert(
-
-      rows
-
-    )
-
-  if (
-
-    auctionError
-
-  ) {
-
-      throw auctionError
-
-  }
-
-}
 
     importedCount++
 
