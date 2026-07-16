@@ -324,39 +324,33 @@ const garage =
 // Floor / Land Area
 // =====================================
 
-const landMatch =
+const areaMatches = [
 
-  html.match(
+  ...html.matchAll(
 
-    /<span>\s*(\d+)\s*<i class="mini-icn icon-square-meters"><\/i>/i
+    /<li class="square-meters-container">[\s\S]*?<span>\s*(\d+)/g
 
-  )
+  ),
 
-const floorMatch =
-
-  html.match(
-
-    /<span>\s*(\d+)\s*<i class="mini-icn icon-floorarea"><\/i>/i
-
-  )
+]
 
 const landArea =
 
-  landMatch
+  areaMatches.length > 0
 
-    ? landMatch[1]
+    ? areaMatches[0][1]
 
     : null
 
 const floorArea =
 
-  floorMatch
+  areaMatches.length > 1
 
-    ? floorMatch[1]
+    ? areaMatches[1][1]
 
     : null
 
-// =====================================
+      // =====================================
 // Photos
 // =====================================
 
@@ -981,7 +975,7 @@ console.log(
   // ⭐ 新增，放到顶层
   openHomes,
 
-  auctions,
+    auctions,
 
   property_json: {
 
