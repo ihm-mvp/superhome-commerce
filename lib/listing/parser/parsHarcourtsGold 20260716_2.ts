@@ -736,8 +736,8 @@ const auctionSeen = new Set<string>()
 
 const auctionRegex =
 
-  /download-upcoming-auctions[\s\S]*?href="data:text\/calendar;charset=utf8;base64,([^"]+)"/g
-
+  /href="data:text\/calendar;charset=utf8;base64,([^"]+)"[^>]*download-upcoming-auctions/g
+  
 const auctionMatches =
 
   [...html.matchAll(auctionRegex)]
