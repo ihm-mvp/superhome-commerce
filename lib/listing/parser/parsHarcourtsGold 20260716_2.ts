@@ -732,38 +732,37 @@ for (const match of hrefMatches) {
 
 const auctions: any[] = []
 
-const auctionSeen = new Set<string>()
+const auctionBlocks = [
 
-const auctionRegex =
+  ...html.matchAll(
 
-  /href="data:text\/calendar;charset=utf8;base64,([^"]+)"[^>]*download-upcoming-auctions/g
-  
-const auctionMatches =
+    /Upcoming Auctions[\s\S]*?<li class="list-item[\s\S]*?<\/li>/g
 
-  [...html.matchAll(auctionRegex)]
+  ),
 
-for (const match of auctionMatches) {
+]
 
-  const ics =
+for (
 
-    Buffer
-      .from(
-        match[1],
-        "base64"
-      )
-      .toString("utf8")
+  const block of auctionBlocks
 
-  const uid =
+) {
 
-    ics.match(
-      /UID:([^\r\n]+)/
-    )?.[1]
+  const text =
+
+    block[0]
+
+  const dateMatch =
+
+    text.match(
+
+      /([0-9]{2}\s+[A-Za-z]+,\s+[0-9]{4})\s+—\s+([0-9]{1,2}:[0-9]{2}\s+[AP]M)/
+
+    )
 
   if (
 
-    !uid ||
-
-    auctionSeen.has(uid)
+    !dateMatch
 
   ) {
 
@@ -771,67 +770,107 @@ for (const match of auctionMatches) {
 
   }
 
-  auctionSeen.add(uid)
+const venueMatch =
+
+  text.match(
+
+    /<p class="mb-0 lh-base">([\s\S]*?)<\/p>/
+
+  )
+
+  const hrefMatch =
+
+    text.match(
+
+      /href="data:text\/calendar;charset=utf8;base64,([^"]+)"/
+
+    )
+
+  let endTime: string | null = null
+
+  if (
+
+    hrefMatch
+
+  ) {
+
+    const ics =
+
+      Buffer
+
+        .from(
+
+          hrefMatch[1],
+
+          "base64"
+
+        )
+
+        .toString("utf8")
+
+    const end =
+
+      ics.match(
+
+        /DTEND:(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z/
+
+      )
+
+    if (
+
+      end
+
+    ) {
+
+      const endUtc =
+
+        new Date(
+
+          Date.UTC(
+
+            Number(end[1]),
+
+            Number(end[2]) - 1,
+
+            Number(end[3]),
+
+            Number(end[4]),
+
+            Number(end[5]),
+
+            Number(end[6])
+
+          )
+
+        )
+
+      endTime =
+
+        toNzParts(
+
+          endUtc
+
+        ).time
+
+    }
+
+  }
 
   const start =
 
-    ics.match(
-
-      /DTSTART:(\d{8})T(\d{6})Z/
-
-    )
-
-  const end =
-
-    ics.match(
-
-      /DTEND:(\d{8})T(\d{6})Z/
-
-    )
-
-  if (
-
-    !start ||
-
-    !end
-
-  ) {
-
-    continue
-
-  }
-
-  const startUtc =
-
     new Date(
 
-      `${start[1].slice(0,4)}-${start[1].slice(4,6)}-${start[1].slice(6,8)}T${start[2].slice(0,2)}:${start[2].slice(2,4)}:${start[2].slice(4,6)}Z`
-
-    )
-
-  const endUtc =
-
-    new Date(
-
-      `${end[1].slice(0,4)}-${end[1].slice(4,6)}-${end[1].slice(6,8)}T${end[2].slice(0,2)}:${end[2].slice(2,4)}:${end[2].slice(4,6)}Z`
+      `${dateMatch[1]} ${dateMatch[2]} NZST`
 
     )
 
   const startNz =
 
-    toNzParts(startUtc)
+    toNzParts(
 
-  const endNz =
+      start
 
-    toNzParts(endUtc)
-
-  const venue =
-
-    ics.match(
-
-      /LOCATION:(.+)/
-
-    )?.[1] || null
+    )
 
   auctions.push({
 
@@ -845,9 +884,15 @@ for (const match of auctionMatches) {
 
     end_time:
 
-      endNz.time,
+      endTime,
 
-    venue,
+    venue:
+
+      venueMatch
+
+        ? venueMatch[1].trim()
+
+        : null,
 
   })
 
