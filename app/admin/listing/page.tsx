@@ -561,56 +561,6 @@ export default function ListingAdminPage() {
 
                 <div className="text-lg font-semibold">
 
-                  Existing Queue
-
-                </div>
-
-                <div className="mt-3 space-y-3">
-
-                  {result.existingListings.map(
-
-                    (
-
-                      listing: any,
-
-                      index: number
-
-                    ) => (
-
-                      <div
-
-                        key={listing.source_listing_id}
-
-                        className="rounded-xl border bg-white p-4"
-
-                      >
-
-                        <div className="font-semibold">
-
-                          {index + 1}. {listing.source_listing_id}
-
-                        </div>
-
-                        <div className="mt-2 break-all text-sm text-gray-500">
-
-                          {listing.source_url}
-
-                        </div>
-
-                      </div>
-
-                    )
-
-                  )}
-
-                </div>
-
-              </div>
-
-              <div className="mt-8">
-
-                <div className="text-lg font-semibold">
-
                   Removed Queue
 
                 </div>
