@@ -444,22 +444,6 @@ const officeName =
 
     : null
 
-    const phoneMatch =
-
-  html.match(
-
-    /href="tel:([^"]+)"/i
-
-  )
-
-const agentPhone =
-
-  phoneMatch
-
-    ? phoneMatch[1].trim()
-
-    : null
-
   // =====================================
   // Latitude / Longitude
   // =====================================
@@ -790,9 +774,6 @@ console.log(
 
   agency_name:
     officeName,
-
-    agent_phone:
-  agentPhone,
 
   trademe_description:
     description,
