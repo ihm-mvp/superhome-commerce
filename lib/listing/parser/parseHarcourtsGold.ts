@@ -748,6 +748,18 @@ const auctionBlocks =
 
       ]
 
+        .filter(
+
+          block =>
+
+            block[0].includes(
+
+              "Gold Auction Rooms"
+
+            )
+
+        )
+
     : []
 
 for (
@@ -779,6 +791,22 @@ for (
   }
 
 const venueMatch =
+
+if (
+
+  !venueMatch ||
+
+  !venueMatch[1].includes(
+
+    "Auction"
+
+  )
+
+) {
+
+  continue
+
+}
 
   text.match(
 
