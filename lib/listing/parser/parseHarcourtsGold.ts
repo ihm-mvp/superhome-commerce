@@ -792,15 +792,15 @@ for (
 
 const venueMatch =
 
-if (
+  text.match(
 
-  !venueMatch ||
-
-  !venueMatch[1].includes(
-
-    "Auction"
+    /<p class="mb-0 lh-base">([\s\S]*?)<\/p>/
 
   )
+
+if (
+
+  !venueMatch
 
 ) {
 
@@ -808,11 +808,19 @@ if (
 
 }
 
-  text.match(
+const venue =
 
-    /<p class="mb-0 lh-base">([\s\S]*?)<\/p>/
+  venueMatch[1].trim()
 
-  )
+if (
+
+  !venue.includes("Auction")
+
+) {
+
+  continue
+
+}
 
   const hrefMatch =
 
@@ -1013,13 +1021,7 @@ start_time:
 
       endTime,
 
-    venue:
-
-      venueMatch
-
-        ? venueMatch[1].trim()
-
-        : null,
+    venue,
 
   })
 
