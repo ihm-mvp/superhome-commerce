@@ -88,6 +88,18 @@ type Props = {
 
 }
 
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+
+  title: "Mark Wang Team | MoveInReady",
+
+  description:
+
+    "Latest property listings from Mark Wang Team.",
+
+}
+
 export default function TeamPage({
 
   params,
@@ -737,7 +749,7 @@ const merged: MarketingListing[] =
   }
   className="w-full rounded-xl border py-3 font-semibold"
 >
-  💬 微信分享
+  💬 打开房源
 
 </button>
 
