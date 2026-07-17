@@ -614,11 +614,11 @@ const merged: MarketingListing[] =
 
           <div className="text-gray-600">
 
-            {home.start_time}
+{home.start_time?.slice(0,5)}
 
-            {" - "}
+{" - "}
 
-            {home.end_time}
+{home.end_time?.slice(0,5)}
 
           </div>
 
