@@ -3,18 +3,14 @@
 type Props = {
   listing: any
   event: any
-  auctions: any
 }
 
 export default function EventCard({
   listing,
   event,
-  auctions,
 }: Props) {
 
-const events = event || []
-
-const auctionEvents = auctions || []
+  const events = event || []
 
   console.log(
   "EVENT CARD",
@@ -101,8 +97,6 @@ const auctionEvents = auctions || []
 
       ) : (
 
-        
-
         <div className="rounded-2xl border border-gray-200 p-5">
 
           <div className="mt-3 text-2xl font-bold text-gray-900">
@@ -152,76 +146,6 @@ const auctionEvents = auctions || []
         </div>
 
       )}
-
-      {auctionEvents.length > 0 && (
-
-  <div className="mt-5 space-y-4">
-
-    {auctionEvents.map(
-
-      (
-
-        item: any,
-
-        index: number
-
-      ) => (
-
-        <div
-
-          key={index}
-
-          className="rounded-2xl border border-amber-200 bg-amber-50 p-5"
-
-        >
-
-          <div className="text-sm font-medium text-amber-700">
-
-            拍卖
-
-          </div>
-
-          <div className="text-xs text-amber-500">
-
-            Auction
-
-          </div>
-
-          <div className="mt-3 text-2xl font-bold text-gray-900">
-
-            {formatDate(
-
-              item.auction_date
-
-            )}
-
-          </div>
-
-          <div className="mt-1 text-lg text-gray-900">
-
-            {formatTime(
-
-              item.start_time
-
-            )}
-
-          </div>
-
-          <div className="mt-2 text-sm text-gray-600">
-
-            {item.venue}
-
-          </div>
-
-        </div>
-
-      )
-
-    )}
-
-  </div>
-
-)}
 
     </section>
 

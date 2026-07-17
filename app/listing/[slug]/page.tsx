@@ -153,6 +153,61 @@ export default async function ListingPage({
       }
     )
 
+
+    const {
+
+  data: auctions,
+
+} = await supabase
+
+  .from(
+
+    "listing_auctions"
+
+  )
+
+  .select("*")
+
+  .eq(
+
+    "listing_id",
+
+    listing.id
+
+  )
+
+  .eq(
+
+    "status",
+
+    "Active"
+
+  )
+
+  .order(
+
+    "auction_date",
+
+    {
+
+      ascending: true,
+
+    }
+
+  )
+
+  .order(
+
+    "start_time",
+
+    {
+
+      ascending: true,
+
+    }
+
+  )
+
   return (
 
     <main className="min-h-screen bg-white">
@@ -172,6 +227,7 @@ export default async function ListingPage({
       <EventCard
         listing={listing}
         event={events}
+        auctions={auctions}
       />
 
       <ContactCard
