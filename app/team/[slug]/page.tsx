@@ -88,18 +88,6 @@ type Props = {
 
 }
 
-import type { Metadata } from "next"
-
-export const metadata: Metadata = {
-
-  title: "Mark Wang Team | MoveInReady",
-
-  description:
-
-    "Latest property listings from Mark Wang Team.",
-
-}
-
 export default function TeamPage({
 
   params,
