@@ -726,15 +726,29 @@ for (const match of hrefMatches) {
 
 const auctions: any[] = []
 
-const auctionBlocks = [
+const auctionSection =
 
-  ...html.matchAll(
+  html.match(
 
-    /Upcoming Auctions[\s\S]*?<li class="list-item[\s\S]*?<\/li>/g
+    /Upcoming Auctions([\s\S]*?)Property Features/
 
-  ),
+  )
 
-]
+const auctionBlocks =
+
+  auctionSection
+
+    ? [
+
+        ...auctionSection[1].matchAll(
+
+          /<li class="list-item[\s\S]*?<\/li>/g
+
+        ),
+
+      ]
+
+    : []
 
 for (
 
@@ -938,6 +952,24 @@ if (
 const startTime =
 
   `${String(hour).padStart(2,"0")}:${t[2]}:00`
+
+  if (
+
+  auctions.some(
+
+    a =>
+
+      a.auction_date === auctionDate &&
+
+      a.start_time === startTime
+
+  )
+
+) {
+
+  continue
+
+}
 
   auctions.push({
 
