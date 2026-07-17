@@ -54,12 +54,27 @@ type OpenHome = {
 
 }
 
+type Auction = {
+
+  listing_id: string
+
+  auction_date: string
+
+  start_time: string | null
+
+  end_time: string | null
+
+  venue: string | null
+
+}
+
 type MarketingListing = {
 
   listing: Listing
 
   openHomes: OpenHome[]
 
+  auctions: Auction[]
 
 }
 
@@ -220,6 +235,7 @@ export default function TeamPage({
 
       } = await supabase
 
+
         .from(
 
           "listing_openhomes"
@@ -268,37 +284,95 @@ export default function TeamPage({
 
         )
 
-      const merged: MarketingListing[] =
+        const {
 
-        listingData.map(
+  data: auctionData,
 
-          (
+} = await supabase
 
-            listing
+  .from(
 
-          ) => ({
+    "listing_auctions"
 
-            listing,
+  )
 
-openHomes:
+  .select("*")
 
-  openHomeData?.filter(
+  .in(
+
+    "listing_id",
+
+    listingIds
+
+  )
+
+  .eq(
+
+    "status",
+
+    "Active"
+
+  )
+
+  .order(
+
+    "auction_date",
+
+    {
+
+      ascending: true,
+
+    }
+
+  )
+
+const merged: MarketingListing[] =
+
+  listingData.map(
 
     (
 
-      item
+      listing
 
-    ) =>
+    ) => ({
 
-      item.listing_id ===
+      listing,
 
-      listing.id
+      openHomes:
 
-  ) || [],
+        openHomeData?.filter(
 
-          })
+          (
 
-        )
+            item
+
+          ) =>
+
+            item.listing_id ===
+
+            listing.id
+
+        ) || [],
+
+      auctions:
+
+        auctionData?.filter(
+
+          (
+
+            item
+
+          ) =>
+
+            item.listing_id ===
+
+            listing.id
+
+        ) || [],
+
+    })
+
+  )
 
         merged.sort((a, b) => {
 
@@ -559,6 +633,56 @@ openHomes:
         +{item.openHomes.length - 2} Upcoming Open Homes
 
       </div>
+
+    )}
+
+  </div>
+
+)}
+
+{item.auctions.length > 0 && (
+
+  <div className="mt-5 rounded-xl bg-amber-50 p-4 border border-amber-200">
+
+    <div className="text-sm text-amber-700 font-medium">
+
+      Upcoming Auction
+
+    </div>
+
+    {item.auctions.map(
+
+      (auction: any) => (
+
+        <div
+
+          key={`${auction.auction_date}-${auction.start_time}`}
+
+          className="mt-2"
+
+        >
+
+          <div className="font-semibold">
+
+            • {auction.auction_date}
+
+          </div>
+
+          <div className="text-gray-600">
+
+            {auction.start_time?.slice(0,5)}
+
+          </div>
+
+          <div className="text-gray-600">
+
+            {auction.venue}
+
+          </div>
+
+        </div>
+
+      )
 
     )}
 
