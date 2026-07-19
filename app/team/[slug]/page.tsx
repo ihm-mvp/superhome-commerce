@@ -376,13 +376,13 @@ const merged: MarketingListing[] =
 
         merged.sort((a, b) => {
 
-  const aHas =
+const aHas =
+  a.openHomes.length > 0 ||
+  a.auctions.length > 0
 
-    a.openHomes?.length > 0
-
-  const bHas =
-
-    b.openHomes?.length > 0
+const bHas =
+  b.openHomes.length > 0 ||
+  b.auctions.length > 0
 
   if (
 
@@ -402,23 +402,20 @@ const merged: MarketingListing[] =
 
   ) {
 
-    return (
+const aDate =
+  a.openHomes.length > 0
+    ? a.openHomes[0].openhome_date
+    : a.auctions[0].auction_date
 
-      new Date(
+const bDate =
+  b.openHomes.length > 0
+    ? b.openHomes[0].openhome_date
+    : b.auctions[0].auction_date
 
-        a.openHomes[0].openhome_date
-
-      ).getTime()
-
-      -
-
-      new Date(
-
-        b.openHomes[0].openhome_date
-
-      ).getTime()
-
-    )
+return (
+  new Date(aDate).getTime() -
+  new Date(bDate).getTime()
+)
 
   }
 
