@@ -502,12 +502,12 @@ const seen = new Set<string>()
 
 const openHomeSection =
   html.match(
-    /Upcoming Open Homes([\s\S]*?)Upcoming Auctions|Upcoming Open Homes([\s\S]*?)Property Features/
+    /<section id="mobile-inspections"[\s\S]*?<\/section>/
   )
 
 const openHomeHtml =
   openHomeSection
-    ? (openHomeSection[1] || openHomeSection[2])
+    ? openHomeSection[0]
     : ""
 
 const hrefRegex =
