@@ -444,6 +444,22 @@ const officeName =
 
     : null
 
+    const phoneMatch =
+
+  html.match(
+
+    /href="tel:([^"]+)"/i
+
+  )
+
+const agentPhone =
+
+  phoneMatch
+
+    ? phoneMatch[1].trim()
+
+    : null
+
   // =====================================
   // Latitude / Longitude
   // =====================================
@@ -704,6 +720,313 @@ for (const match of hrefMatches) {
 
 }
 
+// =====================================
+// Auctions
+// =====================================
+
+const auctions: any[] = []
+
+const auctionSection =
+
+  html.match(
+
+    /Upcoming Auctions([\s\S]*?)Property Features/
+
+  )
+
+const auctionBlocks =
+
+  auctionSection
+
+    ? [
+
+        ...auctionSection[1].matchAll(
+
+          /<li class="list-item[\s\S]*?<\/li>/g
+
+        ),
+
+      ]
+
+        .filter(
+
+          block =>
+
+            block[0].includes(
+
+              "Gold Auction Rooms"
+
+            )
+
+        )
+
+    : []
+
+for (
+
+  const block of auctionBlocks
+
+) {
+
+  const text =
+
+    block[0]
+
+  const dateMatch =
+
+    text.match(
+
+      /([0-9]{2}\s+[A-Za-z]+,\s+[0-9]{4})\s+—\s+([0-9]{1,2}:[0-9]{2}\s+[AP]M)/
+
+    )
+
+  if (
+
+    !dateMatch
+
+  ) {
+
+    continue
+
+  }
+
+const venueMatch =
+
+  text.match(
+
+    /<p class="mb-0 lh-base">([\s\S]*?)<\/p>/
+
+  )
+
+if (
+
+  !venueMatch
+
+) {
+
+  continue
+
+}
+
+const venue =
+
+  venueMatch[1].trim()
+
+if (
+
+  !venue.includes("Auction")
+
+) {
+
+  continue
+
+}
+
+  const hrefMatch =
+
+    text.match(
+
+      /href="data:text\/calendar;charset=utf8;base64,([^"]+)"/
+
+    )
+
+  let endTime: string | null = null
+
+  if (
+
+    hrefMatch
+
+  ) {
+
+    const ics =
+
+      Buffer
+
+        .from(
+
+          hrefMatch[1],
+
+          "base64"
+
+        )
+
+        .toString("utf8")
+
+    const end =
+
+      ics.match(
+
+        /DTEND:(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z/
+
+      )
+
+    if (
+
+      end
+
+    ) {
+
+      const endUtc =
+
+        new Date(
+
+          Date.UTC(
+
+            Number(end[1]),
+
+            Number(end[2]) - 1,
+
+            Number(end[3]),
+
+            Number(end[4]),
+
+            Number(end[5]),
+
+            Number(end[6])
+
+          )
+
+        )
+
+      endTime =
+
+        toNzParts(
+
+          endUtc
+
+        ).time
+
+    }
+
+  }
+
+const dateText =
+
+  dateMatch[1]
+
+const timeText =
+
+  dateMatch[2]
+
+const months: Record<string, number> = {
+
+  January: 1,
+  February: 2,
+  March: 3,
+  April: 4,
+  May: 5,
+  June: 6,
+  July: 7,
+  August: 8,
+  September: 9,
+  October: 10,
+  November: 11,
+  December: 12,
+
+}
+
+const parts =
+
+  dateText.match(
+
+    /(\d{2})\s+([A-Za-z]+),\s+(\d{4})/
+
+  )
+
+if (
+
+  !parts
+
+) {
+
+  continue
+
+}
+
+const auctionDate =
+
+  `${parts[3]}-${String(months[parts[2]]).padStart(2,"0")}-${parts[1]}`
+
+const t =
+
+  timeText.match(
+
+    /(\d{1,2}):(\d{2})\s+(AM|PM)/
+
+  )
+
+if (
+
+  !t
+
+) {
+
+  continue
+
+}
+
+let hour =
+
+  Number(t[1])
+
+if (
+
+  t[3] === "PM" && hour < 12
+
+)
+
+  hour += 12
+
+if (
+
+  t[3] === "AM" && hour === 12
+
+)
+
+  hour = 0
+
+const startTime =
+
+  `${String(hour).padStart(2,"0")}:${t[2]}:00`
+
+  if (
+
+  auctions.some(
+
+    a =>
+
+      a.auction_date === auctionDate &&
+
+      a.start_time === startTime
+
+  )
+
+) {
+
+  continue
+
+}
+
+  auctions.push({
+
+auction_date:
+
+  auctionDate,
+
+start_time:
+
+  startTime,
+
+    end_time:
+
+      endTime,
+
+    venue,
+
+  })
+
+}
+
   // =====================================
   // Listing Id
   // =====================================
@@ -775,6 +1098,9 @@ console.log(
   agency_name:
     officeName,
 
+    agent_phone:
+  agentPhone,
+
   trademe_description:
     description,
 
@@ -783,6 +1109,8 @@ console.log(
 
   // ⭐ 新增，放到顶层
   openHomes,
+
+    auctions,
 
   property_json: {
 

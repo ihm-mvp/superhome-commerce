@@ -500,13 +500,21 @@ const openHomes: any[] = []
 
 const seen = new Set<string>()
 
-const hrefRegex =
+const openHomeSection =
+  html.match(
+    /Upcoming Open Homes([\s\S]*?)Upcoming Auctions|Upcoming Open Homes([\s\S]*?)Property Features/
+  )
 
+const openHomeHtml =
+  openHomeSection
+    ? (openHomeSection[1] || openHomeSection[2])
+    : ""
+
+const hrefRegex =
   /href="data:text\/calendar;charset=utf8;base64,([^"]+)"/g
 
 const hrefMatches =
-
-  [...html.matchAll(hrefRegex)]
+  [...openHomeHtml.matchAll(hrefRegex)]
 
 const nzFormatter =
 
