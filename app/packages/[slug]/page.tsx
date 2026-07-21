@@ -119,6 +119,13 @@ const { data: pkg } = await supabase
 
   if (!pkg) return notFound()
 
+    await supabase
+  .from("package_views")
+  .insert({
+    package_id: pkg.id,
+    lead_source: src,
+  })
+
   // ===== 统一 layout 结构 =====
   const layout = Array.isArray(pkg.layout)
     ? pkg.layout[0]

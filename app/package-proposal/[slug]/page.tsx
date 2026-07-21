@@ -83,20 +83,6 @@ const leadSource =
 
   if (!layout) return notFound()
 
-    if (!isPdf) {
-
-  await supabase
-    .from("package_views")
-    .insert({
-
-      package_id: pkg.id,
-
-      lead_source: leadSource,
-
-    })
-
-}
-
   const layoutSlug = layout.slug
   const packageType = pkg.name?.toLowerCase()
 
