@@ -126,11 +126,13 @@ export default function AdminDashboard() {
 
         ) : (
 
-          <div
-            className="
-              space-y-3
-            "
-          >
+<div
+  className="
+    grid
+    md:grid-cols-3
+    gap-4
+  "
+>
 
             {stats.recentProposals
               ?.length === 0 && (
@@ -146,7 +148,8 @@ export default function AdminDashboard() {
             )}
 
             {stats.recentProposals
-              ?.map(
+  ?.slice(0, 9)
+  .map(
                 (
                   item: any
                 ) => (
