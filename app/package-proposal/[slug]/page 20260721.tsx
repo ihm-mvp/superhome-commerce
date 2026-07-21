@@ -39,22 +39,14 @@ export default async function PackageProposalPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>
-
-searchParams: Promise<{
-  pdf?: string
-  src?: string
-}>
-
+  searchParams: Promise<{ pdf?: string }>
 }) {
 
   const { slug } = await params
 
-const { pdf, src } = await searchParams
+  const { pdf } = await searchParams
 
-const isPdf = pdf === "1"
-
-const leadSource =
-  src || "website"
+  const isPdf = pdf === "1"
 
   // ===== Package =====
 
@@ -82,20 +74,6 @@ const leadSource =
     : pkg.layout
 
   if (!layout) return notFound()
-
-    if (!isPdf) {
-
-  await supabase
-    .from("package_views")
-    .insert({
-
-      package_id: pkg.id,
-
-      lead_source: leadSource,
-
-    })
-
-}
 
   const layoutSlug = layout.slug
   const packageType = pkg.name?.toLowerCase()

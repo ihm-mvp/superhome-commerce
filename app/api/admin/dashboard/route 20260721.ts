@@ -68,27 +68,6 @@ export async function GET() {
     }
 
     // =========================
-// Proposal Views Count
-// =========================
-
-const {
-  count: proposalViews,
-  error: proposalViewsError,
-} = await supabase
-  .from("package_views")
-  .select(
-    "*",
-    {
-      count: "exact",
-      head: true,
-    }
-  )
-
-if (proposalViewsError) {
-  throw proposalViewsError
-}
-
-    // =========================
     // Recent Proposals
     // =========================
 
@@ -130,9 +109,6 @@ if (proposalViewsError) {
 
       users:
         users || 0,
-
-        proposalViews:
-  proposalViews || 0,
 
       proposals:
         proposals || 0,

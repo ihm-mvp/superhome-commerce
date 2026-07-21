@@ -16,7 +16,6 @@ export default function AdminDashboard() {
   ] = useState<any>({
     subscribers: 0,
     users: 0,
-    proposalViews: 0,
     proposals: 0,
     recentProposals: [],
   })
@@ -258,7 +257,7 @@ export default function AdminDashboard() {
         <div
           className="
             grid
-            md:grid-cols-2
+            md:grid-cols-3
             gap-6
           "
         >
@@ -322,36 +321,6 @@ export default function AdminDashboard() {
             </div>
 
           </div>
-
-          <div
-  className="
-    border
-    rounded-xl
-    p-6
-    bg-white
-  "
->
-
-  <div
-    className="
-      text-sm
-      text-gray-500
-    "
-  >
-    Proposal Views
-  </div>
-
-  <div
-    className="
-      text-3xl
-      font-semibold
-      mt-2
-    "
-  >
-    {stats.proposalViews}
-  </div>
-
-</div>
 
           <div
             className="
