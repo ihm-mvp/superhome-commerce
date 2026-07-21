@@ -162,7 +162,7 @@ export default async function PackagesPage() {
               {group.packages.map((pkg: any) => (
                 <Link
                   key={pkg.id}
-                  href={`/packages/${pkg.slug}?src=website`}
+                  href={`/packages/${pkg.slug}`}
                   className="border rounded-2xl overflow-hidden hover:shadow-lg transition bg-white"
                   prefetch={false}
                 >

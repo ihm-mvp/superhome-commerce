@@ -9,7 +9,9 @@ export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>
-}) {
+}) 
+
+{
   const { slug } = await params
 
   const { data: pkg } = await supabase
@@ -79,10 +81,18 @@ export async function generateMetadata({
 
 export default async function PackagePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>
-}) {
+  searchParams: Promise<{
+    src?: string
+  }>
+}) 
+
+{
   const { slug } = await params
+
+  const { src = "website" } = await searchParams
 
   // ===== Package =====
 const { data: pkg } = await supabase
@@ -348,7 +358,7 @@ allocation.rows.forEach(
   </div>
 
   <Link
-    href={`/package-proposal/${pkg.slug}?src=website`}
+    href={`/package-proposal/${pkg.slug}?src=${src}`}
     className="inline-flex items-center px-6 py-3 bg-black text-white rounded-lg hover:opacity-90 transition"
     prefetch={false}
   >
@@ -788,7 +798,7 @@ allocation.rows.forEach(
 <div className="border-t pt-8 text-center">
 
   <Link
-    href={`/package-proposal/${pkg.slug}?src=website`}
+    href={`/package-proposal/${pkg.slug}?src=${src}`}
     className="inline-flex items-center px-8 py-3 bg-black text-white rounded-lg hover:opacity-90 transition"
     prefetch={false}
   >
