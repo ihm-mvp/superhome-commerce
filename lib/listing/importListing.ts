@@ -7,14 +7,22 @@ import { generateQrCode } from "@/lib/listing/generateQrCode"
 import { validateResidentialListing } from "@/lib/listing/validateResidentialListing"
 
 import {
-
   parseHarcourtsGold,
-
 } from "@/lib/listing/parser/parseHarcourtsGold"
+
+import {
+  parseHarcourtsIlam,
+} from "@/lib/listing/parser/parseHarcourtsIlam"
 
 export async function importListing(
   url: string
 ) {
+
+  let listing: any
+
+  // =====================================
+  // Source Adapter
+  // =====================================
 
   if (
     url.includes(
@@ -22,98 +30,137 @@ export async function importListing(
     )
   ) {
 
-const listing =
-
-  await parseHarcourtsGold(
-
-    url
-
-  )
-
-if (
-
-  !listing
-
-) {
-
-  return null
-
-}
-
-const {
-
-  supported,
-
-} = validateResidentialListing(
-
-  listing.bedrooms,
-
-  listing.bathrooms,
-
-)
-
-if (
-
-  !supported
-
-) {
-
-  return null
-
-}
-
-const aiContent =
-
-  await generateMarketingAssets({
-
-    ...listing,
-
-  })
-
-const slug =
-
-  listing.address
-
-    .toLowerCase()
-
-    .replace(/\//g, "-")
-
-    .replace(/,/g, "")
-
-    .replace(/\./g, "")
-
-    .replace(/\s+/g, "-")
-
-    .replace(/-+/g, "-")
-
-    .replace(/^-|-$/g, "")
-
-    .replace(/[^a-z0-9-]/g, "")
-
-    const qrcode_url =
-
-  await generateQrCode(
-    slug
-  )
-
-  return {
-
-  ...listing,
-
-  slug,
-
-  qrcode_url,
-
-  ai_content:
-
-    aiContent,
-
-}
+    listing =
+      await parseHarcourtsGold(
+        url
+      )
 
   }
 
-  throw new Error(
-    "Unsupported listing source."
-  )
+  else if (
+    url.includes(
+      "harcourts.net"
+    )
+  ) {
+
+    listing =
+      await parseHarcourtsIlam(
+        url
+      )
+
+  }
+
+  else {
+
+    throw new Error(
+      "Unsupported listing source."
+    )
+
+  }
+
+  // =====================================
+  // Empty / Unsupported Listing
+  // =====================================
+
+  if (
+    !listing
+  ) {
+
+    return null
+
+  }
+
+  // =====================================
+  // Residential Validation
+  // =====================================
+
+  const {
+    supported,
+  } =
+    validateResidentialListing(
+      listing.bedrooms,
+      listing.bathrooms,
+    )
+
+  if (
+    !supported
+  ) {
+
+    return null
+
+  }
+
+  // =====================================
+  // AI Marketing Assets
+  // =====================================
+
+  const aiContent =
+    await generateMarketingAssets({
+
+      ...listing,
+
+    })
+
+  // =====================================
+  // MIR Slug
+  // =====================================
+
+  const slug =
+    listing.address
+      .toLowerCase()
+      .replace(
+        /\//g,
+        "-"
+      )
+      .replace(
+        /,/g,
+        ""
+      )
+      .replace(
+        /\./g,
+        ""
+      )
+      .replace(
+        /\s+/g,
+        "-"
+      )
+      .replace(
+        /-+/g,
+        "-"
+      )
+      .replace(
+        /^-|-$/g,
+        ""
+      )
+      .replace(
+        /[^a-z0-9-]/g,
+        ""
+      )
+
+  // =====================================
+  // QR Code
+  // =====================================
+
+  const qrcode_url =
+    await generateQrCode(
+      slug
+    )
+
+  // =====================================
+  // Return
+  // =====================================
+
+  return {
+
+    ...listing,
+
+    slug,
+
+    qrcode_url,
+
+    ai_content:
+      aiContent,
+
+  }
 
 }
