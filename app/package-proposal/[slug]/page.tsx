@@ -1,6 +1,5 @@
 import { supabase } from "@/lib/supabase"
 import { notFound } from "next/navigation"
-import { headers, cookies } from "next/headers"
 import {
   calculatePackageAllocation,
 } from "@/lib/package-allocation"
@@ -44,34 +43,23 @@ export default async function PackageProposalPage({
 searchParams: Promise<{
   pdf?: string
   src?: string
+  visitor_id?: string
 }>
 
 }) {
 
   const { slug } = await params
 
-const { pdf, src } = await searchParams
+const {
+  pdf,
+  src,
+  visitor_id,
+} = await searchParams
 
 const isPdf = pdf === "1"
 
 const leadSource =
   src || "website"
-
-const headerStore =
-  await headers()
-
-const cookieStore =
-  await cookies()
-
-const visitorId =
-  cookieStore.get("visitor_id")
-    ?.value || null
-
-const referrer =
-  headerStore.get("referer") || null
-
-const userAgent =
-  headerStore.get("user-agent") || null
 
   // ===== Package =====
 
@@ -94,16 +82,22 @@ const userAgent =
 
   if (!pkg) return notFound()
 
-if (!isPdf) {
+if (
+  !isPdf &&
+  visitor_id
+) {
 
   await supabase
     .from("package_request_views")
     .insert({
-      package_id: pkg.id,
-      visitor_id: visitorId,
-      lead_source: leadSource,
-      referrer: referrer,
-      user_agent: userAgent,
+      package_id:
+        pkg.id,
+
+      lead_source:
+        leadSource,
+
+      visitor_id:
+        visitor_id,
     })
 
 }

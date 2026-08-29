@@ -2,6 +2,8 @@ import { supabase } from "@/lib/supabase"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import PackageViewTracker from "@/components/PackageViewTracker"
+import PackageProposalLink
+  from "@/components/PackageProposalLink"
 import {
   calculatePackageAllocation,
 } from "@/lib/package-allocation"
@@ -363,13 +365,13 @@ return (
 
   </div>
 
-  <Link
-    href={`/package-proposal/${pkg.slug}?src=${src}`}
-    className="inline-flex items-center px-6 py-3 bg-black text-white rounded-lg hover:opacity-90 transition"
-    prefetch={false}
-  >
-    Get Package Proposal
-  </Link>
+<PackageProposalLink
+  slug={pkg.slug}
+  leadSource={src}
+  className="inline-flex items-center px-6 py-3 bg-black text-white rounded-lg hover:opacity-90 transition"
+>
+  Get Package Proposal
+</PackageProposalLink>
 
 </div>
 
@@ -803,13 +805,13 @@ return (
 {/* ===== CTA ===== */}
 <div className="border-t pt-8 text-center">
 
-  <Link
-    href={`/package-proposal/${pkg.slug}?src=${src}`}
-    className="inline-flex items-center px-8 py-3 bg-black text-white rounded-lg hover:opacity-90 transition"
-    prefetch={false}
-  >
-    Get Package Proposal
-  </Link>
+<PackageProposalLink
+  slug={pkg.slug}
+  leadSource={src}
+  className="inline-flex items-center px-8 py-3 bg-black text-white rounded-lg hover:opacity-90 transition"
+>
+  Get Package Proposal
+</PackageProposalLink>
 
 </div>
 
