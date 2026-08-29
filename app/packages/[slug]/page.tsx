@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabase"
 import { notFound } from "next/navigation"
 import Link from "next/link"
+import PackageViewTracker from "@/components/PackageViewTracker"
 import {
   calculatePackageAllocation,
 } from "@/lib/package-allocation"
@@ -118,13 +119,6 @@ const { data: pkg } = await supabase
     .single()
 
   if (!pkg) return notFound()
-
-    await supabase
-  .from("package_views")
-  .insert({
-    package_id: pkg.id,
-    lead_source: src,
-  })
 
   // ===== 统一 layout 结构 =====
   const layout = Array.isArray(pkg.layout)
@@ -290,8 +284,13 @@ allocation.rows.forEach(
     grouped[i.package_room_id].push(i)
   })
 
-  return (
-    <div className="max-w-6xl mx-auto px-6 py-10 space-y-12">
+return (
+  <div className="max-w-6xl mx-auto px-6 py-10 space-y-12">
+
+    <PackageViewTracker
+      packageId={pkg.id}
+      leadSource={src}
+    />
 
       {/* ===== SEO Heading ===== */}
       <div className="space-y-3">

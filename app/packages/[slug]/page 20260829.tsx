@@ -9,7 +9,9 @@ export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>
-}) {
+}) 
+
+{
   const { slug } = await params
 
   const { data: pkg } = await supabase
@@ -79,10 +81,18 @@ export async function generateMetadata({
 
 export default async function PackagePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>
-}) {
+  searchParams: Promise<{
+    src?: string
+  }>
+}) 
+
+{
   const { slug } = await params
+
+  const { src = "website" } = await searchParams
 
   // ===== Package =====
 const { data: pkg } = await supabase
@@ -109,6 +119,13 @@ const { data: pkg } = await supabase
 
   if (!pkg) return notFound()
 
+    await supabase
+  .from("package_views")
+  .insert({
+    package_id: pkg.id,
+    lead_source: src,
+  })
+
   // ===== 统一 layout 结构 =====
   const layout = Array.isArray(pkg.layout)
     ? pkg.layout[0]
@@ -122,7 +139,8 @@ const { data: pkg } = await supabase
     .select(`
       id,
       width_mm,
-      height_mm
+      height_mm,
+      opening_code
     `)
 
 const openingMap:
@@ -347,7 +365,7 @@ allocation.rows.forEach(
   </div>
 
   <Link
-    href={`/package-proposal/${pkg.slug}`}
+    href={`/package-proposal/${pkg.slug}?src=${src}`}
     className="inline-flex items-center px-6 py-3 bg-black text-white rounded-lg hover:opacity-90 transition"
     prefetch={false}
   >
@@ -637,15 +655,63 @@ allocation.rows.forEach(
 
     )}
 
-    {p.variant?.size_label && (
+{p.product?.sku_code?.startsWith("SUN-")
+  ? (
 
-      <div className="text-sm text-gray-500">
+      p.opening_id &&
+      openingMap[
+        p.opening_id
+      ] && (
 
-        Size: {p.variant.size_label}
+<div className="text-sm text-gray-500">
 
-      </div>
+  Opening
 
-    )}
+  {" "}
+
+  {
+    openingMap[
+      p.opening_id
+    ]?.opening_code
+  }
+
+  {" · "}
+
+  {
+    openingMap[
+      p.opening_id
+    ]?.width_mm
+  }
+
+  ×
+
+  {
+    openingMap[
+      p.opening_id
+    ]?.height_mm
+  }
+
+  mm
+
+</div>
+
+      )
+
+    )
+  : (
+
+      p.variant?.size_label && (
+
+        <div className="text-sm text-gray-500">
+
+          Size: {p.variant.size_label}
+
+        </div>
+
+      )
+
+    )
+}
 
     {p.variant?.display_note_en && (
 
@@ -739,7 +805,7 @@ allocation.rows.forEach(
 <div className="border-t pt-8 text-center">
 
   <Link
-    href={`/package-proposal/${pkg.slug}`}
+    href={`/package-proposal/${pkg.slug}?src=${src}`}
     className="inline-flex items-center px-8 py-3 bg-black text-white rounded-lg hover:opacity-90 transition"
     prefetch={false}
   >
