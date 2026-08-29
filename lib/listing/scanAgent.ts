@@ -246,7 +246,7 @@ function scanHarcourtsIlam(
     new Set<string>()
 
   const regex =
-    /href="(\/nz\/office\/ilam\/listing\/(l\d+)(?:-[^"]*)?)"/g
+    /href="(\/nz\/office\/ilam\/people\/[^"]+?\/listing\/(l\d+)-[^"]+)"/g
 
   let match:
     RegExpExecArray | null
