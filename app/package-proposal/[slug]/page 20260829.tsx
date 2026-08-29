@@ -39,14 +39,22 @@ export default async function PackageProposalPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>
-  searchParams: Promise<{ pdf?: string }>
+
+searchParams: Promise<{
+  pdf?: string
+  src?: string
+}>
+
 }) {
 
   const { slug } = await params
 
-  const { pdf } = await searchParams
+const { pdf, src } = await searchParams
 
-  const isPdf = pdf === "1"
+const isPdf = pdf === "1"
+
+const leadSource =
+  src || "website"
 
   // ===== Package =====
 
@@ -141,7 +149,8 @@ products:package_item_products(
     .select(`
       id,
       width_mm,
-      height_mm
+      height_mm,
+      opening_code
     `)
 
 const openingMap:
@@ -580,15 +589,63 @@ rooms?.forEach(
 
     )}
 
-    {p.variant?.size_label && (
+{p.product?.sku_code?.startsWith("SUN-")
+  ? (
 
-      <div className="text-sm text-gray-500">
+      p.opening_id &&
+      openingMap[
+        p.opening_id
+      ] && (
 
-        Size: {p.variant.size_label}
+<div className="text-sm text-gray-500">
 
-      </div>
+  Opening
 
-    )}
+  {" "}
+
+  {
+    openingMap[
+      p.opening_id
+    ]?.opening_code
+  }
+
+  {" · "}
+
+  {
+    openingMap[
+      p.opening_id
+    ]?.width_mm
+  }
+
+  ×
+
+  {
+    openingMap[
+      p.opening_id
+    ]?.height_mm
+  }
+
+  mm
+
+</div>
+
+      )
+
+    )
+  : (
+
+      p.variant?.size_label && (
+
+        <div className="text-sm text-gray-500">
+
+          Size: {p.variant.size_label}
+
+        </div>
+
+      )
+
+    )
+}
 
     {p.variant?.display_note_en && (
 

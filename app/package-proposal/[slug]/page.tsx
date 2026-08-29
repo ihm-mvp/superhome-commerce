@@ -77,6 +77,17 @@ const leadSource =
 
   if (!pkg) return notFound()
 
+  if (!isPdf) {
+
+    await supabase
+      .from("package_request_views")
+      .insert({
+        package_id: pkg.id,
+        lead_source: leadSource,
+      })
+
+  }
+
   const layout = Array.isArray(pkg.layout)
     ? pkg.layout[0]
     : pkg.layout
