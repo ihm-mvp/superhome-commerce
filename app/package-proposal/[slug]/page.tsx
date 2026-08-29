@@ -837,6 +837,18 @@ rooms?.forEach(
         value={pkg.id}
       />
 
+      <input
+  type="hidden"
+  name="visitor_id"
+  value={visitor_id || ""}
+/>
+
+<input
+  type="hidden"
+  name="lead_source"
+  value={leadSource}
+/>
+
       <div>
 
         <label className="block text-sm mb-2">

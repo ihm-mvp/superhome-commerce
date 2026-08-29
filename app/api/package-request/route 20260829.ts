@@ -22,9 +22,6 @@ export async function POST(
     const package_id =
       String(formData.get("package_id") || "").trim()
 
-    const visitor_id =
-  String(formData.get("visitor_id") || "").trim()
-
     if (
       !first_name ||
       !email ||
@@ -87,13 +84,11 @@ const {
   data: requestRow,
   error: requestError,
 } = await supabase
-.from("package_requests")
-.insert({
-  user_id: userId,
-  package_id,
-  visitor_id:
-    visitor_id || null,
-})
+  .from("package_requests")
+  .insert({
+    user_id: userId,
+    package_id,
+  })
   .select("id")
   .single()
 
