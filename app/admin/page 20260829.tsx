@@ -16,7 +16,6 @@ export default function AdminDashboard() {
   ] = useState<any>({
     subscribers: 0,
     users: 0,
-    packageViews: 0,
     proposalViews: 0,
     proposals: 0,
     recentProposals: [],
@@ -259,14 +258,13 @@ export default function AdminDashboard() {
           Business Dashboard
         </h2>
 
-<div
-  className="
-    grid
-    md:grid-cols-2
-    lg:grid-cols-3
-    gap-6
-  "
->
+        <div
+          className="
+            grid
+            md:grid-cols-2
+            gap-6
+          "
+        >
 
           <div
             className="
@@ -324,36 +322,6 @@ export default function AdminDashboard() {
               "
             >
               {stats.users}
-            </div>
-
-          </div>
-
-                    <div
-            className="
-              border
-              rounded-xl
-              p-6
-              bg-white
-            "
-          >
-
-            <div
-              className="
-                text-sm
-                text-gray-500
-              "
-            >
-              Package Views
-            </div>
-
-            <div
-              className="
-                text-3xl
-                font-semibold
-                mt-2
-              "
-            >
-              {stats.packageViews}
             </div>
 
           </div>

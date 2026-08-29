@@ -68,17 +68,8 @@ export async function GET() {
     }
 
     // =========================
-// Package and Proposal Views Count
+// Proposal Views Count
 // =========================
-
-const {
-  count: packageViews,
-} = await supabase
-  .from("package_views")
-  .select("*", {
-    count: "exact",
-    head: true,
-  })
 
 const {
   count: proposalViews,
@@ -132,27 +123,24 @@ if (proposalViewsError) {
       throw recentError
     }
 
-return Response.json({
+    return Response.json({
 
-  subscribers:
-    subscribers || 0,
+      subscribers:
+        subscribers || 0,
 
-  users:
-    users || 0,
+      users:
+        users || 0,
 
-  packageViews:
-    packageViews || 0,
+        proposalViews:
+  proposalViews || 0,
 
-  proposalViews:
-    proposalViews || 0,
+      proposals:
+        proposals || 0,
 
-  proposals:
-    proposals || 0,
+      recentProposals:
+        recentProposals || [],
 
-  recentProposals:
-    recentProposals || [],
-
-})
+    })
 
   } catch (error: any) {
 
