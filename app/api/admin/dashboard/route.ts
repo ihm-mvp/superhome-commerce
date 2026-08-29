@@ -84,7 +84,7 @@ const {
   count: proposalViews,
   error: proposalViewsError,
 } = await supabase
-  .from("package_views")
+  .from("package_request_views")
   .select(
     "*",
     {
