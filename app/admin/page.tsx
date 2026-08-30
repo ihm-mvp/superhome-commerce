@@ -10,30 +10,27 @@ export default function AdminDashboard() {
     setLoading,
   ] = useState(true)
 
-  const [
-    stats,
-    setStats,
-  ] = useState<any>({
-    subscribers: 0,
-    users: 0,
-    packageViews: 0,
-    proposalViews: 0,
+const [
+  stats,
+  setStats,
+] = useState<any>({
+  subscribers: 0,
+  users: 0,
 
-uniqueVisitors: 0,
+  packageViews: 0,
+  proposalViews: 0,
+  proposals: 0,
 
-uniqueProposalVisitors: 0,
+  uniquePackageVisitors: 0,
+  uniqueProposalVisitors: 0,
+  uniqueRequestVisitors: 0,
 
-uniqueRequestVisitors: 0,
+  packageToProposalRate: 0,
+  proposalToRequestRate: 0,
+  packageToRequestRate: 0,
 
-packageToProposalRate: 0,
-
-proposalToRequestRate: 0,
-
-packageToRequestRate: 0,
-
-    proposals: 0,
-    recentProposals: [],
-  })
+  recentProposals: [],
+})
 
   useEffect(() => {
 
@@ -490,7 +487,7 @@ packageToRequestRate: 0,
                   mt-1
                 "
               >
-                {stats.uniquePackageVisitors}
+                {stats.uniquePackageVisitors || 0}
               </div>
 
             </div>
@@ -522,7 +519,7 @@ packageToRequestRate: 0,
                   mt-1
                 "
               >
-                {stats.uniqueProposalVisitors}
+                {stats.uniqueProposalVisitors || 0}
               </div>
 
             </div>
@@ -554,7 +551,7 @@ packageToRequestRate: 0,
                   mt-1
                 "
               >
-                {stats.uniqueRequestVisitors}
+                {stats.uniqueRequestVisitors || 0}
               </div>
 
             </div>
@@ -593,7 +590,7 @@ packageToRequestRate: 0,
                   mt-2
                 "
               >
-                {stats.packageToProposalRate}%
+                {stats.packageToProposalRate || 0}%
               </div>
 
             </div>
@@ -616,7 +613,7 @@ packageToRequestRate: 0,
                   mt-2
                 "
               >
-                {stats.proposalToRequestRate}%
+                {stats.proposalToRequestRate || 0}%
               </div>
 
             </div>
@@ -639,7 +636,7 @@ packageToRequestRate: 0,
                   mt-2
                 "
               >
-                {stats.packageToRequestRate}%
+                {stats.packageToRequestRate || 0}%
               </div>
 
             </div>
