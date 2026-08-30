@@ -18,6 +18,19 @@ export default function AdminDashboard() {
     users: 0,
     packageViews: 0,
     proposalViews: 0,
+
+uniqueVisitors: 0,
+
+uniqueProposalVisitors: 0,
+
+uniqueRequestVisitors: 0,
+
+packageToProposalRate: 0,
+
+proposalToRequestRate: 0,
+
+packageToRequestRate: 0,
+
     proposals: 0,
     recentProposals: [],
   })
@@ -242,6 +255,7 @@ export default function AdminDashboard() {
         )}
 
       </div>
+
       {/* ===================== */}
       {/* Section B */}
       {/* Dashboard Metrics */}
@@ -421,6 +435,218 @@ export default function AdminDashboard() {
         </div>
 
       </div>
+
+        {/* ===================== */}
+        {/* Conversion Funnel */}
+        {/* ===================== */}
+
+        <div
+          className="
+            border
+            rounded-xl
+            p-6
+            bg-white
+            mt-6
+          "
+        >
+
+          <h3
+            className="
+              text-xl
+              font-semibold
+              mb-6
+            "
+          >
+            Conversion Funnel
+          </h3>
+
+          {/* ===== Funnel Visitors ===== */}
+
+          <div
+            className="
+              flex
+              flex-col
+              items-center
+              text-center
+              space-y-2
+            "
+          >
+
+            <div>
+
+              <div
+                className="
+                  text-sm
+                  text-gray-500
+                "
+              >
+                Unique Package Visitors
+              </div>
+
+              <div
+                className="
+                  text-3xl
+                  font-semibold
+                  mt-1
+                "
+              >
+                {stats.uniquePackageVisitors}
+              </div>
+
+            </div>
+
+            <div
+              className="
+                text-2xl
+                text-gray-300
+              "
+            >
+              ↓
+            </div>
+
+            <div>
+
+              <div
+                className="
+                  text-sm
+                  text-gray-500
+                "
+              >
+                Unique Proposal Visitors
+              </div>
+
+              <div
+                className="
+                  text-3xl
+                  font-semibold
+                  mt-1
+                "
+              >
+                {stats.uniqueProposalVisitors}
+              </div>
+
+            </div>
+
+            <div
+              className="
+                text-2xl
+                text-gray-300
+              "
+            >
+              ↓
+            </div>
+
+            <div>
+
+              <div
+                className="
+                  text-sm
+                  text-gray-500
+                "
+              >
+                Unique Request Visitors
+              </div>
+
+              <div
+                className="
+                  text-3xl
+                  font-semibold
+                  mt-1
+                "
+              >
+                {stats.uniqueRequestVisitors}
+              </div>
+
+            </div>
+
+          </div>
+
+          {/* ===== Conversion Rates ===== */}
+
+          <div
+            className="
+              border-t
+              mt-8
+              pt-6
+              grid
+              md:grid-cols-3
+              gap-6
+              text-center
+            "
+          >
+
+            <div>
+
+              <div
+                className="
+                  text-sm
+                  text-gray-500
+                "
+              >
+                Package → Proposal
+              </div>
+
+              <div
+                className="
+                  text-2xl
+                  font-semibold
+                  mt-2
+                "
+              >
+                {stats.packageToProposalRate}%
+              </div>
+
+            </div>
+
+            <div>
+
+              <div
+                className="
+                  text-sm
+                  text-gray-500
+                "
+              >
+                Proposal → Request
+              </div>
+
+              <div
+                className="
+                  text-2xl
+                  font-semibold
+                  mt-2
+                "
+              >
+                {stats.proposalToRequestRate}%
+              </div>
+
+            </div>
+
+            <div>
+
+              <div
+                className="
+                  text-sm
+                  text-gray-500
+                "
+              >
+                Package → Request
+              </div>
+
+              <div
+                className="
+                  text-2xl
+                  font-semibold
+                  mt-2
+                "
+              >
+                {stats.packageToRequestRate}%
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
 
       {/* ===================== */}
       {/* Section A */}
