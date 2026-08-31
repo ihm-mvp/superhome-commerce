@@ -29,6 +29,8 @@ const [
   proposalToRequestRate: 0,
   packageToRequestRate: 0,
 
+  packagePerformance: [],
+
   recentProposals: [],
 })
 
@@ -644,6 +646,226 @@ const [
           </div>
 
         </div>
+
+      {/* ===================== */}
+      {/* Package Performance */}
+      {/* ===================== */}
+
+      <div>
+
+        <h2
+          className="
+            text-xl
+            font-semibold
+            mb-4
+          "
+        >
+          Package Performance
+        </h2>
+
+        <div
+          className="
+            border
+            rounded-xl
+            bg-white
+            overflow-x-auto
+          "
+        >
+
+          <table className="w-full text-sm">
+
+            <thead>
+
+              <tr
+                className="
+                  border-b
+                  text-gray-500
+                "
+              >
+
+                <th
+                  className="
+                    text-left
+                    p-4
+                    font-medium
+                  "
+                >
+                  Package
+                </th>
+
+                <th
+                  className="
+                    text-right
+                    p-4
+                    font-medium
+                  "
+                >
+                  Views
+                </th>
+
+                <th
+                  className="
+                    text-right
+                    p-4
+                    font-medium
+                  "
+                >
+                  Unique Visitors
+                </th>
+
+                <th
+                  className="
+                    text-right
+                    p-4
+                    font-medium
+                  "
+                >
+                  Proposal Views
+                </th>
+
+                <th
+                  className="
+                    text-right
+                    p-4
+                    font-medium
+                  "
+                >
+                  Requests
+                </th>
+
+                <th
+                  className="
+                    text-right
+                    p-4
+                    font-medium
+                  "
+                >
+                  View → Proposal
+                </th>
+
+                <th
+                  className="
+                    text-right
+                    p-4
+                    font-medium
+                  "
+                >
+                  View → Request
+                </th>
+
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              {stats.packagePerformance
+                ?.map(
+                  (item: any) => (
+
+                    <tr
+                      key={item.id}
+                      className="
+                        border-b
+                        last:border-b-0
+                      "
+                    >
+
+                      <td
+                        className="
+                          p-4
+                          font-medium
+                        "
+                      >
+                        {item.name}
+                      </td>
+
+                      <td
+                        className="
+                          p-4
+                          text-right
+                        "
+                      >
+                        {item.views}
+                      </td>
+
+                      <td
+                        className="
+                          p-4
+                          text-right
+                        "
+                      >
+                        {item.uniqueVisitors}
+                      </td>
+
+                      <td
+                        className="
+                          p-4
+                          text-right
+                        "
+                      >
+                        {item.proposalViews}
+                      </td>
+
+                      <td
+                        className="
+                          p-4
+                          text-right
+                        "
+                      >
+                        {item.requests}
+                      </td>
+
+                      <td
+                        className="
+                          p-4
+                          text-right
+                        "
+                      >
+                        {item.viewToProposalRate}%
+                      </td>
+
+                      <td
+                        className="
+                          p-4
+                          text-right
+                        "
+                      >
+                        {item.viewToRequestRate}%
+                      </td>
+
+                    </tr>
+
+                  )
+                )}
+
+              {stats.packagePerformance
+                ?.length === 0 && (
+
+                <tr>
+
+                  <td
+                    colSpan={7}
+                    className="
+                      p-6
+                      text-center
+                      text-gray-400
+                    "
+                  >
+                    No package data
+                  </td>
+
+                </tr>
+
+              )}
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
 
       {/* ===================== */}
       {/* Section A */}
