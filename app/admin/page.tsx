@@ -771,14 +771,27 @@ const [
                       "
                     >
 
-                      <td
-                        className="
-                          p-4
-                          font-medium
-                        "
-                      >
-                        {item.name}
-                      </td>
+<td
+  className="
+    p-4
+  "
+>
+
+  <div className="font-medium">
+    {item.name}
+  </div>
+
+  <div className="text-sm text-gray-400 mt-1">
+    {item.layoutName}
+  </div>
+
+  {item.layoutLocation && (
+    <div className="text-xs text-gray-400 mt-1">
+      {item.layoutLocation}
+    </div>
+  )}
+
+</td>
 
                       <td
                         className="

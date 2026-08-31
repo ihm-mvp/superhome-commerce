@@ -204,17 +204,21 @@ export async function GET() {
     // Package Performance
     // =========================
 
-    const {
-      data: packageList,
-      error: packageListError,
-    } = await supabase
-      .from("packages")
-      .select(`
-        id,
-        name,
-        slug,
-        sort_order
-      `)
+const {
+  data: packageList,
+  error: packageListError,
+} = await supabase
+  .from("packages")
+  .select(`
+    id,
+    name,
+    slug,
+    sort_order,
+    layout:layouts!packages_layout_id_fkey(
+      name,
+      location
+    )
+  `)
       .order(
         "sort_order",
         {
@@ -361,19 +365,30 @@ export async function GET() {
                 )
               : 0
 
-          return {
+const layout =
+  Array.isArray(pkg.layout)
+    ? pkg.layout[0]
+    : pkg.layout
 
-            id:
-              pkg.id,
+return {
 
-            name:
-              pkg.name,
+  id:
+    pkg.id,
 
-            slug:
-              pkg.slug,
+  name:
+    pkg.name,
 
-            views:
-              views.length,
+  slug:
+    pkg.slug,
+
+  layoutName:
+    layout?.name || "",
+
+  layoutLocation:
+    layout?.location || "",
+
+  views:
+    views.length,
 
             uniqueVisitors,
 
