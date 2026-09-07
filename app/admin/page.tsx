@@ -759,9 +759,17 @@ const [
 
             <tbody>
 
-              {stats.packagePerformance
-                ?.map(
-                  (item: any) => (
+{stats.packagePerformance
+  ?.slice()
+  .sort(
+    (a: any, b: any) =>
+      b.requests - a.requests ||
+      b.proposalViews - a.proposalViews ||
+      b.uniqueVisitors - a.uniqueVisitors ||
+      b.views - a.views
+  )
+  .map(
+    (item: any) => (
 
                     <tr
                       key={item.id}
