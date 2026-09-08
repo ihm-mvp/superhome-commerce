@@ -303,6 +303,37 @@ latestPackageView: null,
             </div>
 
             <div
+  className="
+    text-sm
+    text-gray-400
+    mt-1
+  "
+>
+  {
+    stats.latestProposalView.package
+      ?.layout?.name
+  }
+</div>
+
+{stats.latestProposalView.package
+  ?.layout?.location && (
+
+  <div
+    className="
+      text-xs
+      text-gray-400
+      mt-1
+    "
+  >
+    {
+      stats.latestProposalView.package
+        ?.layout?.location
+    }
+  </div>
+
+)}
+
+            <div
               className="
                 text-sm
                 text-gray-500
@@ -376,6 +407,37 @@ latestPackageView: null,
                   ?.name
               }
             </div>
+
+            <div
+  className="
+    text-sm
+    text-gray-400
+    mt-1
+  "
+>
+  {
+    stats.latestPackageView.package
+      ?.layout?.name
+  }
+</div>
+
+{stats.latestPackageView.package
+  ?.layout?.location && (
+
+  <div
+    className="
+      text-xs
+      text-gray-400
+      mt-1
+    "
+  >
+    {
+      stats.latestPackageView.package
+        ?.layout?.location
+    }
+  </div>
+
+)}
 
             <div
               className="
