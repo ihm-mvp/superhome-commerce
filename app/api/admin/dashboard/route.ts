@@ -426,10 +426,14 @@ const {
       email
     ),
 
-    package:packages(
-      name,
-      slug
-    )
+package:packages(
+  name,
+  slug,
+  layout:layouts!packages_layout_id_fkey(
+    name,
+    location
+  )
+)
   `)
   .order(
     "created_at",
@@ -457,10 +461,14 @@ const {
     lead_source,
     created_at,
 
-    package:packages(
-      name,
-      slug
-    )
+package:packages(
+  name,
+  slug,
+  layout:layouts!packages_layout_id_fkey(
+    name,
+    location
+  )
+)
   `)
   .order(
     "created_at",
@@ -488,10 +496,14 @@ const {
     lead_source,
     viewed_at,
 
-    package:packages(
-      name,
-      slug
-    )
+package:packages(
+  name,
+  slug,
+  layout:layouts!packages_layout_id_fkey(
+    name,
+    location
+  )
+)
   `)
   .order(
     "viewed_at",

@@ -208,6 +208,37 @@ latestPackageView: null,
               }
             </div>
 
+<div
+  className="
+    text-sm
+    text-gray-400
+    mt-1
+  "
+>
+  {
+    stats.latestRequest.package
+      ?.layout?.name
+  }
+</div>
+
+{stats.latestRequest.package
+  ?.layout?.location && (
+
+  <div
+    className="
+      text-xs
+      text-gray-400
+      mt-1
+    "
+  >
+    {
+      stats.latestRequest.package
+        ?.layout?.location
+    }
+  </div>
+
+)}
+
             <div
               className="
                 text-xs
