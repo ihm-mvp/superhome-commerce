@@ -31,7 +31,10 @@ const [
 
   packagePerformance: [],
 
-  recentProposals: [],
+latestRequest: null,
+latestProposalView: null,
+latestPackageView: null,
+
 })
 
   useEffect(() => {
@@ -103,157 +106,292 @@ const [
 
       </div>
 
+{/* ===================== */}
+{/* Section C */}
+{/* Latest Activity */}
+{/* ===================== */}
+
+<div
+  className="
+    border
+    rounded-xl
+    p-6
+    bg-white
+  "
+>
+
+  <h2
+    className="
+      text-xl
+      font-semibold
+      mb-4
+    "
+  >
+    Latest Activity
+  </h2>
+
+  {loading ? (
+
+    <div
+      className="
+        text-gray-400
+      "
+    >
+      Loading...
+    </div>
+
+  ) : (
+
+    <div
+      className="
+        grid
+        md:grid-cols-3
+        gap-4
+      "
+    >
+
       {/* ===================== */}
-      {/* Section C */}
-      {/* Latest Activity */}
+      {/* Latest Request */}
       {/* ===================== */}
 
       <div
         className="
           border
-          rounded-xl
-          p-6
-          bg-white
+          rounded-lg
+          p-4
         "
       >
 
-        <h2
+        <div
           className="
-            text-xl
-            font-semibold
-            mb-4
+            text-sm
+            text-gray-400
+            mb-3
           "
         >
-          Latest Proposal Requests
-        </h2>
+          Request Proposal
+        </div>
 
-        {loading ? (
+        {stats.latestRequest ? (
 
-          <div
-            className="
-              text-gray-400
-            "
-          >
-            Loading...
-          </div>
+          <>
+
+            <div className="font-medium">
+              {
+                stats.latestRequest.user
+                  ?.first_name
+              }
+            </div>
+
+            <div
+              className="
+                text-sm
+                text-gray-500
+                mt-1
+              "
+            >
+              {
+                stats.latestRequest.user
+                  ?.email
+              }
+            </div>
+
+            <div
+              className="
+                font-medium
+                mt-3
+              "
+            >
+              {
+                stats.latestRequest.package
+                  ?.name
+              }
+            </div>
+
+            <div
+              className="
+                text-xs
+                text-gray-400
+                mt-1
+              "
+            >
+              {
+                stats.latestRequest.created_at
+                  ?.substring(
+                    0,
+                    16
+                  )
+                  .replace("T", " ")
+              }
+            </div>
+
+          </>
 
         ) : (
 
-<div
-  className="
-    grid
-    md:grid-cols-3
-    gap-4
-  "
->
-
-            {stats.recentProposals
-              ?.length === 0 && (
-
-              <div
-                className="
-                  text-gray-400
-                "
-              >
-                No proposal requests
-              </div>
-
-            )}
-
-            {stats.recentProposals
-  ?.slice(0, 9)
-  .map(
-                (
-                  item: any
-                ) => (
-
-                  <div
-                    key={item.id}
-                    className="
-                      border
-                      rounded-lg
-                      p-4
-                      flex
-                      justify-between
-                      items-center
-                    "
-                  >
-
-                    <div
-                      className="
-                        space-y-1
-                      "
-                    >
-
-                      <div
-                        className="
-                          font-medium
-                        "
-                      >
-                        {
-                          item.user
-                            ?.first_name
-                        }
-                      </div>
-
-                      <div
-                        className="
-                          text-sm
-                          text-gray-500
-                        "
-                      >
-                        {
-                          item.user
-                            ?.email
-                        }
-                      </div>
-
-                    </div>
-
-                    <div
-                      className="
-                        text-right
-                      "
-                    >
-
-                      <div
-                        className="
-                          font-medium
-                        "
-                      >
-                        {
-                          item.package
-                            ?.name
-                        }
-                      </div>
-
-                      <div
-                        className="
-                          text-xs
-                          text-gray-400
-                        "
-                      >
-                        {
-                          item.created_at
-                            ?.substring(
-                              0,
-                              10
-                            )
-                        }
-                      </div>
-
-                    </div>
-
-                  </div>
-
-                )
-              )}
-
+          <div className="text-gray-400">
+            No request yet
           </div>
 
         )}
 
       </div>
+
+
+      {/* ===================== */}
+      {/* Latest Proposal View */}
+      {/* ===================== */}
+
+      <div
+        className="
+          border
+          rounded-lg
+          p-4
+        "
+      >
+
+        <div
+          className="
+            text-sm
+            text-gray-400
+            mb-3
+          "
+        >
+          Proposal View
+        </div>
+
+        {stats.latestProposalView ? (
+
+          <>
+
+            <div className="font-medium">
+              {
+                stats.latestProposalView.package
+                  ?.name
+              }
+            </div>
+
+            <div
+              className="
+                text-sm
+                text-gray-500
+                mt-1
+              "
+            >
+              {
+                stats.latestProposalView.lead_source
+              }
+            </div>
+
+            <div
+              className="
+                text-xs
+                text-gray-400
+                mt-3
+              "
+            >
+              {
+                stats.latestProposalView.created_at
+                  ?.substring(
+                    0,
+                    16
+                  )
+                  .replace("T", " ")
+              }
+            </div>
+
+          </>
+
+        ) : (
+
+          <div className="text-gray-400">
+            No proposal view yet
+          </div>
+
+        )}
+
+      </div>
+
+
+      {/* ===================== */}
+      {/* Latest Package View */}
+      {/* ===================== */}
+
+      <div
+        className="
+          border
+          rounded-lg
+          p-4
+        "
+      >
+
+        <div
+          className="
+            text-sm
+            text-gray-400
+            mb-3
+          "
+        >
+          Package View
+        </div>
+
+        {stats.latestPackageView ? (
+
+          <>
+
+            <div className="font-medium">
+              {
+                stats.latestPackageView.package
+                  ?.name
+              }
+            </div>
+
+            <div
+              className="
+                text-sm
+                text-gray-500
+                mt-1
+              "
+            >
+              {
+                stats.latestPackageView.lead_source
+              }
+            </div>
+
+            <div
+              className="
+                text-xs
+                text-gray-400
+                mt-3
+              "
+            >
+              {
+                stats.latestPackageView.viewed_at
+                  ?.substring(
+                    0,
+                    16
+                  )
+                  .replace("T", " ")
+              }
+            </div>
+
+          </>
+
+        ) : (
+
+          <div className="text-gray-400">
+            No package view yet
+          </div>
+
+        )}
+
+      </div>
+
+    </div>
+
+  )}
+
+</div>
 
       {/* ===================== */}
       {/* Section B */}

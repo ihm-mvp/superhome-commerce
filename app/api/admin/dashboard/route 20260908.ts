@@ -407,104 +407,40 @@ return {
         }
       )
 
-// =========================
-// Latest Activity
-// =========================
+    // =========================
+    // Recent Proposals
+    // =========================
 
-// Latest Request Proposal
-const {
-  data: latestRequest,
-  error: latestRequestError,
-} = await supabase
-  .from("package_requests")
-  .select(`
-    id,
-    created_at,
+    const {
+      data: recentProposals,
+      error: recentError,
+    } = await supabase
+      .from("package_requests")
+      .select(`
+        id,
+        created_at,
 
-    user:users(
-      first_name,
-      email
-    ),
+        user:users(
+          first_name,
+          email
+        ),
 
-    package:packages(
-      name,
-      slug
-    )
-  `)
-  .order(
-    "created_at",
-    {
-      ascending: false,
+        package:packages(
+          name,
+          slug
+        )
+      `)
+      .order(
+        "created_at",
+        {
+          ascending: false,
+        }
+      )
+      .limit(10)
+
+    if (recentError) {
+      throw recentError
     }
-  )
-  .limit(1)
-  .maybeSingle()
-
-if (latestRequestError) {
-  throw latestRequestError
-}
-
-// Latest Proposal View
-const {
-  data: latestProposalView,
-  error: latestProposalViewError,
-} = await supabase
-  .from("package_request_views")
-  .select(`
-    id,
-    package_id,
-    visitor_id,
-    lead_source,
-    created_at,
-
-    package:packages(
-      name,
-      slug
-    )
-  `)
-  .order(
-    "created_at",
-    {
-      ascending: false,
-    }
-  )
-  .limit(1)
-  .maybeSingle()
-
-if (latestProposalViewError) {
-  throw latestProposalViewError
-}
-
-// Latest Package View
-const {
-  data: latestPackageView,
-  error: latestPackageViewError,
-} = await supabase
-  .from("package_views")
-  .select(`
-    id,
-    package_id,
-    visitor_id,
-    lead_source,
-    viewed_at,
-
-    package:packages(
-      name,
-      slug
-    )
-  `)
-  .order(
-    "viewed_at",
-    {
-      ascending: false,
-    }
-  )
-  .limit(1)
-  .maybeSingle()
-
-if (latestPackageViewError) {
-  throw latestPackageViewError
-}
 
     // =========================
     // Response
@@ -541,14 +477,8 @@ if (latestPackageViewError) {
 
       packagePerformance,
 
-latestRequest:
-  latestRequest || null,
-
-latestProposalView:
-  latestProposalView || null,
-
-latestPackageView:
-  latestPackageView || null,
+      recentProposals:
+        recentProposals || [],
 
     })
 
