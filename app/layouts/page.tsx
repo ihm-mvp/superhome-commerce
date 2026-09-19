@@ -1,6 +1,8 @@
 import { supabase } from "@/lib/supabase"
 import Link from "next/link"
 
+export const dynamic = "force-dynamic"
+
 export const metadata = {
   title: "Home Layouts NZ | Move-in Ready Furnished Homes",
 

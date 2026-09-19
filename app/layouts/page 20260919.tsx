@@ -159,17 +159,20 @@ export default async function LayoutsPage() {
                     {layout.bedrooms} Bed ·{" "}
                     {layout.bathrooms} Bath ·{" "}
                     {layout.garage} Garage
-                  </div>
+
+                   {layout.floor_size && (
+                    <> · {layout.floor_size} Floor</>
+                  )}
 
                   {layout.land_size && (
-                    <div className="text-xs text-gray-400">
-                      {layout.land_size}
-                    </div>
+                    <> · {layout.land_size} Land</>
                   )}
+
+                  </div>
 
                   {minPrice && (
                     <div className="text-sm font-medium text-black">
-                      Fully furnished from ${minPrice}+
+                      Fully furnished from ${minPrice}
                     </div>
                   )}
 
