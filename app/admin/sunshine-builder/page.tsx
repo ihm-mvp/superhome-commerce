@@ -260,95 +260,76 @@ async function loadRooms(
 
     }
 
-    async function addProduct() {
+async function addProduct() {
 
-    const room =
-      rooms.find(
-        (r) =>
-          r.name ===
-          selectedRoom
-      )
-
-    if (
-      !room ||
-      !itemType ||
-      !selectedProduct ||
-      !selectedVariant
-    ) {
-
-      alert(
-        "Please complete all selections"
-      )
-
-      return
-
-    }
-
-    const itemTypeMap: any = {
-
-      curtain:
-        "bff60449-aca3-4b5e-a5b5-e6e882a60604",
-
-      track:
-        "3842fbcd-f50f-4365-ad3d-65d0b53b174d",
-
-      blind:
-        "470c8f38-0a63-4a4a-b429-31d468feab7d",
-
-    }
-
-    const res =
-      await fetch(
-        "/api/admin/sunshine-builder-add-product",
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-
-          body:
-            JSON.stringify({
-              package_room_id:
-                room.id,
-
-              item_type_id:
-                itemTypeMap[
-                  itemType
-                ],
-
-              product_id:
-                selectedProduct,
-
-              variant_id:
-                selectedVariant,
-
-              quantity,
-            }),
-        }
-      )
-
-    const result =
-      await res.json()
-
-    if (
-      !res.ok
-    ) {
-
-      alert(
-        result.error
-      )
-
-      return
-
-    }
+  if (
+    !selectedPackage ||
+    !selectedOpening ||
+    !itemType ||
+    !selectedProduct ||
+    !selectedVariant
+  ) {
 
     alert(
-      "Added"
+      "Please complete all selections"
     )
 
+    return
+
   }
+
+  const res =
+    await fetch(
+      "/api/admin/sunshine-builder-add-product",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+
+        body:
+          JSON.stringify({
+
+            package_id:
+              selectedPackage.id,
+
+            opening_id:
+              selectedOpening,
+
+            product_id:
+              selectedProduct,
+
+            variant_id:
+              selectedVariant,
+
+            quantity,
+
+          }),
+      }
+    )
+
+  const result =
+    await res.json()
+
+  if (
+    !res.ok
+  ) {
+
+    alert(
+      result.error
+    )
+
+    return
+
+  }
+
+  alert(
+    "Added"
+  )
+
+}
 
   return (
 
