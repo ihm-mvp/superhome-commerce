@@ -386,48 +386,39 @@ const summary: Record<
   number
 > = {}
 
-items?.forEach(
-  (item: any) => {
+Object.values(
+  grouped
+).forEach(
+  (roomItems: any[]) => {
 
-    const itemName =
-      item.item_type?.name
+    roomItems.forEach(
+      (item: any) => {
 
-    if (!itemName) return
+        const itemName =
+          item.item_type?.name
 
-    const qty =
-      item.products?.reduce(
-        (
-          total: number,
-          p: any
-        ) =>
-          total +
+        if (!itemName) return
+
+        const qty =
+          item.products?.reduce(
+            (
+              total: number,
+              p: any
+            ) =>
+              total +
+              (
+                p.quantity || 0
+              ),
+            0
+          ) || 0
+
+        summary[itemName] =
           (
-            p.quantity || 0
-          ),
-        0
-      ) || 0
+            summary[itemName] || 0
+          ) + qty
 
-    summary[itemName] =
-      (
-        summary[itemName] || 0
-      ) + qty
-
-  }
-)
-
-sunshineProducts?.forEach(
-  (p: any) => {
-
-    const itemName =
-      "Sunshine"
-
-    summary[itemName] =
-      (
-        summary[itemName] || 0
-      ) +
-      (
-        p.quantity || 0
-      )
+      }
+    )
 
   }
 )
