@@ -47,19 +47,29 @@ export default function PackageBuilder() {
   ] = useState("")
 
   const [
-    bedrooms,
-    setBedrooms,
-  ] = useState(2)
+  builderName,
+  setBuilderName,
+] = useState("")
 
-  const [
-    bathrooms,
-    setBathrooms,
-  ] = useState(1)
+const [
+  floorplanHighlights,
+  setFloorplanHighlights,
+] = useState("")
 
-  const [
-    garage,
-    setGarage,
-  ] = useState(1)
+const [
+  bedrooms,
+  setBedrooms,
+] = useState<number | "">("")
+
+const [
+  bathrooms,
+  setBathrooms,
+] = useState<number | "">("")
+
+const [
+  garage,
+  setGarage,
+] = useState<number | "">("")
 
   const [
     floorSize,
@@ -273,16 +283,19 @@ export default function PackageBuilder() {
   }
   async function generate() {
 
-    if (
-      !layoutName ||
-      !slug
-    ) {
+if (
+  !layoutName ||
+  !slug ||
+  bedrooms === "" ||
+  bathrooms === "" ||
+  garage === ""
+) {
 
-      alert(
-        "Layout Name and Slug are required."
-      )
+alert(
+  "Layout Name, Slug, Bedrooms, Bathrooms and Garage are required."
+)
 
-      return
+return
 
     }
 
@@ -307,11 +320,11 @@ export default function PackageBuilder() {
 
                 location,
 
-                bedrooms,
+                bedrooms: Number(bedrooms),
 
-                bathrooms,
+                bathrooms: Number(bathrooms),
 
-                garage,
+                garage: Number(garage),
 
                 floor_size:
                   floorSize,
@@ -383,210 +396,237 @@ export default function PackageBuilder() {
         Package Builder
       </h1>
 
-      {/* ===== Layout ===== */}
+{/* ===== Layout ===== */}
 
-      <div
-        className="
-          border
-          rounded-2xl
-          p-6
-          space-y-5
-        "
-      >
+<div
+  className="
+    border
+    rounded-2xl
+    p-6
+    space-y-5
+  "
+>
 
-        <h2
-          className="
-            text-xl
-            font-semibold
-          "
-        >
-          Layout Information
-        </h2>
+  <h2
+    className="
+      text-xl
+      font-semibold
+    "
+  >
+    Layout Information
+  </h2>
 
-        <div
-          className="
-            grid
-            md:grid-cols-2
-            gap-4
-          "
-        >
+  <div
+    className="
+      grid
+      md:grid-cols-2
+      gap-4
+    "
+  >
 
-          <input
-            placeholder="Layout Name"
-            value={layoutName}
-            onChange={(e) =>
-              setLayoutName(
-                e.target.value
-              )
-            }
-            className="border p-2"
-          />
+    <input
+      placeholder="Layout Name"
+      value={layoutName}
+      onChange={(e) =>
+        setLayoutName(
+          e.target.value
+        )
+      }
+      className="border p-2"
+    />
 
-          <input
-            placeholder="Slug"
-            value={slug}
-            onChange={(e) =>
-              setSlug(
-                e.target.value
-              )
-            }
-            className="border p-2"
-          />
+    <input
+      placeholder="Slug"
+      value={slug}
+      onChange={(e) =>
+        setSlug(
+          e.target.value
+        )
+      }
+      className="border p-2"
+    />
 
-          <input
-            placeholder="Location"
-            value={location}
-            onChange={(e) =>
-              setLocation(
-                e.target.value
-              )
-            }
-            className="border p-2"
-          />
+    <input
+      placeholder="Location"
+      value={location}
+      onChange={(e) =>
+        setLocation(
+          e.target.value
+        )
+      }
+      className="border p-2"
+    />
 
-          <input
-            placeholder="Floor Size"
-            value={floorSize}
-            onChange={(e) =>
-              setFloorSize(
-                e.target.value
-              )
-            }
-            className="border p-2"
-          />
+    <input
+      placeholder="Builder Name"
+      value={builderName}
+      onChange={(e) =>
+        setBuilderName(
+          e.target.value
+        )
+      }
+      className="border p-2"
+    />
 
-          <input
-            placeholder="Land Size"
-            value={landSize}
-            onChange={(e) =>
-              setLandSize(
-                e.target.value
-              )
-            }
-            className="border p-2"
-          />
+    <input
+      placeholder="Floor Size"
+      value={floorSize}
+      onChange={(e) =>
+        setFloorSize(
+          e.target.value
+        )
+      }
+      className="border p-2"
+    />
 
-          <input
-            placeholder="Hero Exterior Image"
-            value={
-              heroExteriorImage
-            }
-            onChange={(e) =>
-              setHeroExteriorImage(
-                e.target.value
-              )
-            }
-            className="border p-2"
-          />
+    <input
+      placeholder="Land Size"
+      value={landSize}
+      onChange={(e) =>
+        setLandSize(
+          e.target.value
+        )
+      }
+      className="border p-2"
+    />
 
-          <input
-            placeholder="Elevation Image"
-            value={
-              elevationImage
-            }
-            onChange={(e) =>
-              setElevationImage(
-                e.target.value
-              )
-            }
-            className="border p-2"
-          />
+    <input
+      placeholder="Hero Exterior Image"
+      value={
+        heroExteriorImage
+      }
+      onChange={(e) =>
+        setHeroExteriorImage(
+          e.target.value
+        )
+      }
+      className="border p-2"
+    />
 
-          <input
-            placeholder="Floorplan Image"
-            value={
-              floorplanImage
-            }
-            onChange={(e) =>
-              setFloorplanImage(
-                e.target.value
-              )
-            }
-            className="border p-2"
-          />
+    <input
+      placeholder="Elevation Image"
+      value={
+        elevationImage
+      }
+      onChange={(e) =>
+        setElevationImage(
+          e.target.value
+        )
+      }
+      className="border p-2"
+    />
 
-          <input
-            placeholder="Video URL"
-            value={videoUrl}
-            onChange={(e) =>
-              setVideoUrl(
-                e.target.value
-              )
-            }
-            className="border p-2"
-          />
+    <input
+      placeholder="Floorplan Image"
+      value={
+        floorplanImage
+      }
+      onChange={(e) =>
+        setFloorplanImage(
+          e.target.value
+        )
+      }
+      className="border p-2"
+    />
 
-        </div>
+    <input
+      placeholder="Video URL"
+      value={videoUrl}
+      onChange={(e) =>
+        setVideoUrl(
+          e.target.value
+        )
+      }
+      className="border p-2"
+    />
 
-        <div
-          className="
-            grid
-            grid-cols-3
-            gap-4
-          "
-        >
+  </div>
 
-          <input
-            type="number"
-            placeholder="Bedrooms"
-            value={bedrooms}
-            onChange={(e) =>
-              setBedrooms(
-                Number(
-                  e.target.value
-                )
-              )
-            }
-            className="border p-2"
-          />
+  <div
+    className="
+      grid
+      grid-cols-3
+      gap-4
+    "
+  >
 
-          <input
-            type="number"
-            placeholder="Bathrooms"
-            value={bathrooms}
-            onChange={(e) =>
-              setBathrooms(
-                Number(
-                  e.target.value
-                )
-              )
-            }
-            className="border p-2"
-          />
+<input
+  type="number"
+  placeholder="Bedrooms"
+  value={bedrooms}
+  onChange={(e) =>
+    setBedrooms(
+      e.target.value === ""
+        ? ""
+        : Number(e.target.value)
+    )
+  }
+  className="border p-2"
+/>
 
-          <input
-            type="number"
-            placeholder="Garage"
-            value={garage}
-            onChange={(e) =>
-              setGarage(
-                Number(
-                  e.target.value
-                )
-              )
-            }
-            className="border p-2"
-          />
+<input
+  type="number"
+  placeholder="Bathrooms"
+  value={bathrooms}
+  onChange={(e) =>
+    setBathrooms(
+      e.target.value === ""
+        ? ""
+        : Number(e.target.value)
+    )
+  }
+  className="border p-2"
+/>
 
-        </div>
+<input
+  type="number"
+  placeholder="Garage"
+  value={garage}
+  onChange={(e) =>
+    setGarage(
+      e.target.value === ""
+        ? ""
+        : Number(e.target.value)
+    )
+  }
+  className="border p-2"
+/>
 
-        <textarea
-          placeholder="Description"
-          value={description}
-          onChange={(e) =>
-            setDescription(
-              e.target.value
-            )
-          }
-          rows={4}
-          className="
-            border
-            p-2
-            w-full
-          "
-        />
+  </div>
 
-      </div>
+  <textarea
+    placeholder="Description"
+    value={description}
+    onChange={(e) =>
+      setDescription(
+        e.target.value
+      )
+    }
+    rows={4}
+    className="
+      border
+      p-2
+      w-full
+    "
+  />
+
+  <textarea
+    placeholder="Floorplan Highlights"
+    value={floorplanHighlights}
+    onChange={(e) =>
+      setFloorplanHighlights(
+        e.target.value
+      )
+    }
+    rows={4}
+    className="
+      border
+      p-2
+      w-full
+    "
+  />
+
+</div>
 
       {/* ===== Packages ===== */}
 

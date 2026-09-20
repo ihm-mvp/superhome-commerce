@@ -50,9 +50,6 @@ export async function POST(
           description:
             layout.description,
 
-          builder_name:
-            layout.builder_name,
-
           hero_exterior_image:
             layout.hero_exterior_image,
 
@@ -61,9 +58,6 @@ export async function POST(
 
           floorplan_image:
             layout.floorplan_image,
-
-          floorplan_highlights:
-            layout.floorplan_highlights,
 
           video_url:
             layout.video_url,
@@ -198,7 +192,6 @@ export async function POST(
 
     return Response.json({
       success: true,
-
       layout_id:
         layoutRow.id,
     })
