@@ -84,33 +84,21 @@ export default function SunshineBuilder() {
 
   }
 
-async function loadRooms(
-  layoutId: string
-) {
+  async function loadRooms(
+    packageId: string
+  ) {
 
-  const res =
-    await fetch(
-      `/api/admin/sunshine-openings?layout_id=${layoutId}`
-    )
+    const res =
+      await fetch(
+        `/api/admin/sunshine-package-rooms?package_id=${packageId}`
+      )
 
-  const data =
-    await res.json()
+    const data =
+      await res.json()
 
-  const uniqueRooms = Array.from(
-    new Set(
-      data
-        .map((o: any) => o.room_name)
-        .filter(Boolean)
-    )
-  ).map(
-    (roomName: any) => ({
-      id: roomName,
-      name: roomName,
-    })
-  )
+    setRooms(data)
 
-  setRooms(uniqueRooms)
-}
+  }
 
   async function loadOpenings(
     layoutId: string,
@@ -188,7 +176,7 @@ async function loadRooms(
       setVariants([])
 
       await loadRooms(
-        pkg.layout_id
+        packageId
       )
 
     }
