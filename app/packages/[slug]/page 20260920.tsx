@@ -1,6 +1,9 @@
 import { supabase } from "@/lib/supabase"
 import { notFound } from "next/navigation"
 import Link from "next/link"
+import PackageViewTracker from "@/components/PackageViewTracker"
+import PackageProposalLink
+  from "@/components/PackageProposalLink"
 import {
   calculatePackageAllocation,
 } from "@/lib/package-allocation"
@@ -118,13 +121,6 @@ const { data: pkg } = await supabase
     .single()
 
   if (!pkg) return notFound()
-
-    await supabase
-  .from("package_views")
-  .insert({
-    package_id: pkg.id,
-    lead_source: src,
-  })
 
   // ===== 统一 layout 结构 =====
   const layout = Array.isArray(pkg.layout)
@@ -290,8 +286,13 @@ allocation.rows.forEach(
     grouped[i.package_room_id].push(i)
   })
 
-  return (
-    <div className="max-w-6xl mx-auto px-6 py-10 space-y-12">
+return (
+  <div className="max-w-6xl mx-auto px-6 py-10 space-y-12">
+
+    <PackageViewTracker
+      packageId={pkg.id}
+      leadSource={src}
+    />
 
       {/* ===== SEO Heading ===== */}
       <div className="space-y-3">
@@ -364,13 +365,13 @@ allocation.rows.forEach(
 
   </div>
 
-  <Link
-    href={`/package-proposal/${pkg.slug}?src=${src}`}
-    className="inline-flex items-center px-6 py-3 bg-black text-white rounded-lg hover:opacity-90 transition"
-    prefetch={false}
-  >
-    Get Package Proposal
-  </Link>
+<PackageProposalLink
+  slug={pkg.slug}
+  leadSource={src}
+  className="inline-flex items-center px-6 py-3 bg-black text-white rounded-lg hover:opacity-90 transition"
+>
+  Get Package Proposal
+</PackageProposalLink>
 
 </div>
 
@@ -804,13 +805,13 @@ allocation.rows.forEach(
 {/* ===== CTA ===== */}
 <div className="border-t pt-8 text-center">
 
-  <Link
-    href={`/package-proposal/${pkg.slug}?src=${src}`}
-    className="inline-flex items-center px-8 py-3 bg-black text-white rounded-lg hover:opacity-90 transition"
-    prefetch={false}
-  >
-    Get Package Proposal
-  </Link>
+<PackageProposalLink
+  slug={pkg.slug}
+  leadSource={src}
+  className="inline-flex items-center px-8 py-3 bg-black text-white rounded-lg hover:opacity-90 transition"
+>
+  Get Package Proposal
+</PackageProposalLink>
 
 </div>
 

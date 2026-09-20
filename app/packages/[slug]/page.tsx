@@ -129,15 +129,54 @@ const { data: pkg } = await supabase
 
   if (!layout) return notFound()
 
-    const { data: openings } =
+const { data: openings } =
   await supabase
     .from("layout_openings")
     .select(`
       id,
       width_mm,
       height_mm,
-      opening_code
+      opening_code,
+      room_name
     `)
+    .eq(
+      "layout_id",
+      pkg.layout_id
+    )
+
+  const { data: sunshineProducts } =
+  await supabase
+    .from("package_opening_products")
+    .select(`
+      id,
+      package_id,
+      opening_id,
+      quantity,
+
+      product:products(
+        id,
+        sku_code,
+        display_name_en,
+        display_description_en,
+        image_url
+      ),
+
+      variant:variants(
+        id,
+        price_rmb,
+        size_label,
+        config,
+        display_config_en,
+        display_note_en,
+        width_mm,
+        length_mm,
+        height_mm
+      )
+    `)
+    .eq(
+      "package_id",
+      pkg.id
+    )
 
 const openingMap:
 Record<string, any> = {}
@@ -285,6 +324,62 @@ allocation.rows.forEach(
 
     grouped[i.package_room_id].push(i)
   })
+
+  sunshineProducts?.forEach(
+  (p: any) => {
+
+    const opening =
+      openingMap[p.opening_id]
+
+    if (!opening) return
+
+    const room =
+      rooms?.find(
+        (r: any) =>
+          r.name === opening.room_name
+      )
+
+    if (!room) return
+
+    if (!grouped[room.id]) {
+      grouped[room.id] = []
+    }
+
+    grouped[room.id].push({
+
+      id:
+        `sunshine-${p.id}`,
+
+      package_room_id:
+        room.id,
+
+      item_type: {
+        name: "Sunshine",
+      },
+
+      products: [
+        {
+          id:
+            p.id,
+
+          opening_id:
+            p.opening_id,
+
+          quantity:
+            p.quantity,
+
+          product:
+            p.product,
+
+          variant:
+            p.variant,
+        },
+      ],
+
+    })
+
+  }
+)
 
 return (
   <div className="max-w-6xl mx-auto px-6 py-10 space-y-12">
