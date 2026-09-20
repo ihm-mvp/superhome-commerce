@@ -381,6 +381,57 @@ allocation.rows.forEach(
   }
 )
 
+const summary: Record<
+  string,
+  number
+> = {}
+
+items?.forEach(
+  (item: any) => {
+
+    const itemName =
+      item.item_type?.name
+
+    if (!itemName) return
+
+    const qty =
+      item.products?.reduce(
+        (
+          total: number,
+          p: any
+        ) =>
+          total +
+          (
+            p.quantity || 0
+          ),
+        0
+      ) || 0
+
+    summary[itemName] =
+      (
+        summary[itemName] || 0
+      ) + qty
+
+  }
+)
+
+sunshineProducts?.forEach(
+  (p: any) => {
+
+    const itemName =
+      "Sunshine"
+
+    summary[itemName] =
+      (
+        summary[itemName] || 0
+      ) +
+      (
+        p.quantity || 0
+      )
+
+  }
+)
+
 return (
   <div className="max-w-6xl mx-auto px-6 py-10 space-y-12">
 
