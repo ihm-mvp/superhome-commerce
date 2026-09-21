@@ -516,61 +516,106 @@ return (
 
 {/* ===== Furniture Summary ===== */}
 
-<div
-  className="
-    border
-    rounded-2xl
-    p-5
-    max-w-4xl
-  "
->
+{(() => {
 
-  <div
-    className="
-      font-semibold
-      text-lg
-      mb-4
-    "
-  >
-    Furniture Included
-  </div>
+  const summary: Record<
+    string,
+    number
+  > = {}
 
-  <div
-    className="
-      flex
-      flex-wrap
-      gap-3
-    "
-  >
+  items?.forEach(
+    (item: any) => {
 
-    {Object.entries(
-      summary
-    ).map(
-      (
-        [name, qty]
-      ) => (
+      const itemName =
+        item.item_type?.name
 
-        <div
-          key={name}
-          className="
-            px-4
-            py-2
-            border
-            rounded-full
-            text-sm
-          "
-        >
-          {qty}
-          {" × "}
-          {name}
-        </div>
+      if (!itemName) return
 
-      )
-    )}
+      const qty =
+        item.products?.reduce(
+          (
+            total: number,
+            p: any
+          ) =>
+            total +
+            (
+              p.quantity ||
+              0
+            ),
+          0
+        ) || 0
 
-  </div>
+      summary[itemName] =
+        (
+          summary[
+            itemName
+          ] || 0
+        ) + qty
 
-</div>
+    }
+  )
+
+  return (
+
+    <div
+      className="
+        border
+        rounded-2xl
+        p-5
+        max-w-4xl
+      "
+    >
+
+      <div
+        className="
+          font-semibold
+          text-lg
+          mb-4
+        "
+      >
+        Furniture Included
+      </div>
+
+      <div
+        className="
+          flex
+          flex-wrap
+          gap-3
+        "
+      >
+
+        {Object.entries(
+          summary
+        ).map(
+          (
+            [name, qty]
+          ) => (
+
+            <div
+              key={name}
+              className="
+                px-4
+                py-2
+                border
+                rounded-full
+                text-sm
+              "
+            >
+              {qty}
+              {" × "}
+              {name}
+            </div>
+
+          )
+        )}
+
+      </div>
+
+    </div>
+
+  )
+
+})()}
 
       {/* ===== Package切换 ===== */}
       <div className="flex gap-3 flex-wrap">
