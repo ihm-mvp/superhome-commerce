@@ -317,16 +317,13 @@ allocation.rows.forEach(
   }
 )
 
-items?.forEach((i: any) => {
+  items?.forEach((i: any) => {
+    if (!grouped[i.package_room_id]) {
+      grouped[i.package_room_id] = []
+    }
 
-  if (!i.products?.length) return
-
-  if (!grouped[i.package_room_id]) {
-    grouped[i.package_room_id] = []
-  }
-
-  grouped[i.package_room_id].push(i)
-})
+    grouped[i.package_room_id].push(i)
+  })
 
   sunshineProducts?.forEach(
   (p: any) => {
