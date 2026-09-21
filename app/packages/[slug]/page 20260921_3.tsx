@@ -356,16 +356,9 @@ items?.forEach((i: any) => {
       package_room_id:
         room.id,
 
-item_type: {
-  name:
-    p.product?.sku_code?.startsWith("SUN-CUR-")
-      ? "Curtain"
-      : p.product?.sku_code?.startsWith("SUN-TRK-")
-        ? "Track"
-        : p.product?.sku_code?.startsWith("SUN-BLD-")
-          ? "Blind"
-          : "Sunshine",
-},
+      item_type: {
+        name: "Sunshine",
+      },
 
       products: [
         {
