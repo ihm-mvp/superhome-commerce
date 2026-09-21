@@ -297,6 +297,45 @@ items?.forEach(
   }
 )
 
+sunshineProducts?.forEach(
+  (p: any) => {
+
+    allocationRows.push({
+
+      pip_id:
+        p.id,
+
+      opening_id:
+        p.opening_id,
+
+      sku_code:
+        p.product?.sku_code || "",
+
+      quantity:
+        p.quantity || 0,
+
+      exw_price_rmb:
+        p.variant?.price_rmb || 0,
+
+      width_mm:
+        p.opening_id
+          ? openingMap[
+              p.opening_id
+            ]?.width_mm
+          : null,
+
+      height_mm:
+        p.opening_id
+          ? openingMap[
+              p.opening_id
+            ]?.height_mm
+          : null,
+
+    })
+
+  }
+)
+
 const allocation =
   calculatePackageAllocation(
     allocationRows,
@@ -359,12 +398,12 @@ items?.forEach((i: any) => {
 item_type: {
   name:
     p.product?.sku_code?.startsWith("SUN-CUR-")
-      ? "Curtain"
+      ? "curtain"
       : p.product?.sku_code?.startsWith("SUN-TRK-")
-        ? "Track"
+        ? "track"
         : p.product?.sku_code?.startsWith("SUN-BLD-")
-          ? "Blind"
-          : "Sunshine",
+          ? "blind"
+          : "sunshine",
 },
 
       products: [
