@@ -258,6 +258,39 @@ allocation.rows.forEach(
   }
 )
 
+const { data: sunshineProducts } =
+  await supabase
+    .from("package_opening_products")
+    .select(`
+      id,
+      opening_id,
+      quantity,
+
+      product:products(
+        id,
+        sku_code,
+        display_name_en,
+        display_description_en,
+        image_url
+      ),
+
+      variant:variants(
+        id,
+        price_rmb,
+        size_label,
+        config,
+        display_config_en,
+        display_note_en,
+        width_mm,
+        length_mm,
+        height_mm
+      )
+    `)
+    .eq(
+      "package_id",
+      pkg.id
+    )
+
   items?.forEach((i: any) => {
 
     if (!grouped[i.package_room_id]) {
@@ -267,6 +300,69 @@ allocation.rows.forEach(
     grouped[i.package_room_id].push(i)
 
   })
+
+sunshineProducts?.forEach(
+  (p: any) => {
+
+    const opening =
+      openingMap[p.opening_id]
+
+    if (!opening) return
+
+    const room =
+      rooms?.find(
+        (r: any) =>
+          r.name === opening.room_name
+      )
+
+    if (!room) return
+
+    if (!grouped[room.id]) {
+      grouped[room.id] = []
+    }
+
+    grouped[room.id].push({
+
+      id:
+        `sunshine-${p.id}`,
+
+      package_room_id:
+        room.id,
+
+      item_type: {
+        name:
+          p.product?.sku_code?.startsWith("SUN-CUR-")
+            ? "Curtain"
+            : p.product?.sku_code?.startsWith("SUN-TRK-")
+            ? "Track"
+            : p.product?.sku_code?.startsWith("SUN-BLD-")
+            ? "Blind"
+            : "Sunshine",
+      },
+
+      products: [
+        {
+          id:
+            p.id,
+
+          opening_id:
+            p.opening_id,
+
+          quantity:
+            p.quantity,
+
+          product:
+            p.product,
+
+          variant:
+            p.variant,
+        },
+      ],
+
+    })
+
+  }
+)
 
 const summaryMap: Record<
   string,

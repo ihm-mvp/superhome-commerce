@@ -39,14 +39,27 @@ export default async function PackageProposalPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>
-  searchParams: Promise<{ pdf?: string }>
+
+searchParams: Promise<{
+  pdf?: string
+  src?: string
+  visitor_id?: string
+}>
+
 }) {
 
   const { slug } = await params
 
-  const { pdf } = await searchParams
+const {
+  pdf,
+  src,
+  visitor_id,
+} = await searchParams
 
-  const isPdf = pdf === "1"
+const isPdf = pdf === "1"
+
+const leadSource =
+  src || "website"
 
   // ===== Package =====
 
@@ -68,6 +81,26 @@ export default async function PackageProposalPage({
     .single()
 
   if (!pkg) return notFound()
+
+if (
+  !isPdf &&
+  visitor_id
+) {
+
+  await supabase
+    .from("package_request_views")
+    .insert({
+      package_id:
+        pkg.id,
+
+      lead_source:
+        leadSource,
+
+      visitor_id:
+        visitor_id,
+    })
+
+}
 
   const layout = Array.isArray(pkg.layout)
     ? pkg.layout[0]
@@ -803,6 +836,18 @@ rooms?.forEach(
         name="package_id"
         value={pkg.id}
       />
+
+      <input
+  type="hidden"
+  name="visitor_id"
+  value={visitor_id || ""}
+/>
+
+<input
+  type="hidden"
+  name="lead_source"
+  value={leadSource}
+/>
 
       <div>
 
