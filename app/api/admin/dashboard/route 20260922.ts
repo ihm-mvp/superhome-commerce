@@ -77,6 +77,24 @@ export async function GET() {
     }
 
     // =========================
+    // Proposal Views Count
+    // =========================
+
+    const {
+      count: proposalViews,
+      error: proposalViewsError,
+    } = await supabase
+      .from("package_request_views")
+      .select("*", {
+        count: "exact",
+        head: true,
+      })
+
+    if (proposalViewsError) {
+      throw proposalViewsError
+    }
+
+    // =========================
     // Unique Package Visitors
     // =========================
 
@@ -95,6 +113,29 @@ export async function GET() {
     const uniquePackageVisitors =
       new Set(
         packageVisitorRows?.map(
+          (row) => row.visitor_id
+        ) || []
+      ).size
+
+    // =========================
+    // Unique Proposal Visitors
+    // =========================
+
+    const {
+      data: proposalVisitorRows,
+      error: proposalVisitorsError,
+    } = await supabase
+      .from("package_request_views")
+      .select("visitor_id")
+      .not("visitor_id", "is", null)
+
+    if (proposalVisitorsError) {
+      throw proposalVisitorsError
+    }
+
+    const uniqueProposalVisitors =
+      new Set(
+        proposalVisitorRows?.map(
           (row) => row.visitor_id
         ) || []
       ).size
@@ -123,8 +164,30 @@ export async function GET() {
       ).size
 
     // =========================
-    // Conversion Funnel
+    // Conversion Funnel Rates
     // =========================
+
+    const packageToProposalRate =
+      uniquePackageVisitors > 0
+        ? Number(
+            (
+              uniqueProposalVisitors /
+              uniquePackageVisitors *
+              100
+            ).toFixed(1)
+          )
+        : 0
+
+    const proposalToRequestRate =
+      uniqueProposalVisitors > 0
+        ? Number(
+            (
+              uniqueRequestVisitors /
+              uniqueProposalVisitors *
+              100
+            ).toFixed(1)
+          )
+        : 0
 
     const packageToRequestRate =
       uniquePackageVisitors > 0
@@ -138,24 +201,24 @@ export async function GET() {
         : 0
 
     // =========================
-    // Package List
+    // Package Performance
     // =========================
 
-    const {
-      data: packageList,
-      error: packageListError,
-    } = await supabase
-      .from("packages")
-      .select(`
-        id,
-        name,
-        slug,
-        sort_order,
-        layout:layouts!packages_layout_id_fkey(
-          name,
-          location
-        )
-      `)
+const {
+  data: packageList,
+  error: packageListError,
+} = await supabase
+  .from("packages")
+  .select(`
+    id,
+    name,
+    slug,
+    sort_order,
+    layout:layouts!packages_layout_id_fkey(
+      name,
+      location
+    )
+  `)
       .order(
         "sort_order",
         {
@@ -167,7 +230,7 @@ export async function GET() {
       throw packageListError
     }
 
-    // =========================
+// =========================
     // Package View Data
     // =========================
 
@@ -183,6 +246,24 @@ export async function GET() {
 
     if (packageViewRowsError) {
       throw packageViewRowsError
+    }
+
+    // =========================
+    // Package Proposal View Data
+    // =========================
+
+    const {
+      data: packageProposalRows,
+      error: packageProposalRowsError,
+    } = await supabase
+      .from("package_request_views")
+      .select(`
+        package_id,
+        visitor_id
+      `)
+
+    if (packageProposalRowsError) {
+      throw packageProposalRowsError
     }
 
     // =========================
@@ -218,6 +299,13 @@ export async function GET() {
                   row.package_id === pkg.id
               )
 
+          const proposalViewsForPackage =
+            (packageProposalRows || [])
+              .filter(
+                (row: any) =>
+                  row.package_id === pkg.id
+              )
+
           const requests =
             (packageRequestRows || [])
               .filter(
@@ -235,6 +323,16 @@ export async function GET() {
                 .filter(Boolean)
             ).size
 
+          const uniqueProposalVisitors =
+            new Set(
+              proposalViewsForPackage
+                .map(
+                  (row: any) =>
+                    row.visitor_id
+                )
+                .filter(Boolean)
+            ).size
+
           const uniqueRequestVisitors =
             new Set(
               requests
@@ -244,6 +342,17 @@ export async function GET() {
                 )
                 .filter(Boolean)
             ).size
+
+          const viewToProposalRate =
+            uniqueVisitors > 0
+              ? Number(
+                  (
+                    uniqueProposalVisitors /
+                    uniqueVisitors *
+                    100
+                  ).toFixed(1)
+                )
+              : 0
 
           const viewToRequestRate =
             uniqueVisitors > 0
@@ -256,35 +365,40 @@ export async function GET() {
                 )
               : 0
 
-          const layout =
-            Array.isArray(pkg.layout)
-              ? pkg.layout[0]
-              : pkg.layout
+const layout =
+  Array.isArray(pkg.layout)
+    ? pkg.layout[0]
+    : pkg.layout
 
-          return {
+return {
 
-            id:
-              pkg.id,
+  id:
+    pkg.id,
 
-            name:
-              pkg.name,
+  name:
+    pkg.name,
 
-            slug:
-              pkg.slug,
+  slug:
+    pkg.slug,
 
-            layoutName:
-              layout?.name || "",
+  layoutName:
+    layout?.name || "",
 
-            layoutLocation:
-              layout?.location || "",
+  layoutLocation:
+    layout?.location || "",
 
-            views:
-              views.length,
+  views:
+    views.length,
 
             uniqueVisitors,
 
+            proposalViews:
+              proposalViewsForPackage.length,
+
             requests:
               requests.length,
+
+            viewToProposalRate,
 
             viewToRequestRate,
 
@@ -293,81 +407,116 @@ export async function GET() {
         }
       )
 
-    // =========================
-    // Latest Activity
-    // =========================
+// =========================
+// Latest Activity
+// =========================
 
-    // Latest Request
-    const {
-      data: latestRequest,
-      error: latestRequestError,
-    } = await supabase
-      .from("package_requests")
-      .select(`
-        id,
-        created_at,
+// Latest Request Proposal
+const {
+  data: latestRequest,
+  error: latestRequestError,
+} = await supabase
+  .from("package_requests")
+  .select(`
+    id,
+    created_at,
 
-        user:users(
-          first_name,
-          email
-        ),
+    user:users(
+      first_name,
+      email
+    ),
 
-        package:packages(
-          name,
-          slug,
-          layout:layouts!packages_layout_id_fkey(
-            name,
-            location
-          )
-        )
-      `)
-      .order(
-        "created_at",
-        {
-          ascending: false,
-        }
-      )
-      .limit(1)
-      .maybeSingle()
-
-    if (latestRequestError) {
-      throw latestRequestError
+package:packages(
+  name,
+  slug,
+  layout:layouts!packages_layout_id_fkey(
+    name,
+    location
+  )
+)
+  `)
+  .order(
+    "created_at",
+    {
+      ascending: false,
     }
+  )
+  .limit(1)
+  .maybeSingle()
 
-    // Latest Package View
-    const {
-      data: latestPackageView,
-      error: latestPackageViewError,
-    } = await supabase
-      .from("package_views")
-      .select(`
-        id,
-        package_id,
-        visitor_id,
-        lead_source,
-        viewed_at,
+if (latestRequestError) {
+  throw latestRequestError
+}
 
-        package:packages(
-          name,
-          slug,
-          layout:layouts!packages_layout_id_fkey(
-            name,
-            location
-          )
-        )
-      `)
-      .order(
-        "viewed_at",
-        {
-          ascending: false,
-        }
-      )
-      .limit(1)
-      .maybeSingle()
+// Latest Proposal View
+const {
+  data: latestProposalView,
+  error: latestProposalViewError,
+} = await supabase
+  .from("package_request_views")
+  .select(`
+    id,
+    package_id,
+    visitor_id,
+    lead_source,
+    created_at,
 
-    if (latestPackageViewError) {
-      throw latestPackageViewError
+package:packages(
+  name,
+  slug,
+  layout:layouts!packages_layout_id_fkey(
+    name,
+    location
+  )
+)
+  `)
+  .order(
+    "created_at",
+    {
+      ascending: false,
     }
+  )
+  .limit(1)
+  .maybeSingle()
+
+if (latestProposalViewError) {
+  throw latestProposalViewError
+}
+
+// Latest Package View
+const {
+  data: latestPackageView,
+  error: latestPackageViewError,
+} = await supabase
+  .from("package_views")
+  .select(`
+    id,
+    package_id,
+    visitor_id,
+    lead_source,
+    viewed_at,
+
+package:packages(
+  name,
+  slug,
+  layout:layouts!packages_layout_id_fkey(
+    name,
+    location
+  )
+)
+  `)
+  .order(
+    "viewed_at",
+    {
+      ascending: false,
+    }
+  )
+  .limit(1)
+  .maybeSingle()
+
+if (latestPackageViewError) {
+  throw latestPackageViewError
+}
 
     // =========================
     // Response
@@ -384,22 +533,34 @@ export async function GET() {
       packageViews:
         packageViews || 0,
 
+      proposalViews:
+        proposalViews || 0,
+
       proposals:
         proposals || 0,
 
       uniquePackageVisitors,
 
+      uniqueProposalVisitors,
+
       uniqueRequestVisitors,
+
+      packageToProposalRate,
+
+      proposalToRequestRate,
 
       packageToRequestRate,
 
       packagePerformance,
 
-      latestRequest:
-        latestRequest || null,
+latestRequest:
+  latestRequest || null,
 
-      latestPackageView:
-        latestPackageView || null,
+latestProposalView:
+  latestProposalView || null,
+
+latestPackageView:
+  latestPackageView || null,
 
     })
 
