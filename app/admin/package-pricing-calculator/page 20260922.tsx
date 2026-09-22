@@ -4,10 +4,16 @@
 
 import { useEffect, useMemo, useState } from "react"
 
+import {
+  calculateProductExwCost
+} from "@/lib/product-cost"
+
 type ProductRow = {
   room_name: string
 
   opening_code?: string
+
+  opening_id?: string | null
 
   sku_code: string
 
@@ -31,8 +37,12 @@ export default function PackagePricingCalculatorPage() {
   // ===== 输入参数 =====
   const [fxRate, setFxRate] = useState(4.0)
   const [shippingFactor, setShippingFactor] = useState(1.2)
-  const [localCost, setLocalCost] = useState(2000)
+  const [localCost, setLocalCost] = useState(1000)
   const [marginPercent, setMarginPercent] = useState(10)
+  const [
+  displayPrice,
+  setDisplayPrice,
+] = useState(0)
 
   // ===== 中国出口成本系数 =====
 const [
@@ -82,6 +92,13 @@ const [
   }, [selectedPackageId])
 
   // ===== grouped by room =====
+
+  const selectedPackage =
+  packages.find(
+    (p) =>
+      p.id === selectedPackageId
+  )
+
   const grouped = useMemo(() => {
 
     const map: Record<string, ProductRow[]> = {}
@@ -99,105 +116,6 @@ const [
 
   }, [rows])
 
-  function calculateCost(
-  row: ProductRow
-) {
-
-  const sku =
-    row.sku_code || ""
-
-  // ====================
-  // Curtain
-  // ====================
-
-  if (
-    sku.startsWith(
-      "SUN-CUR-"
-    )
-  ) {
-
-    return (
-      (
-        (
-          (
-            row.width_mm || 0
-          ) + 300
-        )
-        / 1000
-      )
-      *
-      2.2
-      *
-      row.exw_price_rmb
-    )
-
-  }
-
-  // ====================
-  // Track
-  // ====================
-
-  if (
-    sku.startsWith(
-      "SUN-TRK-"
-    )
-  ) {
-
-    return (
-      (
-          (
-            row.width_mm || 0
-          ) + 300
-      )
-      / 1000
-      *
-      row.exw_price_rmb
-    )
-
-  }
-
-  // ====================
-  // Blind
-  // ====================
-
-  if (
-    sku.startsWith(
-      "SUN-BLD-"
-    )
-  ) {
-
-    return (
-      (
-        (
-          row.width_mm || 0
-        )
-        / 1000
-      )
-      *
-      (
-        (
-          row.height_mm || 0
-        )
-        / 1000
-      )
-      *
-      row.exw_price_rmb
-    )
-
-  }
-
-  // ====================
-  // Furniture
-  // ====================
-
-  return (
-    row.exw_price_rmb
-    *
-    row.quantity
-  )
-
-}
-
   // ===== EXW RMB =====
 const exwTotalRmb = useMemo(() => {
 
@@ -206,7 +124,7 @@ const exwTotalRmb = useMemo(() => {
 
       return (
         sum +
-        calculateCost(r)
+        calculateProductExwCost(r)
       )
 
     },
@@ -256,6 +174,14 @@ const exwTotalRmb = useMemo(() => {
   const roundedPrice =
     Math.round(finalPrice / 100) * 100
 
+    useEffect(() => {
+
+  setDisplayPrice(
+    roundedPrice
+  )
+
+}, [roundedPrice])
+
   // ===== save =====
   async function saveDisplayPrice() {
 
@@ -270,7 +196,7 @@ const exwTotalRmb = useMemo(() => {
         },
         body: JSON.stringify({
           package_id: selectedPackageId,
-          display_price: roundedPrice,
+          display_price: displayPrice,
         }),
       }
     )
@@ -484,6 +410,26 @@ const exwTotalRmb = useMemo(() => {
                           <div>
                             {p.sku_code}
 
+                            {p.opening_code && (
+
+  <div className="text-xs text-gray-500">
+
+    {p.opening_code}
+
+    {" · "}
+
+    {p.width_mm}
+
+    ×
+
+    {p.height_mm}
+
+    mm
+
+  </div>
+
+)}
+
                             <span className="text-gray-400 ml-2">
                               ×{p.quantity}
                             </span>
@@ -501,7 +447,7 @@ const exwTotalRmb = useMemo(() => {
     × ¥{p.exw_price_rmb}
 
     = ¥
-    {calculateCost(p)
+    {calculateProductExwCost(p)
       .toFixed(0)}
 
   </div>
@@ -519,7 +465,7 @@ const exwTotalRmb = useMemo(() => {
     × ¥{p.exw_price_rmb}
 
     = ¥
-    {calculateCost(p)
+    {calculateProductExwCost(p)
       .toFixed(0)}
 
   </div>
@@ -539,7 +485,7 @@ const exwTotalRmb = useMemo(() => {
     × ¥{p.exw_price_rmb}
 
     = ¥
-    {calculateCost(p)
+    {calculateProductExwCost(p)
       .toFixed(0)}
 
   </div>
@@ -550,7 +496,7 @@ const exwTotalRmb = useMemo(() => {
 
                         <div className="w-28 text-right">
 ¥
-{calculateCost(p)
+{calculateProductExwCost(p)
   .toLocaleString(
     undefined,
     {
@@ -634,9 +580,62 @@ const exwTotalRmb = useMemo(() => {
                 Suggested Display Price (Included GST)
               </div>
 
-              <div className="text-4xl font-semibold">
-                ${roundedPrice.toLocaleString()}
-              </div>
+<div className="space-y-4">
+
+  <div>
+
+    <div className="text-sm text-gray-500">
+      Suggested Price
+    </div>
+
+    <div className="text-4xl font-semibold">
+      ${roundedPrice.toLocaleString()}
+    </div>
+
+  </div>
+
+    <div>
+
+    <div className="text-sm text-gray-500">
+      Current Display Price
+    </div>
+
+    <div className="text-2xl font-medium text-blue-600">
+
+      $
+      {selectedPackage?.display_price
+        ?.toLocaleString() || "-"}
+
+    </div>
+
+  </div>
+
+  <div>
+
+    <div className="text-sm text-gray-500">
+      Display Price
+    </div>
+
+    <input
+      type="number"
+      value={displayPrice}
+      onChange={(e) =>
+        setDisplayPrice(
+          Number(e.target.value)
+        )
+      }
+      className="
+        w-full
+        border
+        rounded-lg
+        px-3
+        py-2
+      "
+    />
+
+  </div>
+
+</div>
 
             </div>
 
