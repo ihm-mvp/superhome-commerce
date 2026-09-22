@@ -168,15 +168,20 @@ products:package_item_products(
       rooms?.map(r => r.id) || []
     )
 
-    const { data: openings } =
+const { data: openings } =
   await supabase
     .from("layout_openings")
     .select(`
       id,
+      room_name,
       width_mm,
       height_mm,
       opening_code
     `)
+    .eq(
+      "layout_id",
+      pkg.layout_id
+    )
 
 const openingMap:
 Record<string, any> = {}
@@ -188,6 +193,40 @@ openings?.forEach(
 
   }
 )
+
+const { data: sunshineProducts } =
+  await supabase
+    .from("package_opening_products")
+    .select(`
+      id,
+      package_id,
+      opening_id,
+      quantity,
+
+      product:products(
+        id,
+        sku_code,
+        image_url,
+        display_name_en,
+        display_description_en
+      ),
+
+      variant:variants(
+        id,
+        price_rmb,
+        size_label,
+        config,
+        display_config_en,
+        display_note_en,
+        width_mm,
+        length_mm,
+        height_mm
+      )
+    `)
+    .eq(
+      "package_id",
+      pkg.id
+    )
 
   const grouped: Record<string, any[]> = {}
 
@@ -238,6 +277,42 @@ items?.forEach(
   }
 )
 
+sunshineProducts?.forEach(
+  (p: any) => {
+
+    const opening =
+      p.opening_id
+        ? openingMap[p.opening_id]
+        : null
+
+    allocationRows.push({
+
+      pip_id:
+        p.id,
+
+      opening_id:
+        p.opening_id,
+
+      sku_code:
+        p.product?.sku_code || "",
+
+      quantity:
+        p.quantity || 0,
+
+      exw_price_rmb:
+        p.variant?.price_rmb || 0,
+
+      width_mm:
+        opening?.width_mm || null,
+
+      height_mm:
+        opening?.height_mm || null,
+
+    })
+
+  }
+)
+
 const allocation =
   calculatePackageAllocation(
     allocationRows,
@@ -258,39 +333,6 @@ allocation.rows.forEach(
   }
 )
 
-const { data: sunshineProducts } =
-  await supabase
-    .from("package_opening_products")
-    .select(`
-      id,
-      opening_id,
-      quantity,
-
-      product:products(
-        id,
-        sku_code,
-        display_name_en,
-        display_description_en,
-        image_url
-      ),
-
-      variant:variants(
-        id,
-        price_rmb,
-        size_label,
-        config,
-        display_config_en,
-        display_note_en,
-        width_mm,
-        length_mm,
-        height_mm
-      )
-    `)
-    .eq(
-      "package_id",
-      pkg.id
-    )
-
   items?.forEach((i: any) => {
 
     if (!grouped[i.package_room_id]) {
@@ -305,34 +347,45 @@ sunshineProducts?.forEach(
   (p: any) => {
 
     const opening =
-      openingMap[p.opening_id]
+      p.opening_id
+        ? openingMap[p.opening_id]
+        : null
 
     if (!opening) return
 
     const room =
       rooms?.find(
         (r: any) =>
-          String(r.name).trim().toLowerCase() ===
-          String(opening.room_name).trim().toLowerCase()
+          r.name === opening.room_name
       )
 
     if (!room) return
 
-    if (!grouped[room.id]) {
-      grouped[room.id] = []
-    }
-
     const sku =
       p.product?.sku_code || ""
 
-    const itemType =
+    let itemTypeName =
+      "Sunshine"
+
+    if (
       sku.startsWith("SUN-CUR-")
-        ? "Curtain"
-        : sku.startsWith("SUN-TRK-")
-        ? "Track"
-        : sku.startsWith("SUN-BLD-")
-        ? "Blind"
-        : "Sunshine"
+    ) {
+      itemTypeName = "Curtain"
+    }
+    else if (
+      sku.startsWith("SUN-TRK-")
+    ) {
+      itemTypeName = "Track"
+    }
+    else if (
+      sku.startsWith("SUN-BLD-")
+    ) {
+      itemTypeName = "Blind"
+    }
+
+    if (!grouped[room.id]) {
+      grouped[room.id] = []
+    }
 
     grouped[room.id].push({
 
@@ -343,7 +396,8 @@ sunshineProducts?.forEach(
         room.id,
 
       item_type: {
-        name: itemType,
+        name:
+          itemTypeName,
       },
 
       products: [
@@ -375,22 +429,41 @@ const summaryMap: Record<
   number
 > = {}
 
-items?.forEach((item: any) => {
+Object.values(
+  grouped
+).forEach(
+  (roomItems: any[]) => {
 
-  const displayName =
-    item.item_type?.display_name ||
-    item.item_type?.name
+    roomItems.forEach(
+      (item: any) => {
 
-  const qty = item.products?.reduce(
-    (sum: number, p: any) =>
-      sum + (p.quantity || 0),
-    0
-  ) || 0
+        const displayName =
+          item.item_type?.display_name ||
+          item.item_type?.name
 
-  summaryMap[displayName] =
-    (summaryMap[displayName] || 0) + qty
+        if (!displayName) return
 
-})
+        const qty =
+          item.products?.reduce(
+            (
+              sum: number,
+              p: any
+            ) =>
+              sum +
+              (p.quantity || 0),
+            0
+          ) || 0
+
+        summaryMap[displayName] =
+          (
+            summaryMap[displayName] || 0
+          ) + qty
+
+      }
+    )
+
+  }
+)
 
 const packageSummary =
 
