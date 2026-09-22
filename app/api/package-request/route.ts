@@ -26,7 +26,6 @@ export async function POST(
   String(formData.get("visitor_id") || "").trim()
 
     if (
-      !first_name ||
       !email ||
       !package_id
     ) {

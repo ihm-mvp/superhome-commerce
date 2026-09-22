@@ -2,7 +2,8 @@ import { supabase } from "@/lib/supabase"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import PackageViewTracker from "@/components/PackageViewTracker"
-
+import PackageProposalLink
+  from "@/components/PackageProposalLink"
 import {
   calculatePackageAllocation,
 } from "@/lib/package-allocation"
@@ -550,52 +551,13 @@ return (
 
   </div>
 
-<div className="max-w-3xl border rounded-2xl p-5 bg-gray-50">
-
-  <div className="text-sm uppercase tracking-wide text-gray-400">
-    Get Your Package Proposal
-  </div>
-
-  <div className="text-lg font-semibold mt-1">
-    Receive this package proposal by email
-  </div>
-
-  <form
-    action="/api/package-request"
-    method="POST"
-    className="mt-4 flex flex-col sm:flex-row gap-3"
-  >
-
-    <input
-      type="hidden"
-      name="package_id"
-      value={pkg.id}
-    />
-
-    <input
-      type="hidden"
-      name="lead_source"
-      value={src}
-    />
-
-    <input
-      type="email"
-      name="email"
-      required
-      placeholder="Your email address"
-      className="flex-1 border rounded-lg px-4 py-3 bg-white"
-    />
-
-    <button
-      type="submit"
-      className="inline-flex items-center justify-center px-6 py-3 bg-black text-white rounded-lg hover:opacity-90 transition whitespace-nowrap"
-    >
-      Email Me This Package
-    </button>
-
-  </form>
-
-</div>
+<PackageProposalLink
+  slug={pkg.slug}
+  leadSource={src}
+  className="inline-flex items-center px-6 py-3 bg-black text-white rounded-lg hover:opacity-90 transition"
+>
+  Get Package Proposal
+</PackageProposalLink>
 
 </div>
 
@@ -982,59 +944,15 @@ return (
       </div>
 
 {/* ===== CTA ===== */}
+<div className="border-t pt-8 text-center">
 
-<div className="border-t pt-8">
-
-  <div className="max-w-2xl mx-auto border rounded-2xl p-6 bg-gray-50">
-
-    <div className="text-center">
-
-      <div className="text-2xl font-semibold">
-        Get Your Package Proposal
-      </div>
-
-      <div className="text-gray-600 mt-2">
-        Receive this package proposal by email.
-      </div>
-
-    </div>
-
-    <form
-      action="/api/package-request"
-      method="POST"
-      className="mt-5 flex flex-col sm:flex-row gap-3"
-    >
-
-      <input
-        type="hidden"
-        name="package_id"
-        value={pkg.id}
-      />
-
-      <input
-        type="hidden"
-        name="lead_source"
-        value={src}
-      />
-
-      <input
-        type="email"
-        name="email"
-        required
-        placeholder="Your email address"
-        className="flex-1 border rounded-lg px-4 py-3 bg-white"
-      />
-
-      <button
-        type="submit"
-        className="inline-flex items-center justify-center px-8 py-3 bg-black text-white rounded-lg hover:opacity-90 transition whitespace-nowrap"
-      >
-        Email Me This Package
-      </button>
-
-    </form>
-
-  </div>
+<PackageProposalLink
+  slug={pkg.slug}
+  leadSource={src}
+  className="inline-flex items-center px-8 py-3 bg-black text-white rounded-lg hover:opacity-90 transition"
+>
+  Get Package Proposal
+</PackageProposalLink>
 
 </div>
 
