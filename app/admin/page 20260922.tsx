@@ -29,7 +29,12 @@ const [
   proposalToRequestRate: 0,
   packageToRequestRate: 0,
 
-  recentProposals: [],
+  packagePerformance: [],
+
+latestRequest: null,
+latestProposalView: null,
+latestPackageView: null,
+
 })
 
   useEffect(() => {
@@ -101,157 +106,385 @@ const [
 
       </div>
 
+{/* ===================== */}
+{/* Section C */}
+{/* Latest Activity */}
+{/* ===================== */}
+
+<div
+  className="
+    border
+    rounded-xl
+    p-6
+    bg-white
+  "
+>
+
+  <h2
+    className="
+      text-xl
+      font-semibold
+      mb-4
+    "
+  >
+    Latest Activity
+  </h2>
+
+  {loading ? (
+
+    <div
+      className="
+        text-gray-400
+      "
+    >
+      Loading...
+    </div>
+
+  ) : (
+
+    <div
+      className="
+        grid
+        md:grid-cols-3
+        gap-4
+      "
+    >
+
       {/* ===================== */}
-      {/* Section C */}
-      {/* Latest Activity */}
+      {/* Latest Request */}
       {/* ===================== */}
 
       <div
         className="
           border
-          rounded-xl
-          p-6
-          bg-white
+          rounded-lg
+          p-4
         "
       >
 
-        <h2
+        <div
           className="
-            text-xl
-            font-semibold
-            mb-4
+            text-sm
+            text-gray-400
+            mb-3
           "
         >
-          Latest Proposal Requests
-        </h2>
+          Request Proposal
+        </div>
 
-        {loading ? (
+        {stats.latestRequest ? (
 
-          <div
-            className="
-              text-gray-400
-            "
-          >
-            Loading...
-          </div>
+          <>
 
-        ) : (
+            <div className="font-medium">
+              {
+                stats.latestRequest.user
+                  ?.first_name
+              }
+            </div>
+
+            <div
+              className="
+                text-sm
+                text-gray-500
+                mt-1
+              "
+            >
+              {
+                stats.latestRequest.user
+                  ?.email
+              }
+            </div>
+
+            <div
+              className="
+                font-medium
+                mt-3
+              "
+            >
+              {
+                stats.latestRequest.package
+                  ?.name
+              }
+            </div>
 
 <div
   className="
-    grid
-    md:grid-cols-3
-    gap-4
+    text-sm
+    text-gray-400
+    mt-1
   "
 >
+  {
+    stats.latestRequest.package
+      ?.layout?.name
+  }
+</div>
 
-            {stats.recentProposals
-              ?.length === 0 && (
+{stats.latestRequest.package
+  ?.layout?.location && (
 
-              <div
-                className="
-                  text-gray-400
-                "
-              >
-                No proposal requests
-              </div>
+  <div
+    className="
+      text-xs
+      text-gray-400
+      mt-1
+    "
+  >
+    {
+      stats.latestRequest.package
+        ?.layout?.location
+    }
+  </div>
 
-            )}
+)}
 
-            {stats.recentProposals
-  ?.slice(0, 9)
-  .map(
-                (
-                  item: any
-                ) => (
+            <div
+              className="
+                text-xs
+                text-gray-400
+                mt-1
+              "
+            >
+              {
+                stats.latestRequest.created_at
+                  ?.substring(
+                    0,
+                    16
+                  )
+                  .replace("T", " ")
+              }
+            </div>
 
-                  <div
-                    key={item.id}
-                    className="
-                      border
-                      rounded-lg
-                      p-4
-                      flex
-                      justify-between
-                      items-center
-                    "
-                  >
+          </>
 
-                    <div
-                      className="
-                        space-y-1
-                      "
-                    >
+        ) : (
 
-                      <div
-                        className="
-                          font-medium
-                        "
-                      >
-                        {
-                          item.user
-                            ?.first_name
-                        }
-                      </div>
-
-                      <div
-                        className="
-                          text-sm
-                          text-gray-500
-                        "
-                      >
-                        {
-                          item.user
-                            ?.email
-                        }
-                      </div>
-
-                    </div>
-
-                    <div
-                      className="
-                        text-right
-                      "
-                    >
-
-                      <div
-                        className="
-                          font-medium
-                        "
-                      >
-                        {
-                          item.package
-                            ?.name
-                        }
-                      </div>
-
-                      <div
-                        className="
-                          text-xs
-                          text-gray-400
-                        "
-                      >
-                        {
-                          item.created_at
-                            ?.substring(
-                              0,
-                              10
-                            )
-                        }
-                      </div>
-
-                    </div>
-
-                  </div>
-
-                )
-              )}
-
+          <div className="text-gray-400">
+            No request yet
           </div>
 
         )}
 
       </div>
+
+
+      {/* ===================== */}
+      {/* Latest Proposal View */}
+      {/* ===================== */}
+
+      <div
+        className="
+          border
+          rounded-lg
+          p-4
+        "
+      >
+
+        <div
+          className="
+            text-sm
+            text-gray-400
+            mb-3
+          "
+        >
+          Proposal View
+        </div>
+
+        {stats.latestProposalView ? (
+
+          <>
+
+            <div className="font-medium">
+              {
+                stats.latestProposalView.package
+                  ?.name
+              }
+            </div>
+
+            <div
+  className="
+    text-sm
+    text-gray-400
+    mt-1
+  "
+>
+  {
+    stats.latestProposalView.package
+      ?.layout?.name
+  }
+</div>
+
+{stats.latestProposalView.package
+  ?.layout?.location && (
+
+  <div
+    className="
+      text-xs
+      text-gray-400
+      mt-1
+    "
+  >
+    {
+      stats.latestProposalView.package
+        ?.layout?.location
+    }
+  </div>
+
+)}
+
+            <div
+              className="
+                text-sm
+                text-gray-500
+                mt-1
+              "
+            >
+              {
+                stats.latestProposalView.lead_source
+              }
+            </div>
+
+            <div
+              className="
+                text-xs
+                text-gray-400
+                mt-3
+              "
+            >
+              {
+                stats.latestProposalView.created_at
+                  ?.substring(
+                    0,
+                    16
+                  )
+                  .replace("T", " ")
+              }
+            </div>
+
+          </>
+
+        ) : (
+
+          <div className="text-gray-400">
+            No proposal view yet
+          </div>
+
+        )}
+
+      </div>
+
+
+      {/* ===================== */}
+      {/* Latest Package View */}
+      {/* ===================== */}
+
+      <div
+        className="
+          border
+          rounded-lg
+          p-4
+        "
+      >
+
+        <div
+          className="
+            text-sm
+            text-gray-400
+            mb-3
+          "
+        >
+          Package View
+        </div>
+
+        {stats.latestPackageView ? (
+
+          <>
+
+            <div className="font-medium">
+              {
+                stats.latestPackageView.package
+                  ?.name
+              }
+            </div>
+
+            <div
+  className="
+    text-sm
+    text-gray-400
+    mt-1
+  "
+>
+  {
+    stats.latestPackageView.package
+      ?.layout?.name
+  }
+</div>
+
+{stats.latestPackageView.package
+  ?.layout?.location && (
+
+  <div
+    className="
+      text-xs
+      text-gray-400
+      mt-1
+    "
+  >
+    {
+      stats.latestPackageView.package
+        ?.layout?.location
+    }
+  </div>
+
+)}
+
+            <div
+              className="
+                text-sm
+                text-gray-500
+                mt-1
+              "
+            >
+              {
+                stats.latestPackageView.lead_source
+              }
+            </div>
+
+            <div
+              className="
+                text-xs
+                text-gray-400
+                mt-3
+              "
+            >
+              {
+                stats.latestPackageView.viewed_at
+                  ?.substring(
+                    0,
+                    16
+                  )
+                  .replace("T", " ")
+              }
+            </div>
+
+          </>
+
+        ) : (
+
+          <div className="text-gray-400">
+            No package view yet
+          </div>
+
+        )}
+
+      </div>
+
+    </div>
+
+  )}
+
+</div>
 
       {/* ===================== */}
       {/* Section B */}
@@ -644,6 +877,247 @@ const [
           </div>
 
         </div>
+
+      {/* ===================== */}
+      {/* Package Performance */}
+      {/* ===================== */}
+
+      <div>
+
+        <h2
+          className="
+            text-xl
+            font-semibold
+            mb-4
+          "
+        >
+          Package Performance
+        </h2>
+
+        <div
+          className="
+            border
+            rounded-xl
+            bg-white
+            overflow-x-auto
+          "
+        >
+
+          <table className="w-full text-sm">
+
+            <thead>
+
+              <tr
+                className="
+                  border-b
+                  text-gray-500
+                "
+              >
+
+                <th
+                  className="
+                    text-left
+                    p-4
+                    font-medium
+                  "
+                >
+                  Package
+                </th>
+
+                <th
+                  className="
+                    text-right
+                    p-4
+                    font-medium
+                  "
+                >
+                  Views
+                </th>
+
+                <th
+                  className="
+                    text-right
+                    p-4
+                    font-medium
+                  "
+                >
+                  Unique Visitors
+                </th>
+
+                <th
+                  className="
+                    text-right
+                    p-4
+                    font-medium
+                  "
+                >
+                  Proposal Views
+                </th>
+
+                <th
+                  className="
+                    text-right
+                    p-4
+                    font-medium
+                  "
+                >
+                  Requests
+                </th>
+
+                <th
+                  className="
+                    text-right
+                    p-4
+                    font-medium
+                  "
+                >
+                  View → Proposal
+                </th>
+
+                <th
+                  className="
+                    text-right
+                    p-4
+                    font-medium
+                  "
+                >
+                  View → Request
+                </th>
+
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+{stats.packagePerformance
+  ?.slice()
+  .sort(
+    (a: any, b: any) =>
+      b.requests - a.requests ||
+      b.proposalViews - a.proposalViews ||
+      b.uniqueVisitors - a.uniqueVisitors ||
+      b.views - a.views
+  )
+  .map(
+    (item: any) => (
+
+                    <tr
+                      key={item.id}
+                      className="
+                        border-b
+                        last:border-b-0
+                      "
+                    >
+
+<td
+  className="
+    p-4
+  "
+>
+
+  <div className="font-medium">
+    {item.name}
+  </div>
+
+  <div className="text-sm text-gray-400 mt-1">
+    {item.layoutName}
+  </div>
+
+  {item.layoutLocation && (
+    <div className="text-xs text-gray-400 mt-1">
+      {item.layoutLocation}
+    </div>
+  )}
+
+</td>
+
+                      <td
+                        className="
+                          p-4
+                          text-right
+                        "
+                      >
+                        {item.views}
+                      </td>
+
+                      <td
+                        className="
+                          p-4
+                          text-right
+                        "
+                      >
+                        {item.uniqueVisitors}
+                      </td>
+
+                      <td
+                        className="
+                          p-4
+                          text-right
+                        "
+                      >
+                        {item.proposalViews}
+                      </td>
+
+                      <td
+                        className="
+                          p-4
+                          text-right
+                        "
+                      >
+                        {item.requests}
+                      </td>
+
+                      <td
+                        className="
+                          p-4
+                          text-right
+                        "
+                      >
+                        {item.viewToProposalRate}%
+                      </td>
+
+                      <td
+                        className="
+                          p-4
+                          text-right
+                        "
+                      >
+                        {item.viewToRequestRate}%
+                      </td>
+
+                    </tr>
+
+                  )
+                )}
+
+              {stats.packagePerformance
+                ?.length === 0 && (
+
+                <tr>
+
+                  <td
+                    colSpan={7}
+                    className="
+                      p-6
+                      text-center
+                      text-gray-400
+                    "
+                  >
+                    No package data
+                  </td>
+
+                </tr>
+
+              )}
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
 
       {/* ===================== */}
       {/* Section A */}
