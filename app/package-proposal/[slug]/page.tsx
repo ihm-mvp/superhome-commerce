@@ -312,7 +312,8 @@ sunshineProducts?.forEach(
     const room =
       rooms?.find(
         (r: any) =>
-          r.name === opening.room_name
+          String(r.name).trim().toLowerCase() ===
+          String(opening.room_name).trim().toLowerCase()
       )
 
     if (!room) return
@@ -320,6 +321,18 @@ sunshineProducts?.forEach(
     if (!grouped[room.id]) {
       grouped[room.id] = []
     }
+
+    const sku =
+      p.product?.sku_code || ""
+
+    const itemType =
+      sku.startsWith("SUN-CUR-")
+        ? "Curtain"
+        : sku.startsWith("SUN-TRK-")
+        ? "Track"
+        : sku.startsWith("SUN-BLD-")
+        ? "Blind"
+        : "Sunshine"
 
     grouped[room.id].push({
 
@@ -330,14 +343,7 @@ sunshineProducts?.forEach(
         room.id,
 
       item_type: {
-        name:
-          p.product?.sku_code?.startsWith("SUN-CUR-")
-            ? "Curtain"
-            : p.product?.sku_code?.startsWith("SUN-TRK-")
-            ? "Track"
-            : p.product?.sku_code?.startsWith("SUN-BLD-")
-            ? "Blind"
-            : "Sunshine",
+        name: itemType,
       },
 
       products: [
