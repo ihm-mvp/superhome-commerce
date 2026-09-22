@@ -156,36 +156,6 @@ openings?.forEach(
   }
 )
 
-const { data: sunshineProducts } =
-  await supabase
-    .from("package_opening_products")
-    .select(`
-      id,
-      opening_id,
-      quantity,
-
-      product:products(
-        id,
-        sku_code,
-        image_url,
-        display_name_en,
-        display_description_en
-      ),
-
-      variant:variants(
-        id,
-        price_rmb,
-        size_label,
-        config,
-        display_config_en,
-        display_note_en,
-        width_mm,
-        length_mm,
-        height_mm
-      )
-    `)
-    .eq("package_id", pkg.id)
-
   const grouped: Record<string, any[]> = {}
 
   const allocationRows: any[] = []
@@ -235,41 +205,6 @@ items?.forEach(
   }
 )
 
-sunshineProducts?.forEach(
-  (p: any) => {
-
-    const opening =
-      p.opening_id
-        ? openingMap[p.opening_id]
-        : null
-
-    allocationRows.push({
-
-      pip_id: p.id,
-
-      opening_id:
-        p.opening_id,
-
-      sku_code:
-        p.product?.sku_code || "",
-
-      quantity:
-        p.quantity || 0,
-
-      exw_price_rmb:
-        p.variant?.price_rmb || 0,
-
-      width_mm:
-        opening?.width_mm || null,
-
-      height_mm:
-        opening?.height_mm || null,
-
-    })
-
-  }
-)
-
 const allocation =
   calculatePackageAllocation(
     allocationRows,
@@ -299,69 +234,6 @@ allocation.rows.forEach(
     grouped[i.package_room_id].push(i)
 
   })
-
-  sunshineProducts?.forEach(
-  (p: any) => {
-
-    const opening =
-      p.opening_id
-        ? openingMap[p.opening_id]
-        : null
-
-    if (!opening) return
-
-    const room =
-      rooms?.find(
-        (r: any) =>
-          r.name === opening.room_name
-      )
-
-    if (!room) return
-
-    if (!grouped[room.id]) {
-      grouped[room.id] = []
-    }
-
-    grouped[room.id].push({
-
-      id:
-        `sunshine-${p.id}`,
-
-      package_room_id:
-        room.id,
-
-      item_type: {
-        name:
-          p.product?.sku_code
-            ?.startsWith("SUN-TRK-")
-            ? "TRACK"
-            : "CURTAIN",
-
-      },
-
-      products: [
-        {
-          id:
-            p.id,
-
-          quantity:
-            p.quantity,
-
-          opening_id:
-            p.opening_id,
-
-          product:
-            p.product,
-
-          variant:
-            p.variant,
-        },
-      ],
-
-    })
-
-  }
-)
 
 const summaryMap: Record<
   string,
