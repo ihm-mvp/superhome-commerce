@@ -592,7 +592,7 @@ return (
 
   <p className="text-gray-600 mt-3">
     Enter your email and we'll send you the complete
-    package PDF — free.
+    package PDF — FREE.
   </p >
 
   <form
@@ -641,7 +641,7 @@ return (
 </div>
 
       {/* ===== Package切换 ===== */}
-      <div className="flex gap-3 flex-wrap">
+      <div className="flex gap-3 flex-wrap justify-center">
 
         {allPackages?.map((p: any) => (
           <Link
@@ -662,7 +662,7 @@ return (
 
 {/* ===== Room Navigation ===== */}
 
-<div className="flex flex-wrap gap-2">
+<div className="flex flex-wrap gap-2 justify-center">
 
   {rooms?.map((room: any) => (
 
@@ -951,60 +951,61 @@ return (
 
       </div>
 
-{/* ===== CTA ===== */}
+{/* ===== Email CTA ===== */}
 
-<div className="border-t pt-8">
+<div className="border rounded-2xl p-8 max-w-2xl mx-auto text-center">
 
-  <div className="max-w-2xl mx-auto border rounded-2xl p-6 bg-gray-50">
+  <h2 className="text-2xl font-semibold">
+    Want the Complete Package?
+  </h2>
 
-    <div className="text-center">
+  <p className="text-gray-600 mt-3">
+    Enter your email and we'll send you the complete
+    package PDF — FREE.
+  </p >
 
-      <div className="text-2xl font-semibold">
-        Get Your Package Proposal
-      </div>
+  <form
+    action="/api/package-request"
+    method="POST"
+    className="mt-6 space-y-3"
+  >
 
-      <div className="text-gray-600 mt-2">
-        Receive this package proposal by email.
-      </div>
+    <input
+      type="hidden"
+      name="package_id"
+      value={pkg.id}
+    />
 
-    </div>
+    <input
+      type="hidden"
+      name="lead_source"
+      value={src}
+    />
 
-    <form
-      action="/api/package-request"
-      method="POST"
-      className="mt-5 flex flex-col sm:flex-row gap-3"
+    <input
+      type="email"
+      name="email"
+      required
+      placeholder="Your email address"
+      className="w-full border rounded-lg px-4 py-3"
+    />
+
+    <button
+      type="submit"
+      className="
+        w-full
+        bg-black
+        text-white
+        py-3
+        rounded-lg
+        hover:opacity-90
+        transition
+      "
     >
+      Email Me This Package
+    </button>
 
-      <input
-        type="hidden"
-        name="package_id"
-        value={pkg.id}
-      />
-
-      <input
-        type="hidden"
-        name="lead_source"
-        value={src}
-      />
-
-      <input
-        type="email"
-        name="email"
-        required
-        placeholder="Your email address"
-        className="flex-1 border rounded-lg px-4 py-3 bg-white"
-      />
-
-      <button
-        type="submit"
-        className="inline-flex items-center justify-center px-8 py-3 bg-black text-white rounded-lg hover:opacity-90 transition whitespace-nowrap"
-      >
-        Email Me This Package
-      </button>
-
-    </form>
-
-  </div>
+  </form>
 
 </div>
 
