@@ -479,67 +479,129 @@ return (
       leadSource={src}
     />
 
-{/* ===== Package Hero ===== */}
+      {/* ===== SEO Heading ===== */}
+      <div className="space-y-3">
 
-<div className="space-y-8 text-center">
+        <div className="text-sm uppercase tracking-wide text-gray-400">
+          Move-In Ready Furniture Package
+        </div>
 
-  <div className="space-y-3">
+        <h1 className="text-3xl md:text-4xl font-semibold leading-tight">
+          {pkg.name} Package
+        </h1>
 
-    <div className="text-sm uppercase tracking-wide text-gray-400">
-      Move-In Ready Furniture Package
+        {pkg.display_price && (
+          <div className="text-xl text-gray-600">
+            Fully furnished from ${pkg.display_price}
+          </div>
+        )}
+
+<div className="text-gray-500 max-w-2xl leading-relaxed">
+  Fully furnished furniture package designed for{" "}
+  {layout.name}. Explore a complete move-in ready
+  setup for modern New Zealand living, including living,
+  dining and bedroom furniture selections.
+</div>
+
+<div className="space-y-4 pt-2">
+
+  <div className="border rounded-2xl p-5 bg-gray-50 max-w-3xl">
+
+    <div className="text-xs uppercase tracking-wide text-gray-400">
+      Move-In Ready Showhome
     </div>
 
-    <h1 className="text-3xl md:text-4xl font-semibold leading-tight">
-      {pkg.name} Package
-    </h1>
+    <div className="text-2xl font-semibold mt-1">
+      {layout.name}
+    </div>
 
-    {pkg.display_price && (
-      <div className="text-xl text-gray-600">
-        Fully furnished from ${pkg.display_price}
+    {layout.location && (
+      <div className="text-gray-500 mt-2">
+        {layout.location}
       </div>
     )}
 
-    <div className="text-gray-500 max-w-2xl mx-auto leading-relaxed">
-      A complete furniture solution designed around the{" "}
-      {layout.name} floor plan, helping you create a
-      comfortable, coordinated home ready to move in.
-    </div>
+    <div className="text-gray-500 mt-2">
 
-  </div>
+      {layout.bedrooms}
+      {" Bed"}
 
-  {/* ===== Benefits ===== */}
+      {" · "}
 
-  <div className="max-w-4xl mx-auto border rounded-2xl p-6 bg-gray-50 text-left">
+      {layout.bathrooms}
+      {" Bath"}
 
-    <h2 className="text-2xl font-semibold mb-5 text-center">
-      Why Choose This Package
-    </h2>
+      {" · "}
 
-    <div className="grid md:grid-cols-2 gap-4 text-gray-700">
+      {layout.garage}
+      {" Garage"}
 
-      <div>
-        ✓ Designed around your home layout
-      </div>
+            {" · "}
 
-      <div>
-        ✓ Complete living, dining and bedroom solution
-      </div>
+      {layout.floor_size}
+      {" Floor"}
 
-      <div>
-        ✓ Coordinated furniture selection
-      </div>
+      {" · "}
 
-      <div>
-        ✓ Delivery and installation included
-      </div>
+      {layout.land_size}
+      {" Land"}
 
     </div>
 
   </div>
+
+<div className="max-w-3xl border rounded-2xl p-5 bg-gray-50">
+
+  <div className="text-sm uppercase tracking-wide text-gray-400">
+    Get Your Package Proposal
+  </div>
+
+  <div className="text-lg font-semibold mt-1">
+    Receive this package proposal by email
+  </div>
+
+  <form
+    action="/api/package-request"
+    method="POST"
+    className="mt-4 flex flex-col sm:flex-row gap-3"
+  >
+
+    <input
+      type="hidden"
+      name="package_id"
+      value={pkg.id}
+    />
+
+    <input
+      type="hidden"
+      name="lead_source"
+      value={src}
+    />
+
+    <input
+      type="email"
+      name="email"
+      required
+      placeholder="Your email address"
+      className="flex-1 border rounded-lg px-4 py-3 bg-white"
+    />
+
+    <button
+      type="submit"
+      className="inline-flex items-center justify-center px-6 py-3 bg-black text-white rounded-lg hover:opacity-90 transition whitespace-nowrap"
+    >
+      Email Me This Package
+    </button>
+
+  </form>
 
 </div>
 
-{/* ===== What's Included ===== */}
+</div>
+
+      </div>
+
+{/* ===== Furniture Summary ===== */}
 
 <div
   className="
@@ -547,18 +609,33 @@ return (
     rounded-2xl
     p-5
     max-w-4xl
-    mx-auto
   "
 >
 
-  <div className="font-semibold text-lg mb-4 text-center">
-    What's Included
+  <div
+    className="
+      font-semibold
+      text-lg
+      mb-4
+    "
+  >
+    Furniture Included
   </div>
 
-  <div className="flex flex-wrap gap-3 justify-center">
+  <div
+    className="
+      flex
+      flex-wrap
+      gap-3
+    "
+  >
 
-    {Object.entries(summary).map(
-      ([name, qty]) => (
+    {Object.entries(
+      summary
+    ).map(
+      (
+        [name, qty]
+      ) => (
 
         <div
           key={name}
@@ -582,64 +659,6 @@ return (
 
 </div>
 
-{/* ===== Email CTA ===== */}
-
-<div className="border rounded-2xl p-8 max-w-2xl mx-auto text-center">
-
-  <h2 className="text-2xl font-semibold">
-    Want the Complete Package?
-  </h2>
-
-  <p className="text-gray-600 mt-3">
-    Enter your email and we'll send you the complete
-    package PDF — free.
-  </p >
-
-  <form
-    action="/api/package-request"
-    method="POST"
-    className="mt-6 space-y-3"
-  >
-
-    <input
-      type="hidden"
-      name="package_id"
-      value={pkg.id}
-    />
-
-    <input
-      type="hidden"
-      name="lead_source"
-      value={src}
-    />
-
-    <input
-      type="email"
-      name="email"
-      required
-      placeholder="Your email address"
-      className="w-full border rounded-lg px-4 py-3"
-    />
-
-    <button
-      type="submit"
-      className="
-        w-full
-        bg-black
-        text-white
-        py-3
-        rounded-lg
-        hover:opacity-90
-        transition
-      "
-    >
-      Email Me This Package
-    </button>
-
-  </form>
-
-</div>
-
       {/* ===== Package切换 ===== */}
       <div className="flex gap-3 flex-wrap">
 
@@ -657,6 +676,17 @@ return (
             {p.name}
           </Link>
         ))}
+
+      </div>
+
+      {/* ===== Hero Image ===== */}
+      <div className="space-y-3">
+
+        <img
+          src={`/packages/${layoutSlug}_${packageType}_overview.jpg`}
+          className="w-full rounded-2xl border"
+          loading="lazy"
+        />
 
       </div>
 
