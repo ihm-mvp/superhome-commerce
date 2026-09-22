@@ -140,6 +140,7 @@ products:package_item_products(
     .from("layout_openings")
     .select(`
       id,
+      room_name,
       opening_code,
       width_mm,
       height_mm
@@ -161,7 +162,10 @@ const { data: sunshineProducts } =
     .from("package_opening_products")
     .select(`
       id,
+      package_id,
       opening_id,
+      product_id,
+      variant_id,
       quantity,
 
       product:products(
@@ -184,7 +188,10 @@ const { data: sunshineProducts } =
         height_mm
       )
     `)
-    .eq("package_id", pkg.id)
+    .eq(
+      "package_id",
+      pkg.id
+    )
 
   const grouped: Record<string, any[]> = {}
 
@@ -240,12 +247,15 @@ sunshineProducts?.forEach(
 
     const opening =
       p.opening_id
-        ? openingMap[p.opening_id]
+        ? openingMap[
+            p.opening_id
+          ]
         : null
 
     allocationRows.push({
 
-      pip_id: p.id,
+      pip_id:
+        p.id,
 
       opening_id:
         p.opening_id,
@@ -300,29 +310,48 @@ allocation.rows.forEach(
 
   })
 
-  sunshineProducts?.forEach(
+sunshineProducts?.forEach(
   (p: any) => {
 
     const opening =
       p.opening_id
-        ? openingMap[p.opening_id]
+        ? openingMap[
+            p.opening_id
+          ]
         : null
 
-    if (!opening) return
+    if (!opening?.room_name) return
 
     const room =
       rooms?.find(
         (r: any) =>
-          r.name === opening.room_name
+          r.name ===
+          opening.room_name
       )
 
     if (!room) return
 
-    if (!grouped[room.id]) {
-      grouped[room.id] = []
+    let displayName =
+      "Sunshine"
+
+    if (
+      p.product?.sku_code
+        ?.startsWith("SUN-CUR-")
+    ) {
+      displayName = "Curtain"
+    } else if (
+      p.product?.sku_code
+        ?.startsWith("SUN-TRK-")
+    ) {
+      displayName = "Track"
+    } else if (
+      p.product?.sku_code
+        ?.startsWith("SUN-BLD-")
+    ) {
+      displayName = "Blind"
     }
 
-    grouped[room.id].push({
+    const sunshineItem = {
 
       id:
         `sunshine-${p.id}`,
@@ -331,21 +360,23 @@ allocation.rows.forEach(
         room.id,
 
       item_type: {
+
         name:
-          p.product?.sku_code
-            ?.startsWith("SUN-TRK-")
-            ? "TRACK"
-            : "CURTAIN",
+          displayName,
+
+        display_name:
+          displayName,
 
       },
 
       products: [
         {
+
           id:
             p.id,
 
           quantity:
-            p.quantity,
+            p.quantity || 1,
 
           opening_id:
             p.opening_id,
@@ -355,10 +386,20 @@ allocation.rows.forEach(
 
           variant:
             p.variant,
-        },
+
+        }
+
       ],
 
-    })
+    }
+
+    if (!grouped[room.id]) {
+      grouped[room.id] = []
+    }
+
+    grouped[room.id].push(
+      sunshineItem
+    )
 
   }
 )
@@ -384,6 +425,45 @@ items?.forEach((item: any) => {
     (summaryMap[displayName] || 0) + qty
 
 })
+
+sunshineProducts?.forEach(
+  (p: any) => {
+
+    let displayName =
+      "Sunshine"
+
+    if (
+      p.product?.sku_code
+        ?.startsWith("SUN-CUR-")
+    ) {
+
+      displayName =
+        "Curtain"
+
+    } else if (
+      p.product?.sku_code
+        ?.startsWith("SUN-TRK-")
+    ) {
+
+      displayName =
+        "Track"
+
+    } else if (
+      p.product?.sku_code
+        ?.startsWith("SUN-BLD-")
+    ) {
+
+      displayName =
+        "Blind"
+
+    }
+
+    summaryMap[displayName] =
+      (summaryMap[displayName] || 0) +
+      (p.quantity || 0)
+
+  }
+)
 
 const packageSummary =
   Object.entries(summaryMap)
