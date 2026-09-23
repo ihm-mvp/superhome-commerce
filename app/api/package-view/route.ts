@@ -26,6 +26,7 @@ export async function POST(
 
 const TEST_VISITOR_IDS = new Set([
   "6a14cce3-31fb-48da-8273-e498861271f4",
+  "c1ca2b39-a3d7-476e-95da-e21ba0a1297e",
 ])
 
 if (
