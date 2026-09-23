@@ -20,24 +20,6 @@ export async function POST(
       user_agent,
     } = await req.json()
 
-    // =========================
-// Test Visitor Whitelist
-// =========================
-
-const TEST_VISITOR_IDS = new Set([
-  "6a14cce3-31fb-48da-8273-e498861271f4",
-])
-
-if (
-  visitor_id &&
-  TEST_VISITOR_IDS.has(visitor_id)
-) {
-  return NextResponse.json({
-    success: true,
-    tracked: false,
-  })
-}
-
     const {
       error,
     } = await supabase
