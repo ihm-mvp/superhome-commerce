@@ -660,31 +660,6 @@ return (
 
       </div>
 
-{/* ===== Room Navigation ===== */}
-
-<div className="flex flex-wrap gap-2 justify-center">
-
-  {rooms?.map((room: any) => (
-
-    <a
-      key={room.id}
-      href={`#room-${room.id}`}
-      className="
-        px-3
-        py-2
-        border
-        rounded-lg
-        text-sm
-        hover:bg-gray-50
-      "
-    >
-      {room.name}
-    </a >
-
-  ))}
-
-</div>
-
 {/* ===== Rooms ===== */}
 
 <div className="space-y-14">
