@@ -21,7 +21,8 @@ export async function generateMetadata({
       floor_size,
       land_size,
       builder_name,
-      hero_exterior_image
+      hero_exterior_image,
+      virtual_showhome_iframe
     `)
     .eq("slug", slug)
     .single()
@@ -90,7 +91,8 @@ const { data: layout } = await supabase
     description,
     hero_exterior_image,
     floorplan_image,
-    floorplan_highlights
+    floorplan_highlights,
+    virtual_showhome_iframe
   `)
   .eq("slug", slug)
   .single()
@@ -277,6 +279,45 @@ const { data: files } = await supabase
         </div>
 
       </div>
+
+{/* ===== VIRTUAL SHOWHOME ===== */}
+{layout.virtual_showhome_iframe && (
+  <section className="space-y-6">
+
+    <div className="space-y-1">
+      <h2 className="text-2xl font-semibold">
+        Explore This Home in 3D
+      </h2>
+
+      <p className="text-sm text-gray-400">
+        Take a virtual walkthrough and explore the spaces of this home.
+      </p >
+    </div>
+
+    <div className="overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-sm">
+      <div
+        className="relative w-full"
+        style={{ height: "75vh", minHeight: "600px" }}
+      >
+        <iframe
+          src={layout.virtual_showhome_iframe}
+          title={`${layout.name} Virtual Showhome`}
+          width="100%"
+          height="100%"
+          frameBorder="0"
+          allowFullScreen
+          style={{
+            display: "block",
+            width: "100%",
+            height: "100%",
+            border: "none",
+          }}
+        />
+      </div>
+    </div>
+
+  </section>
+)}
 
       {/* ===== PACKAGES ===== */}
       {packages && packages.length > 0 && (

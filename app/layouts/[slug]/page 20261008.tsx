@@ -130,6 +130,7 @@ const { data: files } = await supabase
               "/earlsbrook-hero-exterior-image.jpg"
             }
             className="w-full object-cover"
+            loading="lazy"
           />
         </div>
 
@@ -171,7 +172,7 @@ const { data: files } = await supabase
 
               {layout.floor_size && (
                 <div className="border rounded-lg px-4 py-2">
-                  {layout.floor_size}
+                  {layout.floor_size} Floor
                 </div>
               )}
 
@@ -286,7 +287,7 @@ const { data: files } = await supabase
             <div className="space-y-1">
 
               <h2 className="text-2xl font-semibold">
-                Furniture Packages
+                Move-in Ready Packages
               </h2>
 
               <div className="text-sm text-gray-400">
@@ -309,6 +310,7 @@ const { data: files } = await supabase
                   key={pkg.id}
                   href={`/packages/${pkg.slug}`}
                   className="border rounded-2xl overflow-hidden hover:shadow-lg transition bg-white"
+                  prefetch={false}
                 >
 
                   {/* Hero */}
@@ -317,6 +319,7 @@ const { data: files } = await supabase
                     <img
                       src={`/packages/${slug}_${packageType}_overview.jpg`}
                       className="w-full h-full object-cover hover:scale-[1.02] transition"
+                      loading="lazy"
                     />
 
                   </div>
@@ -338,7 +341,7 @@ const { data: files } = await supabase
 
                     {pkg.display_price && (
                       <div className="text-sm text-gray-600">
-                        From ${pkg.display_price} NZD
+                        Fully furnished from ${pkg.display_price}
                       </div>
                     )}
 
@@ -381,6 +384,7 @@ const { data: files } = await supabase
               <img
                 src={layout.floorplan_image}
                 className="rounded-2xl border"
+                loading="lazy"
               />
 
             </div>
