@@ -99,6 +99,9 @@ const { data: layout } = await supabase
 
   if (!layout) return notFound()
 
+  const virtualShowhomeSrc =
+  layout.virtual_showhome_iframe?.match(/src=["']([^"']+)["']/i)?.[1] ?? null
+
   // ===== Packages =====
   const { data: packages } = await supabase
     .from("packages")
@@ -281,7 +284,7 @@ const { data: files } = await supabase
       </div>
 
 {/* ===== VIRTUAL SHOWHOME ===== */}
-{layout.virtual_showhome_iframe && (
+{virtualShowhomeSrc && (
   <section className="space-y-6">
 
     <div className="space-y-1">
@@ -297,10 +300,13 @@ const { data: files } = await supabase
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-sm">
       <div
         className="relative w-full"
-        style={{ height: "75vh", minHeight: "600px" }}
+        style={{
+          height: "75vh",
+          minHeight: "600px",
+        }}
       >
         <iframe
-          src={layout.virtual_showhome_iframe}
+          src={virtualShowhomeSrc}
           title={`${layout.name} Virtual Showhome`}
           width="100%"
           height="100%"
