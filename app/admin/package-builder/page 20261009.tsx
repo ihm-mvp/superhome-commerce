@@ -320,12 +320,6 @@ return
 
                 location,
 
-                  builder_name:
-    builderName,
-
-  floorplan_highlights:
-    floorplanHighlights,
-
                 bedrooms: Number(bedrooms),
 
                 bathrooms: Number(bathrooms),
