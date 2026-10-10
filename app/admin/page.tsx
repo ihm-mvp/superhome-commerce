@@ -10,6 +10,8 @@ export default function AdminDashboard() {
     setLoading,
   ] = useState(true)
 
+  const [selectedPeriod, setSelectedPeriod] = useState("30d")
+
 const [
   stats,
   setStats,
@@ -35,22 +37,25 @@ latestRequest: null,
 
 latestPackageView: null,
 
+trend: [],
+
 })
 
-  useEffect(() => {
+useEffect(() => {
+  loadDashboard(selectedPeriod)
+}, [selectedPeriod])
 
-    loadDashboard()
-
-  }, [])
-
-  async function loadDashboard() {
+async function loadDashboard(period: string) {
 
     try {
 
-      const res =
-        await fetch(
-          "/api/admin/dashboard"
-        )
+const res = await fetch(
+  `/api/admin/dashboard?period=${period}`
+)
+
+if (!res.ok) {
+  throw new Error("Failed to load dashboard data")
+}
 
       const data =
         await res.json()
@@ -68,6 +73,23 @@ latestPackageView: null,
     }
 
   }
+
+  const trendData = stats.trend || []
+
+const maxViews = Math.max(
+  1,
+  ...trendData.map((item: any) => item.views)
+)
+
+const maxRequests = Math.max(
+  1,
+  ...trendData.map((item: any) => item.requests)
+)
+
+const trendLabelStep = Math.max(
+  1,
+  Math.ceil(trendData.length / 10)
+)
 
   return (
 
@@ -635,7 +657,7 @@ latestPackageView: null,
         text-gray-500
       "
     >
-      Package → Request
+      Package Visitor → Request Visitor
     </div>
 
     <div
@@ -658,15 +680,173 @@ latestPackageView: null,
 
       <div>
 
-        <h2
-          className="
-            text-xl
-            font-semibold
-            mb-4
-          "
-        >
-          Package Performance
-        </h2>
+<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+
+  <h2 className="text-xl font-semibold">
+    Package Performance
+  </h2>
+
+  <select
+    value={selectedPeriod}
+    onChange={(event) => setSelectedPeriod(event.target.value)}
+    className="border rounded-lg px-3 py-2 text-sm bg-white"
+    aria-label="Select performance date range"
+  >
+    <option value="7d">Last 7 Days</option>
+    <option value="30d">Last 30 Days</option>
+    <option value="90d">Last 90 Days</option>
+    <option value="all">All Time</option>
+  </select>
+
+</div>
+
+{/* ===================== */}
+{/* Package Performance Trend */}
+{/* ===================== */}
+
+<div className="border rounded-xl p-6 bg-white mb-6">
+
+  <h3 className="text-lg font-semibold mb-6">
+    Activity Trend
+  </h3>
+
+  {/* Package Views */}
+
+  <div className="mb-8">
+
+    <div className="flex items-center justify-between mb-3">
+      <span className="text-sm text-gray-600">
+        Package Views
+      </span>
+
+      <span className="text-sm font-semibold">
+        {stats.packageViews}
+      </span>
+    </div>
+
+    <div className="overflow-x-auto">
+      <div className="flex items-end gap-1 h-28 min-w-max border-b pb-1">
+
+        {trendData.map((item: any) => (
+
+          <div
+            key={`views-${item.date}`}
+            className="flex flex-col items-center justify-end h-full"
+            style={{ width: "18px" }}
+            title={`${item.date}: ${item.views} views`}
+          >
+
+            <div
+              className="w-3 rounded-t bg-blue-500"
+              style={{
+                height: `${Math.max(
+                  item.views > 0 ? 3 : 0,
+                  (item.views / maxViews) * 100
+                )}%`,
+              }}
+            />
+
+          </div>
+
+        ))}
+
+      </div>
+
+      <div className="flex gap-1 mt-2 min-w-max">
+
+        {trendData.map((item: any, index: number) => (
+
+          <div
+            key={`views-date-${item.date}`}
+            className="text-[10px] text-gray-400 text-center"
+            style={{ width: "18px" }}
+          >
+
+            {index % trendLabelStep === 0 ||
+            index === trendData.length - 1
+              ? item.date.slice(5)
+              : ""}
+
+          </div>
+
+        ))}
+
+      </div>
+    </div>
+
+  </div>
+
+  {/* Proposal Requests */}
+
+  <div>
+
+    <div className="flex items-center justify-between mb-3">
+      <span className="text-sm text-gray-600">
+        Proposal Requests
+      </span>
+
+      <span className="text-sm font-semibold">
+        {stats.proposals}
+      </span>
+    </div>
+
+    <div className="overflow-x-auto">
+      <div className="flex items-end gap-1 h-28 min-w-max border-b pb-1">
+
+        {trendData.map((item: any) => (
+
+          <div
+            key={`requests-${item.date}`}
+            className="flex flex-col items-center justify-end h-full"
+            style={{ width: "18px" }}
+            title={`${item.date}: ${item.requests} requests`}
+          >
+
+            <div
+              className="w-3 rounded-t bg-emerald-500"
+              style={{
+                height: `${Math.max(
+                  item.requests > 0 ? 3 : 0,
+                  (item.requests / maxRequests) * 100
+                )}%`,
+              }}
+            />
+
+          </div>
+
+        ))}
+
+      </div>
+
+      <div className="flex gap-1 mt-2 min-w-max">
+
+        {trendData.map((item: any, index: number) => (
+
+          <div
+            key={`requests-date-${item.date}`}
+            className="text-[10px] text-gray-400 text-center"
+            style={{ width: "18px" }}
+          >
+
+            {index % trendLabelStep === 0 ||
+            index === trendData.length - 1
+              ? item.date.slice(5)
+              : ""}
+
+          </div>
+
+        ))}
+
+      </div>
+    </div>
+
+  </div>
+
+  <div className="text-xs text-gray-400 mt-4">
+    Each bar represents one day. Hover over a bar to see its date and count.
+  </div>
+
+</div>
 
         <div
           className="

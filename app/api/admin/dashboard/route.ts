@@ -1,11 +1,126 @@
 import { supabase } from "@/lib/supabase"
 
-export async function GET() {
+const TIME_ZONE = "Pacific/Auckland"
 
+function getNZDateString(date = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date)
+
+  const values = Object.fromEntries(
+    parts.map((part) => [part.type, part.value])
+  )
+
+  return `${values.year}-${values.month}-${values.day}`
+}
+
+function addDays(dateString: string, days: number) {
+  const [year, month, day] = dateString.split("-").map(Number)
+
+  const date = new Date(
+    Date.UTC(year, month - 1, day + days)
+  )
+
+  return [
+    date.getUTCFullYear(),
+    String(date.getUTCMonth() + 1).padStart(2, "0"),
+    String(date.getUTCDate()).padStart(2, "0"),
+  ].join("-")
+}
+
+// Convert midnight in New Zealand to a UTC timestamp.
+// This also accounts for daylight saving time.
+function getNZMidnightUTC(dateString: string) {
+  const [year, month, day] = dateString.split("-").map(Number)
+
+  const targetUTC = Date.UTC(year, month - 1, day)
+  const guess = new Date(targetUTC)
+
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(guess)
+
+  const values = Object.fromEntries(
+    parts.map((part) => [part.type, part.value])
+  )
+
+  const representedUTC = Date.UTC(
+    Number(values.year),
+    Number(values.month) - 1,
+    Number(values.day),
+    Number(values.hour),
+    Number(values.minute),
+    Number(values.second)
+  )
+
+  return new Date(
+    targetUTC + targetUTC - representedUTC
+  ).toISOString()
+}
+
+function getPeriodRange(period: string) {
+  const today = getNZDateString()
+
+  if (period === "all") {
+    return {
+      startDate: null as string | null,
+      startISO: null as string | null,
+      endISO: null as string | null,
+      today,
+    }
+  }
+
+  const days =
+    period === "7d" ? 7 :
+    period === "90d" ? 90 :
+    30
+
+  const startDate = addDays(today, -(days - 1))
+  const endDate = addDays(today, 1)
+
+  return {
+    startDate,
+    startISO: getNZMidnightUTC(startDate),
+    endISO: getNZMidnightUTC(endDate),
+    today,
+  }
+}
+
+function getEventDate(timestamp: string) {
+  return getNZDateString(new Date(timestamp))
+}
+
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url)
+
+    const requestedPeriod = searchParams.get("period") || "30d"
+
+    const period = ["7d", "30d", "90d", "all"].includes(
+      requestedPeriod
+    )
+      ? requestedPeriod
+      : "30d"
+
+    const {
+      startDate,
+      startISO,
+      endISO,
+      today,
+    } = getPeriodRange(period)
 
     // =========================
-    // Subscribers Count
+    // Subscribers Count: All Time
     // =========================
 
     const {
@@ -18,12 +133,10 @@ export async function GET() {
         head: true,
       })
 
-    if (subscribersError) {
-      throw subscribersError
-    }
+    if (subscribersError) throw subscribersError
 
     // =========================
-    // Users Count
+    // Users Count: All Time
     // =========================
 
     const {
@@ -36,95 +149,163 @@ export async function GET() {
         head: true,
       })
 
-    if (usersError) {
-      throw usersError
-    }
+    if (usersError) throw usersError
 
     // =========================
-    // Proposal Requests Count
+    // Package Views Count
+    // Apply Selected Period
     // =========================
 
-    const {
-      count: proposals,
-      error: proposalsError,
-    } = await supabase
-      .from("package_requests")
+    let packageViewsQuery = supabase
+      .from("package_views")
       .select("*", {
         count: "exact",
         head: true,
       })
 
-    if (proposalsError) {
-      throw proposalsError
+    if (startISO) {
+      packageViewsQuery = packageViewsQuery.gte(
+        "viewed_at",
+        startISO
+      )
     }
 
-    // =========================
-    // Package Views Count
-    // =========================
+    if (endISO) {
+      packageViewsQuery = packageViewsQuery.lt(
+        "viewed_at",
+        endISO
+      )
+    }
 
     const {
       count: packageViews,
       error: packageViewsError,
-    } = await supabase
-      .from("package_views")
+    } = await packageViewsQuery
+
+    if (packageViewsError) throw packageViewsError
+
+    // =========================
+    // Proposal Requests Count
+    // Apply Selected Period
+    // =========================
+
+    let proposalsQuery = supabase
+      .from("package_requests")
       .select("*", {
         count: "exact",
         head: true,
       })
 
-    if (packageViewsError) {
-      throw packageViewsError
+    if (startISO) {
+      proposalsQuery = proposalsQuery.gte(
+        "created_at",
+        startISO
+      )
     }
 
-    // =========================
-    // Unique Package Visitors
-    // =========================
+    if (endISO) {
+      proposalsQuery = proposalsQuery.lt(
+        "created_at",
+        endISO
+      )
+    }
 
     const {
-      data: packageVisitorRows,
-      error: packageVisitorsError,
-    } = await supabase
+      count: proposals,
+      error: proposalsError,
+    } = await proposalsQuery
+
+    if (proposalsError) throw proposalsError
+
+    // =========================
+    // Package View Data
+    // =========================
+
+    let packageViewQuery = supabase
       .from("package_views")
-      .select("visitor_id")
-      .not("visitor_id", "is", null)
+      .select(`
+        package_id,
+        visitor_id,
+        viewed_at
+      `)
 
-    if (packageVisitorsError) {
-      throw packageVisitorsError
+    if (startISO) {
+      packageViewQuery = packageViewQuery.gte(
+        "viewed_at",
+        startISO
+      )
     }
 
-    const uniquePackageVisitors =
-      new Set(
-        packageVisitorRows?.map(
-          (row) => row.visitor_id
-        ) || []
-      ).size
-
-    // =========================
-    // Unique Request Visitors
-    // =========================
+    if (endISO) {
+      packageViewQuery = packageViewQuery.lt(
+        "viewed_at",
+        endISO
+      )
+    }
 
     const {
-      data: requestVisitorRows,
-      error: requestVisitorsError,
-    } = await supabase
-      .from("package_requests")
-      .select("visitor_id")
-      .not("visitor_id", "is", null)
+      data: packageViewRows,
+      error: packageViewRowsError,
+    } = await packageViewQuery
 
-    if (requestVisitorsError) {
-      throw requestVisitorsError
+    if (packageViewRowsError) {
+      throw packageViewRowsError
     }
 
-    const uniqueRequestVisitors =
-      new Set(
-        requestVisitorRows?.map(
-          (row) => row.visitor_id
-        ) || []
-      ).size
+    // =========================
+    // Package Request Data
+    // =========================
+
+    let packageRequestQuery = supabase
+      .from("package_requests")
+      .select(`
+        package_id,
+        visitor_id,
+        created_at
+      `)
+
+    if (startISO) {
+      packageRequestQuery = packageRequestQuery.gte(
+        "created_at",
+        startISO
+      )
+    }
+
+    if (endISO) {
+      packageRequestQuery = packageRequestQuery.lt(
+        "created_at",
+        endISO
+      )
+    }
+
+    const {
+      data: packageRequestRows,
+      error: packageRequestRowsError,
+    } = await packageRequestQuery
+
+    if (packageRequestRowsError) {
+      throw packageRequestRowsError
+    }
+
+    const viewsData = packageViewRows || []
+    const requestsData = packageRequestRows || []
 
     // =========================
-    // Conversion Funnel
+    // Unique Visitors
+    // Within Selected Period
     // =========================
+
+    const uniquePackageVisitors = new Set(
+      viewsData
+        .map((row) => row.visitor_id)
+        .filter(Boolean)
+    ).size
+
+    const uniqueRequestVisitors = new Set(
+      requestsData
+        .map((row) => row.visitor_id)
+        .filter(Boolean)
+    ).size
 
     const packageToRequestRate =
       uniquePackageVisitors > 0
@@ -156,148 +337,117 @@ export async function GET() {
           location
         )
       `)
-      .order(
-        "sort_order",
-        {
-          ascending: true,
-        }
-      )
+      .order("sort_order", {
+        ascending: true,
+      })
 
-    if (packageListError) {
-      throw packageListError
-    }
+    if (packageListError) throw packageListError
 
     // =========================
-    // Package View Data
+    // Package Performance
+    // Within Selected Period
     // =========================
 
-    const {
-      data: packageViewRows,
-      error: packageViewRowsError,
-    } = await supabase
-      .from("package_views")
-      .select(`
-        package_id,
-        visitor_id
-      `)
+    const packagePerformance = (packageList || []).map(
+      (pkg: any) => {
+        const views = viewsData.filter(
+          (row) => row.package_id === pkg.id
+        )
 
-    if (packageViewRowsError) {
-      throw packageViewRowsError
-    }
+        const requests = requestsData.filter(
+          (row) => row.package_id === pkg.id
+        )
 
-    // =========================
-    // Package Request Data
-    // =========================
+        const uniqueVisitors = new Set(
+          views
+            .map((row) => row.visitor_id)
+            .filter(Boolean)
+        ).size
 
-    const {
-      data: packageRequestRows,
-      error: packageRequestRowsError,
-    } = await supabase
-      .from("package_requests")
-      .select(`
-        package_id,
-        visitor_id
-      `)
+        const uniquePackageRequestVisitors = new Set(
+          requests
+            .map((row) => row.visitor_id)
+            .filter(Boolean)
+        ).size
 
-    if (packageRequestRowsError) {
-      throw packageRequestRowsError
-    }
-
-    // =========================
-    // Build Package Performance
-    // =========================
-
-    const packagePerformance =
-      (packageList || []).map(
-        (pkg: any) => {
-
-          const views =
-            (packageViewRows || [])
-              .filter(
-                (row: any) =>
-                  row.package_id === pkg.id
+        const viewToRequestRate =
+          uniqueVisitors > 0
+            ? Number(
+                (
+                  uniquePackageRequestVisitors /
+                  uniqueVisitors *
+                  100
+                ).toFixed(1)
               )
+            : 0
 
-          const requests =
-            (packageRequestRows || [])
-              .filter(
-                (row: any) =>
-                  row.package_id === pkg.id
-              )
+        const layout = Array.isArray(pkg.layout)
+          ? pkg.layout[0]
+          : pkg.layout
 
-          const uniqueVisitors =
-            new Set(
-              views
-                .map(
-                  (row: any) =>
-                    row.visitor_id
-                )
-                .filter(Boolean)
-            ).size
-
-          const uniqueRequestVisitors =
-            new Set(
-              requests
-                .map(
-                  (row: any) =>
-                    row.visitor_id
-                )
-                .filter(Boolean)
-            ).size
-
-          const viewToRequestRate =
-            uniqueVisitors > 0
-              ? Number(
-                  (
-                    uniqueRequestVisitors /
-                    uniqueVisitors *
-                    100
-                  ).toFixed(1)
-                )
-              : 0
-
-          const layout =
-            Array.isArray(pkg.layout)
-              ? pkg.layout[0]
-              : pkg.layout
-
-          return {
-
-            id:
-              pkg.id,
-
-            name:
-              pkg.name,
-
-            slug:
-              pkg.slug,
-
-            layoutName:
-              layout?.name || "",
-
-            layoutLocation:
-              layout?.location || "",
-
-            views:
-              views.length,
-
-            uniqueVisitors,
-
-            requests:
-              requests.length,
-
-            viewToRequestRate,
-
-          }
-
+        return {
+          id: pkg.id,
+          name: pkg.name,
+          slug: pkg.slug,
+          layoutName: layout?.name || "",
+          layoutLocation: layout?.location || "",
+          views: views.length,
+          uniqueVisitors,
+          requests: requests.length,
+          viewToRequestRate,
         }
-      )
+      }
+    )
+
+       // =========================
+    // Daily Trend
+    // =========================
+
+    const eventDates = [
+      ...viewsData.map((row) => row.viewed_at),
+      ...requestsData.map((row) => row.created_at),
+    ]
+      .filter(Boolean)
+      .map((timestamp) => getEventDate(timestamp))
+
+    const firstEventDate =
+      eventDates.length > 0
+        ? eventDates.reduce((earliest, date) =>
+            date < earliest ? date : earliest
+          )
+        : today
+
+    const trendStartDate =
+      startDate && startDate > firstEventDate
+        ? startDate
+        : firstEventDate
+
+    const trend = []
+
+    for (
+      let date = trendStartDate;
+      date <= today;
+      date = addDays(date, 1)
+    ) {
+      const views = viewsData.filter(
+        (row) => getEventDate(row.viewed_at) === date
+      ).length
+
+      const requests = requestsData.filter(
+        (row) => getEventDate(row.created_at) === date
+      ).length
+
+      trend.push({
+        date,
+        views,
+        requests,
+      })
+    }
 
     // =========================
-    // Latest Activity
+    // Latest Request: Unfiltered
     // =========================
 
-    // Latest Request
     const {
       data: latestRequest,
       error: latestRequestError,
@@ -306,12 +456,10 @@ export async function GET() {
       .select(`
         id,
         created_at,
-
         user:users(
           first_name,
           email
         ),
-
         package:packages(
           name,
           slug,
@@ -321,20 +469,18 @@ export async function GET() {
           )
         )
       `)
-      .order(
-        "created_at",
-        {
-          ascending: false,
-        }
-      )
+      .order("created_at", {
+        ascending: false,
+      })
       .limit(1)
       .maybeSingle()
 
-    if (latestRequestError) {
-      throw latestRequestError
-    }
+    if (latestRequestError) throw latestRequestError
 
-    // Latest Package View
+    // =========================
+    // Latest Package View: Unfiltered
+    // =========================
+
     const {
       data: latestPackageView,
       error: latestPackageViewError,
@@ -346,7 +492,6 @@ export async function GET() {
         visitor_id,
         lead_source,
         viewed_at,
-
         package:packages(
           name,
           slug,
@@ -356,12 +501,9 @@ export async function GET() {
           )
         )
       `)
-      .order(
-        "viewed_at",
-        {
-          ascending: false,
-        }
-      )
+      .order("viewed_at", {
+        ascending: false,
+      })
       .limit(1)
       .maybeSingle()
 
@@ -374,46 +516,30 @@ export async function GET() {
     // =========================
 
     return Response.json({
+      period,
 
-      subscribers:
-        subscribers || 0,
+      subscribers: subscribers || 0,
+      users: users || 0,
 
-      users:
-        users || 0,
-
-      packageViews:
-        packageViews || 0,
-
-      proposals:
-        proposals || 0,
+      packageViews: packageViews || 0,
+      proposals: proposals || 0,
 
       uniquePackageVisitors,
-
       uniqueRequestVisitors,
-
       packageToRequestRate,
 
       packagePerformance,
+      trend,
 
-      latestRequest:
-        latestRequest || null,
-
-      latestPackageView:
-        latestPackageView || null,
-
+      latestRequest: latestRequest || null,
+      latestPackageView: latestPackageView || null,
     })
-
   } catch (error: any) {
-
-    console.error(
-      "Dashboard Error:",
-      error
-    )
+    console.error("Dashboard Error:", error)
 
     return Response.json(
       {
-        error:
-          error.message,
+        error: error.message,
       },
       {
         status: 500,
