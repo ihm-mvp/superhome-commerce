@@ -18,7 +18,7 @@ export default function CftFormShell({
       {/* Canton Fair Tours brand header */}
       <div className="mb-5 flex items-center gap-3 border-b border-gray-200 pb-4">
         <img
-          src="/images/CantonFairTours-LOGI.png"
+          src="/images/CantonFairTours-LOGO.png"
           alt="Canton Fair Tours"
           className="h-11 w-auto max-w-[130px] shrink-0 object-contain"
         />
