@@ -2,7 +2,7 @@
 import { useState, type FormEvent } from "react";
 import CftFormShell, { Field, inputClass, optionClass } from "@/app/cft/_components/cft-form-shell";
 import { PHASES, type Phase } from "@/lib/cft/fair-config";
-const ENDPOINT="https://jmduwafyyrmatyptfndy.supabase.co/functions/v1/cft-submit-post-survey";
+const ENDPOINT = "/api/cft/post-survey";
 const highlights=[{value:"canton_fair",label:"Visiting the Canton Fair"},{value:"products_suppliers",label:"Discovering products and suppliers"},{value:"guidance",label:"Guidance and support from the tour team"},{value:"business_connections",label:"Business discussions and connections"},{value:"other_guests",label:"Meeting other participants"},{value:"guangzhou_culture",label:"Guangzhou food and culture"},{value:"shenzhen_extension",label:"Shenzhen extension"},{value:"accommodation_transport",label:"Accommodation and transport"},{value:"other",label:"Other"}];
 const outcomes=[{value:"specific_leads",label:"Found specific products or suppliers to follow up"},{value:"need_more_information",label:"Found opportunities but need more information"},{value:"researching",label:"Still researching and comparing options"},{value:"none_yet",label:"No specific sourcing outcome yet"}];
 const stages=[{value:"ready_quote_sample",label:"Ready to request quotations or samples"},{value:"discussing_suppliers",label:"Discussing requirements with suppliers"},{value:"need_information",label:"Need more product or supplier information"},{value:"comparing",label:"Comparing suppliers or products"},{value:"future_research",label:"Researching for a future project"},{value:"no_current_plan",label:"No current purchasing plan"}];
