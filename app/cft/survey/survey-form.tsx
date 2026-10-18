@@ -14,7 +14,30 @@ export default function SurveyForm({phase}:{phase:Phase}){
  return <CftFormShell phase={phase} title="Post-Tour Survey" description="Tell us about your experience and any sourcing opportunities you would like to follow up."><form onSubmit={submit} className="rounded-2xl border border-gray-200 bg-white p-5 sm:p-7">
  <Field label="Your name" required><input className={inputClass} autoComplete="name" value={respondentName} onChange={e=>setRespondentName(e.target.value)} placeholder="Enter your name" maxLength={120}/></Field>
  <Field label="Email (optional)"><input className={inputClass} type="email" autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="Enter your email if you would like follow-up"/></Field>
- <Field label="1. Overall, how satisfied were you with the tour?" required><div className="space-y-2">{[{value:"1",label:"1 — Very dissatisfied"},{value:"2",label:"2"},{value:"3",label:"3"},{value:"4",label:"4"},{value:"5",label:"5 — Very satisfied"}].map(x=><label key={x.value} className={optionClass}><input className="mt-1 accent-emerald-800" type="radio" name="satisfaction" checked={satisfaction===x.value} onChange={()=>setSatisfaction(x.value)}/><span>{x.label}</span></label>)}</div></Field>
+
+<Field label="1. Overall, how satisfied were you with the tour?" required>
+  <div className="space-y-2">
+    {[
+      { value: "5", label: "5 — Very satisfied" },
+      { value: "4", label: "4" },
+      { value: "3", label: "3" },
+      { value: "2", label: "2" },
+      { value: "1", label: "1 — Very dissatisfied" },
+    ].map((x) => (
+      <label key={x.value} className={optionClass}>
+        <input
+          className="mt-1 accent-emerald-800"
+          type="radio"
+          name="satisfaction"
+          checked={satisfaction === x.value}
+          onChange={() => setSatisfaction(x.value)}
+        />
+        <span>{x.label}</span>
+      </label>
+    ))}
+  </div>
+</Field> 
+
  <Field label="2. Which parts of the tour did you find most valuable? (optional)"><div className="space-y-2">{highlights.map(x=><label key={x.value} className={optionClass}><input className="mt-1 accent-emerald-800" type="checkbox" checked={selectedHighlights.includes(x.value)} onChange={()=>toggle(selectedHighlights,x.value,setSelectedHighlights)}/><span>{x.label}</span></label>)}</div></Field>
  <Field label="3. What is one thing we could improve? (optional)"><textarea className={inputClass} rows={3} maxLength={1000} value={improvement} onChange={e=>setImprovement(e.target.value)} placeholder="Optional feedback"/></Field>
  <Field label="4. Which product categories did you explore or want to follow up? (optional)"><div className="grid gap-2 sm:grid-cols-2">{PHASES[phase].categories.map(c=><label key={c.value} className={optionClass}><input className="mt-1 accent-emerald-800" type="checkbox" checked={categories.includes(c.value)} onChange={()=>toggle(categories,c.value,setCategories)}/><span>{c.label}</span></label>)}</div></Field>
