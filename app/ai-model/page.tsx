@@ -293,16 +293,7 @@ export default function AIModelTestPage() {
             AI Furniture Model Test
           </h1>
 
-          <p className="mt-2 text-sm leading-6 text-gray-600">
-            测试日荣 RR-PC5313 Armchair 的 AI 生成模型在浏览器中的呈现效果。
-            本页面仅用于技术验证，不影响现有产品或套餐功能。
-          </p >
         </header>
-
-        <div className="mb-5 rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-900">
-          <strong>测试目标：</strong>
-          验证模型能否加载、外形是否完整、比例是否合理，以及旋转和缩放是否正常。
-        </div>
 
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
           <ModelViewer
@@ -316,16 +307,6 @@ export default function AIModelTestPage() {
           />
         </div>
 
-        <section className="mt-6 rounded-xl border bg-white p-5">
-          <h2 className="font-semibold text-gray-900">测试记录</h2>
-          <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-6 text-gray-600">
-            <li>模型是否成功加载，是否出现空白或报错。</li>
-            <li>椅背、扶手、坐垫和椅脚的外形是否完整。</li>
-            <li>模型比例及整体形态是否接近日荣实物。</li>
-            <li>拖动、旋转、缩放时是否流畅。</li>
-            <li>GLB 与 OBJ 的材质、颜色和外观有何区别。</li>
-          </ul>
-        </section>
       </div>
     </main>
   );
