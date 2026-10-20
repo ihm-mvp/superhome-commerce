@@ -119,10 +119,10 @@ export default function SupplierLoginPage() {
       <div className="mx-auto w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
         <header className="text-center">
           <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
-            Supplier Portal
+            SMB供应商门户
           </h1>
           <p className="mt-2 text-sm text-gray-600">
-            Submit and manage your furniture products.
+            提交并管理您的产品
           </p >
         </header>
 
@@ -142,7 +142,7 @@ export default function SupplierLoginPage() {
                 : "text-gray-600 hover:text-gray-900"
             }`}
           >
-            Sign in
+            登录
           </button>
 
           <button
@@ -156,20 +156,20 @@ export default function SupplierLoginPage() {
                 : "text-gray-600 hover:text-gray-900"
             }`}
           >
-            Sign up
+            注册
           </button>
         </div>
 
         <div className="mt-6">
           <h2 className="text-lg font-semibold text-gray-900">
             {mode === "signin"
-              ? "Welcome back"
+              ? "欢迎回来"
               : "Create your supplier account"}
           </h2>
 
      <p className="mt-1 text-sm text-gray-600">
             {mode === "signin"
-              ? "Sign in to continue to your product submissions."
+              ? "请登录以继续进行产品提交"
               : "Register your company to submit products for review."}
           </p >
         </div>
@@ -185,7 +185,7 @@ export default function SupplierLoginPage() {
                   htmlFor="companyName"
                   className="mb-1.5 block text-sm font-medium text-gray-700"
                 >
-                  Company / supplier name
+                  公司 / 供应商 名称
                 </label>
                 <input
                   id="companyName"
@@ -205,7 +205,7 @@ export default function SupplierLoginPage() {
                   htmlFor="contactName"
                   className="mb-1.5 block text-sm font-medium text-gray-700"
                 >
-                  Contact name
+                  联系人姓名
                 </label>
                 <input
                   id="contactName"
@@ -227,7 +227,7 @@ export default function SupplierLoginPage() {
               htmlFor="email"
               className="mb-1.5 block text-sm font-medium text-gray-700"
             >
-              Email address
+              电子邮箱
             </label>
             <input
               id="email"
@@ -247,7 +247,7 @@ export default function SupplierLoginPage() {
               htmlFor="password"
               className="mb-1.5 block text-sm font-medium text-gray-700"
             >
-              Password
+              密码
             </label>
             <input
               id="password"
@@ -279,8 +279,8 @@ export default function SupplierLoginPage() {
                 ? "Signing in..."
                 : "Creating account..."
               : mode === "signin"
-                ? "Sign in"
-                : "Create account"}
+                ? "登录"
+                : "创建账号"}
           </button>
         </form>
 
@@ -304,8 +304,8 @@ export default function SupplierLoginPage() {
 
         <p className="mt-6 text-center text-xs leading-5 text-gray-500">
           {mode === "signin"
-            ? "New to the Supplier Portal? Select Sign up above."
-            : "Already have an account? Select Sign in above."}
+            ? "初次使用供应商门户？请选择上方的“注册”"
+            : "已有账户？请选择上方的“登录”"}
         </p >
       </div>
     </main>
