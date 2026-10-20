@@ -23,20 +23,32 @@ export async function POST(request: NextRequest) {
     if (!anonKey) missing.push("NEXT_PUBLIC_SUPABASE_ANON_KEY");
     if (!serviceKey) missing.push("SUPABASE_SERVICE_ROLE_KEY");
 
-    if (missing.length > 0) {
-      console.error(
-        "Supplier account setup: missing environment variables",
-        missing
-      );
+if (missing.length > 0) {
+  const diagnostics = {
+    missing,
+    vercelEnv: process.env.VERCEL_ENV ?? null,
+    vercelUrl: process.env.VERCEL_URL ?? null,
+    productionUrl:
+      process.env.VERCEL_PROJECT_PRODUCTION_URL ?? null,
+    serviceKeyPresent:
+      Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY),
+    serviceKeyLength:
+      process.env.SUPABASE_SERVICE_ROLE_KEY?.length ?? 0,
+  };
 
-      return NextResponse.json(
-        {
-          error: "Required environment variables are missing.",
-          missing,
-        },
-        { status: 500 }
-      );
-    }
+  console.error(
+    "Supplier account environment diagnostics:",
+    diagnostics
+  );
+
+  return NextResponse.json(
+    {
+      error: "Required environment variables are missing.",
+      ...diagnostics,
+    },
+    { status: 500 }
+  );
+}
 
     // Narrow the environment variable types after validation.
     const supabaseUrl = url as string;
