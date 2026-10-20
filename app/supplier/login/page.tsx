@@ -101,13 +101,13 @@ export default function SupplierLoginPage() {
       }
 
       setMessage(
-        "Registration successful. Please check your email to confirm your account. After confirmation, return here and sign in."
+        "注册成功，请登录"
       );
     } catch (error) {
       setErrorMessage(
         error instanceof Error
           ? error.message
-          : "Unable to create your account."
+          : "无法生成您的账户"
       );
     } finally {
       setBusy(false);
@@ -119,7 +119,7 @@ export default function SupplierLoginPage() {
       <div className="mx-auto w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
         <header className="text-center">
           <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
-            SMB供应商门户
+            SMB 供应商门户
           </h1>
           <p className="mt-2 text-sm text-gray-600">
             提交并管理您的产品
@@ -164,13 +164,13 @@ export default function SupplierLoginPage() {
           <h2 className="text-lg font-semibold text-gray-900">
             {mode === "signin"
               ? "欢迎回来"
-              : "Create your supplier account"}
+              : "创建您的供应商账户"}
           </h2>
 
      <p className="mt-1 text-sm text-gray-600">
             {mode === "signin"
               ? "请登录以继续进行产品提交"
-              : "Register your company to submit products for review."}
+              : "注册您的公司，以便提交产品以供审核"}
           </p >
         </div>
 
@@ -227,7 +227,7 @@ export default function SupplierLoginPage() {
               htmlFor="email"
               className="mb-1.5 block text-sm font-medium text-gray-700"
             >
-              电子邮箱
+            邮箱
             </label>
             <input
               id="email"
@@ -264,7 +264,7 @@ export default function SupplierLoginPage() {
             />
             {mode === "signup" && (
               <p className="mt-1 text-xs text-gray-500">
-                Use at least 8 characters.
+                至少使用 8 个字符
               </p >
             )}
           </div>
@@ -280,7 +280,7 @@ export default function SupplierLoginPage() {
                 : "Creating account..."
               : mode === "signin"
                 ? "登录"
-                : "创建账号"}
+                : "创建账户"}
           </button>
         </form>
 
