@@ -286,57 +286,7 @@ imageUrls.push(result.url);
       </p >
 
       <form onSubmit={submit} className="mt-6 space-y-6">
-        {/* 1–4：图片上传，严格按指定顺序呈现 */}
-        <section className="space-y-5">
-          <h2 className="text-lg font-semibold">产品图片</h2>
-          <p className="text-sm text-gray-600">
-            每张图片至少 2000px，单张不超过 12 MB。原始文件名无需修改。
-          </p >
 
-          {groups.map((group) => (
-            <div key={group.key} className="rounded-lg border p-4">
-              <h3 className="font-medium">{group.title}</h3>
-              <p className="mt-1 text-sm text-gray-600">
-                {group.description}
-              </p >
-
-              <input
-                className="mt-3 block w-full text-sm"
-                type="file"
-                accept="image/*"
-                multiple={group.max > 1}
-                disabled={busy}
-                onChange={(event) => {
-                  selectImages(group.key, event.target.files);
-                  event.target.value = "";
-                }}
-              />
-
-              {group.files.length > 0 && (
-                <ul className="mt-3 space-y-2 text-sm">
-                  {group.files.map((file, index) => (
-                    <li
-                      key={`${file.name}-${file.size}-${index}`}
-                      className="flex items-center justify-between gap-3"
-                    >
-                      <span className="break-all">
-                        {file.name}
-                      </span>
-                      <button
-                        type="button"
-                        className="shrink-0 text-red-700 underline"
-                        disabled={busy}
-                        onClick={() => removeImage(group.key, index)}
-                      >
-                        移除
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          ))}
-        </section>
         {/* 5：基本信息 */}
         <section className="space-y-4">
           <h2 className="text-lg font-semibold">产品基本信息</h2>
@@ -394,6 +344,58 @@ imageUrls.push(result.url);
               onChange={(e) => setDescription(e.target.value)}
             />
           </label>
+        </section>
+
+                {/* 1–4：图片上传，严格按指定顺序呈现 */}
+        <section className="space-y-5">
+          <h2 className="text-lg font-semibold">产品图片</h2>
+          <p className="text-sm text-gray-600">
+            每张图片至少 2000px，单张不超过 12 MB。原始文件名无需修改。
+          </p >
+
+          {groups.map((group) => (
+            <div key={group.key} className="rounded-lg border p-4">
+              <h3 className="font-medium">{group.title}</h3>
+              <p className="mt-1 text-sm text-gray-600">
+                {group.description}
+              </p >
+
+              <input
+                className="mt-3 block w-full text-sm"
+                type="file"
+                accept="image/*"
+                multiple={group.max > 1}
+                disabled={busy}
+                onChange={(event) => {
+                  selectImages(group.key, event.target.files);
+                  event.target.value = "";
+                }}
+              />
+
+              {group.files.length > 0 && (
+                <ul className="mt-3 space-y-2 text-sm">
+                  {group.files.map((file, index) => (
+                    <li
+                      key={`${file.name}-${file.size}-${index}`}
+                      className="flex items-center justify-between gap-3"
+                    >
+                      <span className="break-all">
+                        {file.name}
+                      </span>
+                      <button
+                        type="button"
+                        className="shrink-0 text-red-700 underline"
+                        disabled={busy}
+                        onClick={() => removeImage(group.key, index)}
+                      >
+                        移除
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
         </section>
 
         <button
