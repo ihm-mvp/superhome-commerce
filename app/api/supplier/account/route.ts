@@ -17,6 +17,14 @@ export async function POST(request: NextRequest) {
     const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
+    console.error("[SUPPLIER-ENV-DIAG]", {
+  vercelEnv: process.env.VERCEL_ENV ?? null,
+  vercelUrl: process.env.VERCEL_URL ?? null,
+  cwd: process.cwd(),
+  serviceKeyPresent: Boolean(serviceKey),
+  serviceKeyLength: serviceKey?.length ?? 0,
+});
+
     const missing: string[] = [];
 
     if (!url) missing.push("NEXT_PUBLIC_SUPABASE_URL");
