@@ -17,23 +17,46 @@ export async function POST(request: NextRequest) {
     const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    if (!url || !anonKey || !serviceKey) {
+    const missing: string[] = [];
+
+    if (!url) missing.push("NEXT_PUBLIC_SUPABASE_URL");
+    if (!anonKey) missing.push("NEXT_PUBLIC_SUPABASE_ANON_KEY");
+    if (!serviceKey) missing.push("SUPABASE_SERVICE_ROLE_KEY");
+
+    if (missing.length > 0) {
+      console.error(
+        "Supplier account setup: missing environment variables",
+        missing
+      );
+
       return NextResponse.json(
-        { error: "Required Supabase environment variables are missing." },
+        {
+          error: "Required environment variables are missing.",
+          missing,
+        },
         { status: 500 }
       );
     }
 
+    // Narrow the environment variable types after validation.
+    const supabaseUrl = url as string;
+    const supabaseAnonKey = anonKey as string;
+    const supabaseServiceKey = serviceKey as string;
+
     // Validate the caller's Supabase Auth session.
-    const userClient = createClient(url, anonKey, {
-      global: {
-        headers: { Authorization: authorization },
-      },
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false,
-      },
-    });
+    const userClient = createClient(
+      supabaseUrl,
+      supabaseAnonKey,
+      {
+        global: {
+          headers: { Authorization: authorization },
+        },
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+        },
+      }
+    );
 
     const {
       data: { user },
@@ -62,27 +85,39 @@ export async function POST(request: NextRequest) {
 
     if (!companyName) {
       return NextResponse.json(
-        { error: "Supplier/company name is missing from the account." },
+        {
+          error:
+            "Supplier/company name is missing from the account.",
+        },
         { status: 400 }
       );
     }
 
-    // Use the service role key only on the server.
-    const admin = createClient(url, serviceKey, {
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false,
-      },
-    });
+    // Service role key is used only on the server.
+    const admin = createClient(
+      supabaseUrl,
+      supabaseServiceKey,
+      {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+        },
+      }
+    );
 
-    // Avoid creating duplicate supplier records for the same Auth user.
-    const { data: existing, error: lookupError } = await admin
+    // Avoid duplicate supplier records for the same Auth user.
+    const {
+      data: existing,
+      error: lookupError,
+    } = await admin
       .from("suppliers")
       .select("id, auth_user_id")
       .eq("auth_user_id", user.id)
       .maybeSingle();
 
-    if (lookupError) throw lookupError;
+    if (lookupError) {
+      throw lookupError;
+    }
 
     if (existing) {
       return NextResponse.json({
@@ -91,7 +126,10 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const { data: supplier, error: insertError } = await admin
+    const {
+      data: supplier,
+      error: insertError,
+    } = await admin
       .from("suppliers")
       .insert({
         name: companyName,
@@ -100,7 +138,9 @@ export async function POST(request: NextRequest) {
       .select("id")
       .single();
 
-    if (insertError) throw insertError;
+    if (insertError) {
+      throw insertError;
+    }
 
     return NextResponse.json(
       {
@@ -109,7 +149,7 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     );
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Supplier account setup failed:", error);
 
     return NextResponse.json(
