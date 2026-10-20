@@ -276,8 +276,8 @@ export default function SupplierLoginPage() {
           >
             {busy
               ? mode === "signin"
-                ? "Signing in..."
-                : "Creating account..."
+                ? "正在登录......"
+                : "正在创建......"
               : mode === "signin"
                 ? "登录"
                 : "创建账户"}
