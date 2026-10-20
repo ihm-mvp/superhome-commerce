@@ -1,32 +1,313 @@
+
 "use client";
 
 import { FormEvent, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
+type Mode = "signin" | "signup";
 
 export default function SupplierLoginPage() {
+  const [mode, setMode] = useState<Mode>("signin");
+  const [companyName, setCompanyName] = useState("");
+  const [contactName, setContactName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [busy, setBusy] = useState(false);
 
-  async function submit(event: FormEvent) {
-    event.preventDefault(); setBusy(true); setMessage("");
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setBusy(false);
-    if (error) { setMessage(error.message); return; }
-    window.location.href = "/supplier/products/new";
+  function switchMode(nextMode: Mode) {
+    setMode(nextMode);
+    setMessage("");
+    setErrorMessage("");
   }
 
-  return <main className="mx-auto max-w-md p-6 sm:p-10">
-    <h1 className="text-2xl font-semibold">Supplier sign in</h1>
-    <p className="mt-2 text-sm text-gray-600">Supplier accounts must be created and linked to a supplier record by the project administrator.</p>
-    <form onSubmit={submit} className="mt-6 space-y-4">
-      <label className="block text-sm">Email<input className="mt-1 w-full rounded border p-3" type="email" required value={email} onChange={e=>setEmail(e.target.value)} autoComplete="username" /></label>
-      <label className="block text-sm">Password<input className="mt-1 w-full rounded border p-3" type="password" required value={password} onChange={e=>setPassword(e.target.value)} autoComplete="current-password" /></label>
-      <button disabled={busy} className="w-full rounded bg-black px-4 py-3 text-white disabled:opacity-50">{busy ? "Signing in…" : "Sign in"}</button>
-    </form>
-    {message && <p role="alert" className="mt-4 text-sm text-red-700">{message}</p>}
-  </main>;
+  async function setupSupplierAccount(accessToken: string) {
+    const response = await fetch("/api/supplier/account", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(
+        result.error || "Unable to set up your supplier profile."
+      );
+    }
+  }
+
+  async function handleSignIn(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setBusy(true);
+    setMessage("");
+    setErrorMessage("");
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+
+      if (error) throw error;
+      if (!data.session) {
+        throw new Error("Login succeeded but no session was returned.");
+      }
+
+      await setupSupplierAccount(data.session.access_token);
+      window.location.href = "/supplier/products/new";
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : "Unable to sign in."
+      );
+      setBusy(false);
+    }
+  }
+
+  async function handleSignUp(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setBusy(true);
+    setMessage("");
+    setErrorMessage("");
+
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+        options: {
+          data: {
+            company_name: companyName.trim(),
+            contact_name: contactName.trim(),
+            account_type: "supplier",
+          },
+          emailRedirectTo: `${window.location.origin}/supplier/login`,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data.session) {
+        await setupSupplierAccount(data.session.access_token);
+        window.location.href = "/supplier/products/new";
+        return;
+      }
+
+      setMessage(
+        "Registration successful. Please check your email to confirm your account. After confirmation, return here and sign in."
+      );
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Unable to create your account."
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <main className="min-h-screen bg-gray-50 px-4 py-10">
+      <div className="mx-auto w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
+        <header className="text-center">
+          <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
+            Supplier Portal
+          </h1>
+          <p className="mt-2 text-sm text-gray-600">
+            Submit and manage your furniture products.
+          </p >
+        </header>
+
+        <div
+          className="mt-7 grid grid-cols-2 rounded-lg bg-gray-100 p-1"
+          role="tablist"
+          aria-label="Supplier account"
+        >
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mode === "signin"}
+            onClick={() => switchMode("signin")}
+            className={`rounded-md px-4 py-2.5 text-sm font-medium transition ${
+              mode === "signin"
+                ? "bg-white text-gray-900 shadow-sm"
+                : "text-gray-600 hover:text-gray-900"
+            }`}
+          >
+            Sign in
+          </button>
+
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mode === "signup"}
+            onClick={() => switchMode("signup")}
+            className={`rounded-md px-4 py-2.5 text-sm font-medium transition ${
+              mode === "signup"
+                ? "bg-white text-gray-900 shadow-sm"
+                : "text-gray-600 hover:text-gray-900"
+            }`}
+          >
+            Sign up
+          </button>
+        </div>
+
+        <div className="mt-6">
+          <h2 className="text-lg font-semibold text-gray-900">
+            {mode === "signin"
+              ? "Welcome back"
+              : "Create your supplier account"}
+          </h2>
+
+     <p className="mt-1 text-sm text-gray-600">
+            {mode === "signin"
+              ? "Sign in to continue to your product submissions."
+              : "Register your company to submit products for review."}
+          </p >
+        </div>
+
+        <form
+          onSubmit={mode === "signin" ? handleSignIn : handleSignUp}
+          className="mt-6 space-y-4"
+        >
+          {mode === "signup" && (
+            <>
+              <div>
+                <label
+                  htmlFor="companyName"
+                  className="mb-1.5 block text-sm font-medium text-gray-700"
+                >
+                  Company / supplier name
+                </label>
+                <input
+                  id="companyName"
+                  name="organization"
+                  type="text"
+                  autoComplete="organization"
+                  required
+                  maxLength={200}
+                  value={companyName}
+                  onChange={(event) => setCompanyName(event.target.value)}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-3 text-sm outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="contactName"
+                  className="mb-1.5 block text-sm font-medium text-gray-700"
+                >
+                  Contact name
+                </label>
+                <input
+                  id="contactName"
+                  name="name"
+                  type="text"
+                  autoComplete="name"
+                  required
+                  maxLength={150}
+                  value={contactName}
+                  onChange={(event) => setContactName(event.target.value)}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-3 text-sm outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
+                />
+              </div>
+            </>
+          )}
+
+          <div>
+            <label
+              htmlFor="email"
+              className="mb-1.5 block text-sm font-medium text-gray-700"
+            >
+              Email address
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              maxLength={254}
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              className="w-full rounded-lg border border-gray-300 px-3 py-3 text-sm outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="password"
+              className="mb-1.5 block text-sm font-medium text-gray-700"
+            >
+              Password
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autoComplete={
+                mode === "signin" ? "current-password" : "new-password"
+              }
+              required
+              minLength={mode === "signup" ? 8 : undefined}
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              className="w-full rounded-lg border border-gray-300 px-3 py-3 text-sm outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
+            />
+            {mode === "signup" && (
+              <p className="mt-1 text-xs text-gray-500">
+                Use at least 8 characters.
+              </p >
+            )}
+          </div>
+
+          <button
+            type="submit"
+            disabled={busy}
+            className="w-full rounded-lg bg-gray-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {busy
+              ? mode === "signin"
+                ? "Signing in..."
+                : "Creating account..."
+              : mode === "signin"
+                ? "Sign in"
+                : "Create account"}
+          </button>
+        </form>
+
+        {message && (
+          <div
+            role="status"
+            className="mt-5 rounded-lg border border-green-200 bg-green-50 p-3 text-sm text-green-800"
+          >
+            {message}
+          </div>
+        )}
+
+        {errorMessage && (
+          <div
+            role="alert"
+            className="mt-5 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700"
+          >
+            {errorMessage}
+          </div>
+        )}
+
+        <p className="mt-6 text-center text-xs leading-5 text-gray-500">
+          {mode === "signin"
+            ? "New to the Supplier Portal? Select Sign up above."
+            : "Already have an account? Select Sign in above."}
+        </p >
+      </div>
+    </main>
+  );
 }
