@@ -39,6 +39,23 @@ type DirectoryRecord = Exhibitor & {
 
 const PAGE_SIZE = 30;
 
+const boothCollator = new Intl.Collator("en", {
+  numeric: true,
+  sensitivity: "base",
+});
+
+function compareBoothNumbers(a: string | null, b: string | null) {
+  const boothA = (a ?? "").replace(/\s+/g, "").trim();
+  const boothB = (b ?? "").replace(/\s+/g, "").trim();
+
+  // 有展位号的记录排在没有展位号的记录前面。
+  if (!boothA && !boothB) return 0;
+  if (!boothA) return 1;
+  if (!boothB) return -1;
+
+  return boothCollator.compare(boothA, boothB);
+}
+
 export default function ExhibitorDirectory() {
   const [records, setRecords] = useState<DirectoryRecord[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -46,7 +63,6 @@ export default function ExhibitorDirectory() {
   const [query, setQuery] = useState("");
   const [phase, setPhase] = useState("all");
   const [areaId, setAreaId] = useState("all");
-  const [boothType, setBoothType] = useState("all");
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -141,17 +157,13 @@ export default function ExhibitorDirectory() {
     return matching.sort((a, b) => a.area_name.localeCompare(b.area_name));
   }, [areas, phase, records]);
 
-  const boothTypes = useMemo(
-    () => Array.from(new Set(records.map((record) => record.booth_type).filter((value): value is string => Boolean(value)))).sort(),
-    [records],
-  );
+const filtered = useMemo(() => {
+  const needle = query.trim().toLocaleLowerCase();
 
-  const filtered = useMemo(() => {
-    const needle = query.trim().toLocaleLowerCase();
-    return records.filter((record) => {
+  return records
+    .filter((record) => {
       if (phase !== "all" && String(record.session.phase) !== phase) return false;
       if (areaId !== "all" && record.area_id !== areaId) return false;
-      if (boothType !== "all" && record.booth_type !== boothType) return false;
       if (!needle) return true;
       return [
         record.company_name_en,
@@ -160,10 +172,14 @@ export default function ExhibitorDirectory() {
         record.booth_number,
         record.area.area_name,
       ].some((value) => value?.toLocaleLowerCase().includes(needle));
-    });
-  }, [records, query, phase, areaId, boothType]);
+    })
+    .sort((a, b) => compareBoothNumbers(
+      a.booth_number,
+      b.booth_number,
+    ));
+}, [records, query, phase, areaId]);
 
-  useEffect(() => setPage(1), [query, phase, areaId, boothType]);
+  useEffect(() => setPage(1), [query, phase, areaId]);
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const visibleRecords = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -281,10 +297,7 @@ export default function ExhibitorDirectory() {
                 <option key={area.id} value={area.id}>{area.area_name}</option>
               ))}
             </FilterSelect>
-            <FilterSelect label="Booth type" value={boothType} onChange={setBoothType}>
-              <option value="all">All booth types</option>
-              {boothTypes.map((type) => <option key={type} value={type}>{type}</option>)}
-            </FilterSelect>
+
           </div>
         </section>
 
@@ -292,10 +305,10 @@ export default function ExhibitorDirectory() {
           <p className="text-sm text-slate-600">
             {loading ? "Loading exhibitors…" : `${filtered.length} exhibitor records found`}
           </p>
-          {(query || phase !== "all" || areaId !== "all" || boothType !== "all") && (
+          {(query || phase !== "all" || areaId !== "all") && (
             <button
               type="button"
-              onClick={() => { setQuery(""); setPhase("all"); setAreaId("all"); setBoothType("all"); }}
+              onClick={() => { setQuery(""); setPhase("all"); setAreaId("all");}}
               className="min-h-10 rounded-lg px-3 text-sm font-semibold text-emerald-800 hover:bg-emerald-50"
             >
               Clear filters
