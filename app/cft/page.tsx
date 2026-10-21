@@ -2,7 +2,9 @@ import Link from "next/link";
 
 import SurveyResults from "@/app/cft/_components/survey-results";
 
-export const metadata = { title: "Canton Fair · October 2026", description: "Canton Fair October 2026 sourcing requests and post-tour survey links." };
+export const metadata = { title: "Canton Fair · October 2026", description: "Canton Fair October 2026 sourcing requests and post-tour survey links.", icons: {
+    icon: "/images/CantonFairTours-LOGO.png",
+  }, };
 
 const cards = [
   { group: "During the tour · Kick-off Breakfast", title: "Sourcing Requests", phase: "Phase 1", href: "/cft/sourcing?phase=phase1" },
