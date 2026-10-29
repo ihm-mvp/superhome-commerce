@@ -128,32 +128,44 @@ export default async function ShopifyTestPage() {
       </div>
 
       <div className="grid gap-10 md:grid-cols-2">
-        <section>
-          {featuredImage ? (
-            <img
-              src={featuredImage.url}
-              alt={featuredImage.altText || product.title}
-              className="w-full rounded-xl object-contain"
-            />
-          ) : (
-            <div className="flex aspect-square items-center justify-center rounded-xl bg-gray-100 text-gray-500">
-              No product image
-            </div>
-          )}
+<section>
+  {featuredImage ? (
+    <button
+      type="button"
+      onClick={() => window.open(featuredImage.url, "_blank")}
+      className="flex w-full cursor-zoom-in items-center justify-center rounded-xl bg-gray-100 p-6"
+    >
+      <img
+        src={featuredImage.url}
+        alt={featuredImage.altText || product.title}
+        className="max-h-[500px] w-full object-contain"
+      />
+    </button>
+  ) : (
+    <div className="flex aspect-square items-center justify-center rounded-xl bg-gray-100 text-gray-500">
+      No product image
+    </div>
+  )}
 
-          {images.length > 1 && (
-            <div className="mt-4 grid grid-cols-4 gap-3">
-              {images.map((image, index) => (
-                <img
-                  key={`${image.url}-${index}`}
-                  src={image.url}
-                  alt={image.altText || `${product.title} ${index + 1}`}
-                  className="w-full rounded-lg border object-contain"
-                />
-              ))}
-            </div>
-          )}
-        </section>
+  {images.length > 1 && (
+    <div className="mt-4 grid grid-cols-4 gap-3">
+      {images.map((image, index) => (
+        <button
+          key={`${image.url}-${index}`}
+          type="button"
+          onClick={() => window.open(image.url, "_blank")}
+          className="cursor-zoom-in rounded-lg border p-1"
+        >
+          <img
+            src={image.url}
+            alt={image.altText || `${product.title} ${index + 1}`}
+            className="h-24 w-full object-contain"
+          />
+        </button>
+      ))}
+    </div>
+  )}
+</section>
 
         <section className="space-y-6">
           <div>
