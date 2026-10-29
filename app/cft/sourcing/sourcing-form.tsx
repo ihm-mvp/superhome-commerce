@@ -75,7 +75,7 @@ export default function SourcingForm({ phase }: { phase: Phase }) {
       }
 
       setMessage(
-        "Thank you! We look forward to welcoming you to Shunde on 3 November.",
+        "Thank you! We look forward to welcoming you on 3 November.",
       );
 
       setName("");
@@ -98,7 +98,7 @@ export default function SourcingForm({ phase }: { phase: Phase }) {
     <CftFormShell
       phase={phase}
       title="Phase 3 Business Visit"
-      description="Join us for an afternoon of business visits in Shunde on 3 November. Tell us a little about your company and the products or opportunities you're interested in exploring."
+      description="Join us for the business visits on 3 November. Tell us a little about your company and the products or opportunities you're interested in exploring."
     >
       <form
         onSubmit={submit}
