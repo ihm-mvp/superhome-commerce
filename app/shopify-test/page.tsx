@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { shopifyQuery } from "@/lib/shopify";
 import ShopifyTestPurchase from "@/components/ShopifyTestPurchase";
+import ProductImages from "@/components/ProductImages";
 
 export const dynamic = "force-dynamic";
 
@@ -45,7 +46,7 @@ type ShopifyProductResult = {
 
 export async function generateMetadata() {
   return {
-    title: "Shopify Test Product | MoveInReady",
+    title: "Smart Home Switch Switch Module KMS1 | MoveInReady",
     robots: {
       index: false,
       follow: false,
@@ -128,43 +129,14 @@ export default async function ShopifyTestPage() {
       </div>
 
       <div className="grid gap-10 md:grid-cols-2">
-<section>
-  {featuredImage ? (
-    <button
-      type="button"
-      onClick={() => window.open(featuredImage.url, "_blank")}
-      className="flex w-full cursor-zoom-in items-center justify-center rounded-xl bg-gray-100 p-6"
-    >
-      <img
-        src={featuredImage.url}
-        alt={featuredImage.altText || product.title}
-        className="max-h-[500px] w-full object-contain"
-      />
-    </button>
-  ) : (
-    <div className="flex aspect-square items-center justify-center rounded-xl bg-gray-100 text-gray-500">
-      No product image
-    </div>
-  )}
 
-  {images.length > 1 && (
-    <div className="mt-4 grid grid-cols-4 gap-3">
-      {images.map((image, index) => (
-        <button
-          key={`${image.url}-${index}`}
-          type="button"
-          onClick={() => window.open(image.url, "_blank")}
-          className="cursor-zoom-in rounded-lg border p-1"
-        >
-          <img
-            src={image.url}
-            alt={image.altText || `${product.title} ${index + 1}`}
-            className="h-24 w-full object-contain"
-          />
-        </button>
-      ))}
-    </div>
-  )}
+<section>
+  <ProductImages
+    images={images.map((image) => ({
+      image_url: image.url,
+      alt_text: image.altText,
+    }))}
+  />
 </section>
 
         <section className="space-y-6">
