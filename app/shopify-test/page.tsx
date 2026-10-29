@@ -46,7 +46,7 @@ type ShopifyProductResult = {
 
 export async function generateMetadata() {
   return {
-    title: "Smart Home Switch Switch Module KMS1 | MoveInReady",
+    title: "Smart Home Switch Module KMS1 | MoveInReady",
     robots: {
       index: false,
       follow: false,
@@ -101,7 +101,7 @@ export default async function ShopifyTestPage() {
     );
   } catch {
     throw new Error(
-      "Unable to load the Shopify test product. Check the server logs."
+      "Unable to load the product. Check the server logs."
     );
   }
 
@@ -122,11 +122,6 @@ export default async function ShopifyTestPage() {
 
   return (
     <main className="max-w-6xl mx-auto px-5 py-10">
-      <div className="mb-8 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
-        <strong>Development test page.</strong> This page uses a product
-        created manually in Shopify. It is separate from MIR&apos;s normal
-        product database and is not intended for public promotion.
-      </div>
 
       <div className="grid gap-10 md:grid-cols-2">
 
@@ -141,17 +136,11 @@ export default async function ShopifyTestPage() {
 
         <section className="space-y-6">
           <div>
-            <p className="mb-2 text-xs uppercase tracking-widest text-gray-500">
-              MoveInReady · Shopify Integration Test
-            </p >
 
             <h1 className="text-3xl font-semibold leading-tight">
               {product.title}
             </h1>
 
-            <p className="mt-2 text-sm text-gray-500">
-              Shopify product handle: {product.handle}
-            </p >
           </div>
 
           <div className="border-t pt-5">
