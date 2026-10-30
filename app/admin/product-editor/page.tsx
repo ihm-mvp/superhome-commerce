@@ -53,6 +53,15 @@ const [
   setKeyword,
 ] = useState("")
 
+const [syncingProductId, setSyncingProductId] =
+  useState<string | null>(null)
+
+const [syncResults, setSyncResults] =
+  useState<Record<string, {
+    success: boolean
+    message: string
+  }>>({})
+
   async function load() {
 
     setLoading(true)
@@ -119,6 +128,84 @@ setCategories(
     )
 
   }
+
+  async function syncToShopify(product: any) {
+  if (syncingProductId) {
+    return
+  }
+
+  const confirmed = window.confirm(
+    `Sync ${product.sku_code} to Shopify?\n\n` +
+    "This will create or update the Shopify product. " +
+    "It will not publish the product."
+  )
+
+  if (!confirmed) {
+    return
+  }
+
+  setSyncingProductId(product.id)
+
+  setSyncResults((prev) => ({
+    ...prev,
+    [product.id]: {
+      success: false,
+      message: "Syncing...",
+    },
+  }))
+
+  try {
+    const response = await fetch(
+      "/api/admin/shopify-sync-product",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          product_id: product.id,
+        }),
+      }
+    )
+
+    const result = await response.json()
+
+    if (!response.ok || !result.success) {
+      throw new Error(
+        result.error || "Shopify sync failed"
+      )
+    }
+
+    setSyncResults((prev) => ({
+      ...prev,
+      [product.id]: {
+        success: true,
+        message:
+          `Synced successfully. Shopify status: ${
+            result.shopify_status || "DRAFT"
+          }`,
+      },
+    }))
+
+    // Refresh the product data to load persisted Shopify fields.
+    await load()
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Unknown error"
+
+    setSyncResults((prev) => ({
+      ...prev,
+      [product.id]: {
+        success: false,
+        message,
+      },
+    }))
+  } finally {
+    setSyncingProductId(null)
+  }
+}
 
   useEffect(() => {
 
@@ -409,23 +496,59 @@ onChange={(e) => {
 
             <div className="border-b pb-3">
 
-<div className="flex justify-between">
+<div className="flex justify-between items-center gap-4">
 
   <div className="font-semibold text-lg">
-
     {product.sku_code}
-
   </div>
 
-  <div className="text-sm text-gray-500">
+  <div className="flex items-center gap-3">
 
-    {product.variants?.length || 0}
+    <div className="text-sm text-gray-500">
+      {product.variants?.length || 0}
+      {" Variants"}
+    </div>
 
-    {" Variants"}
+    <button
+      type="button"
+      onClick={() => syncToShopify(product)}
+      disabled={syncingProductId !== null}
+      className="
+        px-4
+        py-2
+        rounded-lg
+        border
+        border-blue-600
+        text-blue-700
+        hover:bg-blue-50
+        disabled:opacity-50
+        disabled:cursor-not-allowed
+        text-sm
+        font-medium
+      "
+    >
+      {syncingProductId === product.id
+        ? "Syncing..."
+        : "Sync to Shopify"}
+    </button>
 
   </div>
 
 </div>
+
+{syncResults[product.id] && (
+  <div
+    className={`mt-2 text-sm ${
+      syncResults[product.id].success
+        ? "text-green-700"
+        : syncResults[product.id].message === "Syncing..."
+          ? "text-blue-600"
+          : "text-red-600"
+    }`}
+  >
+    {syncResults[product.id].message}
+  </div>
+)}
 
   <div className="text-sm text-gray-500">
 
