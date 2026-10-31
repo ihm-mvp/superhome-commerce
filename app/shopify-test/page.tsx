@@ -12,6 +12,7 @@ type ShopifyProductResult = {
     id: string;
     title: string;
     description: string;
+    descriptionHtml: string;
     handle: string;
     availableForSale: boolean;
     featuredImage: {
@@ -46,7 +47,7 @@ type ShopifyProductResult = {
 
 export async function generateMetadata() {
   return {
-    title: "Smart Home Switch Module KMS1 | MoveInReady",
+    title: "Smart Home Switch Module | MoveInReady",
     robots: {
       index: false,
       follow: false,
@@ -65,6 +66,7 @@ export default async function ShopifyTestPage() {
             id
             title
             description
+            descriptionHtml
             handle
             availableForSale
             featuredImage {
@@ -143,15 +145,48 @@ export default async function ShopifyTestPage() {
 
           </div>
 
-          <div className="border-t pt-5">
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-600">
-              Product Description
-            </h2>
+<div className="border-t pt-5">
+  <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-600">
+    Product Description
+  </h2>
 
-            <p className="whitespace-pre-line leading-relaxed text-gray-700">
-              {product.description || "No description provided."}
-            </p >
-          </div>
+  {product.descriptionHtml?.trim() ? (
+    <div
+      className="
+        product-description
+        leading-relaxed
+        text-gray-700
+        [&_h1]:text-2xl
+        [&_h1]:font-bold
+        [&_h1]:mb-4
+        [&_h2]:text-xl
+        [&_h2]:font-semibold
+        [&_h2]:mb-3
+        [&_h3]:text-lg
+        [&_h3]:font-semibold
+        [&_h3]:mb-2
+        [&_p]:mb-3
+        [&_ol]:list-decimal
+        [&_ol]:pl-6
+        [&_ol]:mb-4
+        [&_ul]:list-disc
+        [&_ul]:pl-6
+        [&_ul]:mb-4
+        [&_li]:pl-1
+        [&_li]:mb-2
+        [&_strong]:font-semibold
+        [&_a]:underline
+      "
+      dangerouslySetInnerHTML={{
+        __html: product.descriptionHtml,
+      }}
+    />
+  ) : (
+    <p className="whitespace-pre-line leading-relaxed text-gray-700">
+      {product.description || "No description provided."}
+    </p >
+  )}
+</div>
 
           <div className="border-t pt-5">
             <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-600">
