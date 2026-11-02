@@ -265,6 +265,7 @@ export async function POST(req: Request) {
       .select(`
         id,
         sku_code,
+        category_id,
         name,
         display_name_en,
         description,
@@ -285,6 +286,31 @@ export async function POST(req: Request) {
     if (!product.sku_code?.trim()) {
       throw new Error("Product SKU is required");
     }
+
+        if (!product.category_id) {
+      throw new Error(
+        "Product category is required before Shopify sync"
+      );
+    }
+
+    const {
+      data: category,
+      error: categoryError,
+    } = await supabase
+      .from("categories")
+      .select("display_name")
+      .eq("id", product.category_id)
+      .single();
+
+    if (categoryError || !category?.display_name?.trim()) {
+      throw new Error(
+        categoryError?.message ||
+          "Category display name is missing"
+      );
+    }
+
+    const shopifyProductType =
+      category.display_name.trim();
 
     const title =
       product.display_name_en?.trim() ||
@@ -407,7 +433,7 @@ export async function POST(req: Request) {
               .replace(/\n/g, "<br>")}</p >`
           : "",
         vendor: "MoveInReady",
-        productType: product.sku_code,
+        productType: shopifyProductType,
         status: "DRAFT",
         productOptions: [
           {
@@ -501,7 +527,7 @@ if (saveProductIdError) {
                     .replace(/\n/g, "<br>")}</p >`
                 : "",
               vendor: "MoveInReady",
-              productType: product.sku_code,
+              productType: shopifyProductType,
             },
           }
         );
