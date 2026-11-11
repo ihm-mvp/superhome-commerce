@@ -14,6 +14,7 @@ type MirVariant = {
   length_mm: number | null;
   height_mm: number | null;
   price_rmb: number | null;
+  retail_price_nzd: number | null;
   shopify_variant_id: string | null;
 };
 
@@ -71,11 +72,16 @@ function variantLabel(variant: MirVariant): string {
 }
 
 function variantPrice(variant: MirVariant): string {
-  const price = Number(variant.price_rmb ?? 0);
+  const price = Number(variant.retail_price_nzd);
 
-  if (!Number.isFinite(price) || price < 0) {
+  if (
+    variant.retail_price_nzd == null ||
+    !Number.isFinite(price) ||
+    price <= 0
+  ) {
     throw new Error(
-      `Invalid price for MIR variant ${variant.id}`
+      `Invalid or missing NZD retail price for MIR variant ${variant.id}. ` +
+      "Please set and save its Individual Retail Price before syncing."
     );
   }
 
@@ -338,6 +344,7 @@ export async function POST(req: Request) {
         length_mm,
         height_mm,
         price_rmb,
+        retail_price_nzd,
         shopify_variant_id
       `)
       .eq("product_id", productId)
@@ -355,6 +362,30 @@ export async function POST(req: Request) {
         "This product has no variants. Sync is cancelled."
       );
     }
+
+        // Validate all NZD retail prices before any Shopify operation.
+    const invalidPriceVariants = variants.filter(
+      (variant) =>
+        variant.retail_price_nzd == null ||
+        !Number.isFinite(Number(variant.retail_price_nzd)) ||
+        Number(variant.retail_price_nzd) <= 0
+    );
+
+    if (invalidPriceVariants.length > 0) {
+      throw new Error(
+        "Shopify sync cancelled. The following variants have no valid NZD retail price: " +
+        invalidPriceVariants
+          .map((variant) => {
+            const label = variantLabel(variant);
+            return `${label} (ID: ${variant.id})`;
+          })
+          .join("; ") +
+        ". Please calculate and save all variant retail prices first."
+      );
+    }
+
+    const labeledVariants =
+      uniqueLabels(variants);
 
     const labeledVariants =
       uniqueLabels(variants);
