@@ -96,7 +96,8 @@ export async function GET(
       product_id,
       config,
       size_label,
-      price_rmb
+      price_rmb,
+      retail_price_nzd
     `)
 
 const {

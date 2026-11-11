@@ -85,6 +85,9 @@ export async function POST(
             price_rmb:
               variant.price_rmb,
 
+            retail_price_nzd:
+              variant.retail_price_nzd
+
           })
           .eq(
             "id",

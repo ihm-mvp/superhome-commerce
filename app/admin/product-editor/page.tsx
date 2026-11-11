@@ -753,6 +753,33 @@ className="
 
                   <div>
 
+  <div>
+  <div className="text-sm font-medium text-green-700">
+    Price NZD
+  </div>
+
+  <input
+    type="number"
+    value={variant.retail_price_nzd ?? ""}
+    onChange={(e) =>
+      updateVariant(
+        product.id,
+        variant.id,
+        "retail_price_nzd",
+        e.target.value === ""
+          ? null
+          : Number(e.target.value)
+      )
+    }
+    className="
+      border
+      p-2
+      bg-green-50
+      font-semibold
+    "
+  />
+</div>
+  
   <div className="text-sm font-medium text-blue-600">
     Display Config English
   </div>
