@@ -66,7 +66,8 @@ export async function GET() {
       length_mm,
       height_mm,
 
-      price_rmb
+      price_rmb,
+      retail_price_nzd
     `)
 
   const {
