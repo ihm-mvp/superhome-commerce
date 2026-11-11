@@ -387,9 +387,6 @@ export async function POST(req: Request) {
     const labeledVariants =
       uniqueLabels(variants);
 
-    const labeledVariants =
-      uniqueLabels(variants);
-
     const {
       data: imagesData,
       error: imagesError,
