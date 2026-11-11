@@ -54,6 +54,10 @@ const [individualRetailPrices, setIndividualRetailPrices] = useState<
   Record<string, number>
 >({})
 
+const [savingVariantId, setSavingVariantId] = useState<string | null>(null)
+
+const [saveMessages, setSaveMessages] = useState<Record<string, string>>({})
+
   const [shippingFactor, setShippingFactor] = useState(1.2)
   const [localCost, setLocalCost] = useState(1000)
   const [marginPercent, setMarginPercent] = useState(10)
@@ -311,6 +315,76 @@ function calculateIndividualPrice(variant: any) {
     finalPrice,
     roundedPrice:
       Math.round(finalPrice / 100) * 100,
+  }
+}
+
+// ===== Save Individual Retail Price =====
+
+async function saveIndividualRetailPrice(variantId: string) {
+  const price = individualRetailPrices[variantId]
+
+  if (!Number.isFinite(price) || price <= 0) {
+    setSaveMessages((prev) => ({
+      ...prev,
+      [variantId]: "Please enter a valid price greater than zero.",
+    }))
+    return
+  }
+
+  setSavingVariantId(variantId)
+
+  setSaveMessages((prev) => ({
+    ...prev,
+    [variantId]: "",
+  }))
+
+  try {
+    const res = await fetch(
+      "/api/admin/product-pricing/save",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          variant_id: variantId,
+          retail_price_nzd: price,
+        }),
+      }
+    )
+
+    const data = await res.json()
+
+    if (!res.ok) {
+      throw new Error(data.error || "Failed to save retail price")
+    }
+
+    setIndividualVariants((prev) =>
+      prev.map((variant) =>
+        variant.id === variantId
+          ? {
+              ...variant,
+              retail_price_nzd: data.variant.retail_price_nzd,
+            }
+          : variant
+      )
+    )
+
+    setSaveMessages((prev) => ({
+      ...prev,
+      [variantId]: "Retail price saved successfully.",
+    }))
+
+  } catch (error) {
+    setSaveMessages((prev) => ({
+      ...prev,
+      [variantId]:
+        error instanceof Error
+          ? error.message
+          : "Failed to save retail price.",
+    }))
+  } finally {
+    setSavingVariantId(null)
   }
 }
 
@@ -591,6 +665,26 @@ function calculateIndividualPrice(variant: any) {
                               }
                               className="w-full border rounded-lg px-3 py-2"
                             />
+
+                                                        <button
+                              type="button"
+                              onClick={() =>
+                                saveIndividualRetailPrice(variant.id)
+                              }
+                              disabled={savingVariantId === variant.id}
+                              className="w-full py-2 bg-black text-white rounded-lg disabled:opacity-50"
+                            >
+                              {savingVariantId === variant.id
+                                ? "Saving..."
+                                : "Save Retail Price"}
+                            </button>
+
+                            {saveMessages[variant.id] && (
+                              <div className="text-sm text-gray-600">
+                                {saveMessages[variant.id]}
+                              </div>
+                            )}
+                            
                           </div>
 
                         </div>
