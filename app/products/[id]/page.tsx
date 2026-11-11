@@ -1,9 +1,59 @@
 import { supabase } from "@/lib/supabase"
+import { shopifyQuery } from "@/lib/shopify"
 import ProductImages from "@/components/ProductImages"
 import { notFound } from "next/navigation"
 
 type Props = {
   params: Promise<{ id: string }>
+}
+
+type ShopifyProductResult = {
+  product: {
+    id: string
+    title: string
+    description: string
+    descriptionHtml: string
+    handle: string
+    availableForSale: boolean
+
+    featuredImage: {
+      url: string
+      altText: string | null
+    } | null
+
+    images: {
+      nodes: {
+        url: string
+        altText: string | null
+      }[]
+    }
+
+    priceRange: {
+      minVariantPrice: {
+        amount: string
+        currencyCode: string
+      }
+    }
+
+    variants: {
+      nodes: {
+        id: string
+        title: string
+        availableForSale: boolean
+        sku: string | null
+
+        selectedOptions: {
+          name: string
+          value: string
+        }[]
+
+        price: {
+          amount: string
+          currencyCode: string
+        }
+      }[]
+    }
+  } | null
 }
 
 // ===== SEO Metadata =====
@@ -76,15 +126,89 @@ export default async function ProductPage({
   const { id } = await params
 
   // ===== Product =====
-  const { data: product } = await supabase
-    .from("products")
-    .select("*")
-    .eq("id", id)
-    .single()
+const { data: product } = await supabase
+  .from("products")
+  .select("*")
+  .eq("id", id)
+  .single()
 
-  if (!product) {
-    return notFound()
-  }
+if (!product) {
+  return notFound()
+}
+
+// ===== Shopify Product =====
+
+if (!product.shopify_product_id) {
+  notFound()
+}
+
+let shopifyData: ShopifyProductResult
+
+try {
+  shopifyData = await shopifyQuery<ShopifyProductResult>(
+    `
+      query GetMIRProduct($id: ID!) {
+        product(id: $id) {
+          id
+          title
+          description
+          descriptionHtml
+          handle
+          availableForSale
+
+          featuredImage {
+            url
+            altText
+          }
+
+          images(first: 20) {
+            nodes {
+              url
+              altText
+            }
+          }
+
+          priceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+
+          variants(first: 100) {
+            nodes {
+              id
+              title
+              availableForSale
+              sku
+
+              selectedOptions {
+                name
+                value
+              }
+
+              price {
+                amount
+                currencyCode
+              }
+            }
+          }
+        }
+      }
+    `,
+    {
+      id: product.shopify_product_id,
+    }
+  )
+} catch {
+  throw new Error("Unable to load Shopify product")
+}
+
+const shopifyProduct = shopifyData.product
+
+if (!shopifyProduct) {
+  notFound()
+}
 
   // ===== Images =====
   const { data: images } = await supabase
