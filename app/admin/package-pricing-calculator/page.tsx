@@ -36,6 +36,24 @@ export default function PackagePricingCalculatorPage() {
 
   // ===== 输入参数 =====
   const [fxRate, setFxRate] = useState(4.0)
+  const [pricingMode, setPricingMode] = useState<
+  "package" | "individual"
+>("package")
+
+// ===== Individual Product Pricing =====
+
+const [individualProducts, setIndividualProducts] = useState<any[]>([])
+
+const [selectedProductId, setSelectedProductId] = useState("")
+
+const [individualVariants, setIndividualVariants] = useState<any[]>([])
+
+const [individualLocalCost, setIndividualLocalCost] = useState(0)
+
+const [individualRetailPrices, setIndividualRetailPrices] = useState<
+  Record<string, number>
+>({})
+
   const [shippingFactor, setShippingFactor] = useState(1.2)
   const [localCost, setLocalCost] = useState(1000)
   const [marginPercent, setMarginPercent] = useState(10)
@@ -70,6 +88,82 @@ const [
     loadPackages()
 
   }, [])
+
+  // ===== Load Individual Products =====
+
+useEffect(() => {
+  async function loadIndividualProducts() {
+    try {
+      const res = await fetch(
+        "/api/admin/product-pricing/products"
+      )
+
+      if (!res.ok) {
+        throw new Error("Failed to load products")
+      }
+
+      const data = await res.json()
+
+      setIndividualProducts(data || [])
+
+    } catch (error) {
+      console.error(
+        "Load individual products error:",
+        error
+      )
+    }
+  }
+
+  loadIndividualProducts()
+}, [])
+
+// ===== Load Individual Product Variants =====
+
+useEffect(() => {
+  async function loadIndividualVariants() {
+    if (!selectedProductId) {
+      setIndividualVariants([])
+      setIndividualRetailPrices({})
+      return
+    }
+
+    try {
+      const res = await fetch(
+        `/api/admin/product-pricing/variants?product_id=${selectedProductId}`
+      )
+
+      if (!res.ok) {
+        throw new Error("Failed to load product variants")
+      }
+
+      const data = await res.json()
+
+      setIndividualVariants(data || [])
+
+      const prices: Record<string, number> = {}
+
+      ;(data || []).forEach((variant: any) => {
+        prices[variant.id] =
+          variant.retail_price_nzd == null
+            ? 0
+            : Number(variant.retail_price_nzd)
+      })
+
+      setIndividualRetailPrices(prices)
+
+    } catch (error) {
+      console.error(
+        "Load individual variants error:",
+        error
+      )
+
+      setIndividualVariants([])
+      setIndividualRetailPrices({})
+    }
+  }
+
+  loadIndividualVariants()
+}, [selectedProductId])
 
   // ===== package detail =====
   useEffect(() => {
@@ -174,6 +268,52 @@ const exwTotalRmb = useMemo(() => {
   const roundedPrice =
     Math.round(finalPrice / 100) * 100
 
+    // ===== Individual Product Pricing Calculation =====
+
+function calculateIndividualPrice(variant: any) {
+  const row = {
+    sku_code: variant.products?.sku_code || "",
+    quantity: 1,
+    exw_price_rmb: Number(variant.price_rmb) || 0,
+    width_mm: variant.width_mm,
+    height_mm: variant.height_mm,
+  }
+
+  const exwRmb = calculateProductExwCost(row)
+
+  const exportCostRmb =
+    exwRmb * (exportFactor - 1)
+
+  const totalChinaCostNzd =
+    (exwRmb + exportCostRmb) / fxRate
+
+  const landedCost =
+    totalChinaCostNzd * shippingFactor
+
+  const subtotal =
+    landedCost + individualLocalCost
+
+  const beforeGst =
+    subtotal / (1 - marginPercent / 100)
+
+  const gstAmount =
+    beforeGst * (gstRate / 100)
+
+  const finalPrice =
+    beforeGst + gstAmount
+
+  return {
+    exwRmb,
+    exportCostRmb,
+    landedCost,
+    beforeGst,
+    gstAmount,
+    finalPrice,
+    roundedPrice:
+      Math.round(finalPrice / 100) * 100,
+  }
+}
+
     useEffect(() => {
 
   setDisplayPrice(
@@ -221,7 +361,257 @@ const exwTotalRmb = useMemo(() => {
 
       </div>
 
-      <div className="grid grid-cols-12 gap-8">
+            {/* ===== PRICING MODE SWITCH ===== */}
+      <div className="flex gap-3 mb-6">
+        <button
+          type="button"
+          onClick={() => setPricingMode("package")}
+          className={`px-4 py-2 rounded border ${
+            pricingMode === "package"
+              ? "bg-blue-600 text-white"
+              : "bg-white text-gray-700"
+          }`}
+        >
+          Package Pricing
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setPricingMode("individual")}
+          className={`px-4 py-2 rounded border ${
+            pricingMode === "individual"
+              ? "bg-blue-600 text-white"
+              : "bg-white text-gray-700"
+          }`}
+        >
+          Individual Product Pricing
+        </button>
+      </div>
+
+      {/* ===== INDIVIDUAL PRODUCT PRICING ===== */}
+      {pricingMode === "individual" && (
+        <div className="space-y-6">
+
+          <div className="grid grid-cols-12 gap-8">
+
+            {/* LEFT: PRODUCT & PRICING INPUTS */}
+            <div className="col-span-3 space-y-6">
+
+              <div className="border rounded-2xl p-5 space-y-4">
+
+                <div className="font-medium">
+                  Select Product
+                </div>
+
+                <select
+                  value={selectedProductId}
+                  onChange={(e) =>
+                    setSelectedProductId(e.target.value)
+                  }
+                  className="w-full border rounded-lg px-3 py-2"
+                >
+                  <option value="">
+                    Select Product
+                  </option>
+
+                  {individualProducts.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.sku_code} · {p.display_name_en || p.name}
+                    </option>
+                  ))}
+                </select>
+
+              </div>
+
+              <div className="border rounded-2xl p-5 space-y-5">
+
+                <div className="font-medium">
+                  Individual Pricing Inputs
+                </div>
+
+                <div className="space-y-2">
+                  <div className="text-sm text-gray-500">
+                    RMB / NZD FX Rate
+                  </div>
+                  <input
+                    type="number"
+                    value={fxRate}
+                    step="0.01"
+                    onChange={(e) => setFxRate(Number(e.target.value))}
+                    className="w-full border rounded-lg px-3 py-2"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <div className="text-sm text-gray-500">
+                    China Export Factor
+                  </div>
+                  <input
+                    type="number"
+                    value={exportFactor}
+                    step="0.01"
+                    onChange={(e) => setExportFactor(Number(e.target.value))}
+                    className="w-full border rounded-lg px-3 py-2"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <div className="text-sm text-gray-500">
+                    Shipping Factor
+                  </div>
+                  <input
+                    type="number"
+                    value={shippingFactor}
+                    step="0.01"
+                    onChange={(e) => setShippingFactor(Number(e.target.value))}
+                    className="w-full border rounded-lg px-3 py-2"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <div className="text-sm text-gray-500">
+                    Individual NZ Local Cost
+                  </div>
+                  <input
+                    type="number"
+                    value={individualLocalCost}
+                    onChange={(e) =>
+                      setIndividualLocalCost(Number(e.target.value))
+                    }
+                    className="w-full border rounded-lg px-3 py-2"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <div className="text-sm text-gray-500">
+                    Margin %
+                  </div>
+                  <input
+                    type="number"
+                    value={marginPercent}
+                    onChange={(e) => setMarginPercent(Number(e.target.value))}
+                    className="w-full border rounded-lg px-3 py-2"
+                  />
+                </div>
+
+                <div className="text-sm text-gray-500">
+                  GST: {gstRate}%
+                </div>
+
+              </div>
+
+            </div>
+
+            {/* RIGHT: VARIANT PRICING */}
+            <div className="col-span-9">
+
+              <div className="border rounded-2xl p-6 space-y-5">
+
+                <div className="font-medium text-lg">
+                  Variant Retail Pricing
+                </div>
+
+                {!selectedProductId ? (
+                  <div className="text-gray-500 py-8 text-center">
+                    Please select a product.
+                  </div>
+                ) : individualVariants.length === 0 ? (
+                  <div className="text-gray-500 py-8 text-center">
+                    No variants found for this product.
+                  </div>
+                ) : (
+
+                  <div className="space-y-5">
+
+                    {individualVariants.map((variant) => {
+                      const calculation =
+                        calculateIndividualPrice(variant)
+
+                      return (
+                        <div
+                          key={variant.id}
+                          className="border rounded-xl p-4 space-y-3"
+                        >
+
+                          <div className="font-medium">
+{variant.display_config_en ||
+                              variant.size_label ||
+                              variant.config ||
+                              "Default"}
+                          </div>
+
+                          <div className="grid grid-cols-3 gap-4 text-sm">
+
+                            <div>
+                              <div className="text-gray-500">
+                                Supplier Cost
+                              </div>
+                              <div>
+                                ¥{Number(variant.price_rmb || 0).toLocaleString()}
+                              </div>
+                            </div>
+
+                            <div>
+                              <div className="text-gray-500">
+                                Suggested Retail Price
+                              </div>
+                              <div className="font-semibold text-lg">
+                                ${calculation.roundedPrice.toLocaleString()}
+                              </div>
+                            </div>
+
+                            <div>
+                              <div className="text-gray-500">
+                                Current Retail Price
+                              </div>
+                              <div className="text-blue-600 font-medium">
+                                {variant.retail_price_nzd == null
+                                  ? "Not set"
+                                  : `$${Number(variant.retail_price_nzd).toLocaleString()}`}
+                              </div>
+                            </div>
+
+                          </div>
+
+                          <div className="space-y-2">
+                            <div className="text-sm text-gray-500">
+                              Confirmed Retail Price (NZD, incl. GST)
+                            </div>
+
+                            <input
+                              type="number"
+                              value={
+                                individualRetailPrices[variant.id] ?? 0
+                              }
+                              onChange={(e) =>
+                                setIndividualRetailPrices((prev) => ({
+                                  ...prev,
+                                  [variant.id]: Number(e.target.value),
+                                }))
+                              }
+                              className="w-full border rounded-lg px-3 py-2"
+                            />
+                          </div>
+
+                        </div>
+                      )
+                    })}
+
+                  </div>
+
+                )}
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      )}
+
+      {pricingMode === "package" && (
+        <div className="grid grid-cols-12 gap-8">
 
         {/* ===== LEFT ===== */}
         <div className="col-span-3 space-y-6">
@@ -651,6 +1041,7 @@ const exwTotalRmb = useMemo(() => {
         </div>
 
       </div>
+      )}
 
     </div>
   )

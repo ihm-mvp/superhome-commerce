@@ -13,6 +13,8 @@ type ProductRow = {
 
   opening_code?: string
 
+  opening_id?: string | null
+
   sku_code: string
 
   quantity: number
@@ -35,7 +37,7 @@ export default function PackagePricingCalculatorPage() {
   // ===== 输入参数 =====
   const [fxRate, setFxRate] = useState(4.0)
   const [shippingFactor, setShippingFactor] = useState(1.2)
-  const [localCost, setLocalCost] = useState(2000)
+  const [localCost, setLocalCost] = useState(1000)
   const [marginPercent, setMarginPercent] = useState(10)
   const [
   displayPrice,
@@ -407,6 +409,26 @@ const exwTotalRmb = useMemo(() => {
 
                           <div>
                             {p.sku_code}
+
+                            {p.opening_code && (
+
+  <div className="text-xs text-gray-500">
+
+    {p.opening_code}
+
+    {" · "}
+
+    {p.width_mm}
+
+    ×
+
+    {p.height_mm}
+
+    mm
+
+  </div>
+
+)}
 
                             <span className="text-gray-400 ml-2">
                               ×{p.quantity}
