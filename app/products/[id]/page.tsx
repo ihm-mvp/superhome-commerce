@@ -1,7 +1,6 @@
 import { supabase } from "@/lib/supabase"
 import { shopifyQuery } from "@/lib/shopify"
 import ProductImages from "@/components/ProductImages"
-// import ShopifyTestPurchase from "@/components/ShopifyTestPurchase"
 import ShopifyProductPurchase from "@/components/ShopifyProductPurchase"
 import { notFound } from "next/navigation"
 
@@ -257,7 +256,7 @@ return (
         {/* ===== Description ===== */}
         <div className="border-t pt-5">
           <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-600">
-            Product Description
+            Choose Your Configuration
           </h2>
 
           {shopifyProduct.descriptionHtml?.trim() ? (
@@ -296,19 +295,6 @@ return (
               {shopifyProduct.description || "No description provided."}
             </p >
           )}
-        </div>
-
-        {/* ===== Product Options ===== */}
-        <div className="border-t pt-5">
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-600">
-            Product Options
-          </h2>
-
-          <p className="text-sm text-gray-700">
-            {shopifyProduct.variants.nodes
-              .map((variant) => variant.title)
-              .join(", ") || "Default variant"}
-          </p >
         </div>
 
         {/* ===== Purchase ===== */}

@@ -204,10 +204,6 @@ export default function ShopifyProductPurchase({
         </p >
       )}
 
-      <p className="text-xs text-gray-500">
-        Checkout and order processing are securely handled by Shopify.
-      </p >
-
     </div>
   );
 }
