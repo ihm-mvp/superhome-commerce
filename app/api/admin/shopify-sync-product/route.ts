@@ -607,7 +607,7 @@ if (!inventoryLocationId) {
           : "",
         vendor: "MoveInReady",
         productType: shopifyProductType,
-        status: "DRAFT",
+        status: "ACTIVE",
         productOptions: [
           {
             name: "Configuration",
