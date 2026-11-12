@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { shopifyProductSyncGraphQL } from "@/lib/shopify-product-sync";
+import { randomUUID } from "node:crypto";
 
 export const dynamic = "force-dynamic";
 
@@ -131,6 +132,32 @@ const PRODUCT_VARIANTS_QUERY = `
   }
 `;
 
+const INVENTORY_VARIANTS_QUERY = `
+  query GetInventoryVariants(
+    $id: ID!,
+    $locationId: ID!
+  ) {
+    product(id: $id) {
+      variants(first: 250) {
+        nodes {
+          id
+          title
+          selectedOptions {
+            name
+            value
+          }
+          inventoryItem {
+            id
+            inventoryLevel(locationId: $locationId) {
+              id
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
 const PRODUCT_CREATE_MUTATION = `
   mutation CreateProduct(
     $product: ProductCreateInput!
@@ -222,6 +249,42 @@ const VARIANTS_UPDATE_MUTATION = `
   }
 `;
 
+const INVENTORY_ACTIVATE_MUTATION = `
+  mutation ActivateInventory(
+    $inventoryItemId: ID!,
+    $locationId: ID!,
+    $available: Int!,
+    $idempotencyKey: String!
+  ) {
+    inventoryActivate(
+      inventoryItemId: $inventoryItemId,
+      locationId: $locationId,
+      available: $available
+    ) @idempotent(key: $idempotencyKey) {
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`;
+
+const INVENTORY_SET_MUTATION = `
+  mutation SetInventory(
+    $input: InventorySetQuantitiesInput!,
+    $idempotencyKey: String!
+  ) {
+    inventorySetQuantities(
+      input: $input
+    ) @idempotent(key: $idempotencyKey) {
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`;
+
 const PRODUCT_BY_ID_QUERY = `
   query GetProduct($id: ID!) {
     product(id: $id) {
@@ -245,6 +308,66 @@ function findVariantByLabel(
   );
 }
 
+async function syncVariantInventory(
+  inventoryItemId: string,
+  locationId: string,
+  quantity: number,
+  isActive: boolean
+) {
+  if (!isActive) {
+    const result =
+      await shopifyProductSyncGraphQL<{
+        inventoryActivate: {
+          userErrors: ShopifyUserError[];
+        };
+      }>(
+        INVENTORY_ACTIVATE_MUTATION,
+        {
+          inventoryItemId,
+          locationId,
+          available: quantity,
+          idempotencyKey: randomUUID(),
+        }
+      );
+
+    throwUserErrors(
+      result.inventoryActivate.userErrors,
+      "Shopify inventory activation failed"
+    );
+
+    return;
+  }
+
+  const result =
+    await shopifyProductSyncGraphQL<{
+      inventorySetQuantities: {
+        userErrors: ShopifyUserError[];
+      };
+    }>(
+      INVENTORY_SET_MUTATION,
+      {
+        input: {
+          name: "available",
+          reason: "correction",
+          quantities: [
+            {
+              inventoryItemId,
+              locationId,
+              quantity,
+              changeFromQuantity: null,
+            },
+          ],
+        },
+        idempotencyKey: randomUUID(),
+      }
+    );
+
+  throwUserErrors(
+    result.inventorySetQuantities.userErrors,
+    "Shopify inventory update failed"
+  );
+}
+
 export async function POST(req: Request) {
   let productId = "";
 
@@ -262,6 +385,28 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
+
+    const inventoryQuantity = body.inventory_quantity;
+
+if (
+  typeof inventoryQuantity !== "number" ||
+  !Number.isInteger(inventoryQuantity) ||
+  inventoryQuantity < 0
+) {
+  return Response.json(
+    { error: "inventory_quantity must be a non-negative integer" },
+    { status: 400 }
+  );
+}
+
+const inventoryLocationId =
+  process.env.SHOPIFY_INVENTORY_LOCATION_ID;
+
+if (!inventoryLocationId) {
+  throw new Error(
+    "Missing SHOPIFY_INVENTORY_LOCATION_ID"
+  );
+}
 
     const {
       data: product,
@@ -755,6 +900,66 @@ for (const [label, variant] of localVariantForLabel) {
       );
     }
 
+    // Reset every variant's available inventory.
+const inventoryResult =
+  await shopifyProductSyncGraphQL<{
+    product: {
+      variants: {
+        nodes: Array<{
+          id: string;
+          title: string;
+          selectedOptions: Array<{
+            name: string;
+            value: string;
+          }>;
+          inventoryItem: {
+            id: string;
+            inventoryLevel: {
+              id: string;
+            } | null;
+          };
+        }>;
+      };
+    } | null;
+  }>(
+    INVENTORY_VARIANTS_QUERY,
+    {
+      id: shopifyProductId,
+      locationId: inventoryLocationId,
+    }
+  );
+
+if (!inventoryResult.product) {
+  throw new Error(
+    "Unable to retrieve Shopify inventory variants"
+  );
+}
+
+for (const { label } of labeledVariants) {
+  const shopifyVariant =
+    inventoryResult.product.variants.nodes.find(
+      (candidate) =>
+        candidate.selectedOptions.some(
+          (option) =>
+            option.name === "Configuration" &&
+            option.value === label
+        )
+    );
+
+  if (!shopifyVariant) {
+    throw new Error(
+      `Unable to find Shopify inventory variant: ${label}`
+    );
+  }
+
+  await syncVariantInventory(
+    shopifyVariant.inventoryItem.id,
+    inventoryLocationId,
+    inventoryQuantity,
+    shopifyVariant.inventoryItem.inventoryLevel !== null
+  );
+}
+
     const { error: finalSaveError } =
       await supabase
         .from("products")
@@ -784,6 +989,8 @@ for (const [label, variant] of localVariantForLabel) {
         finalResult.product.status,
       variants_synced: variants.length,
       images_submitted: imageUrls.length,
+      inventory_quantity_per_variant: inventoryQuantity,
+inventory_location_id: inventoryLocationId,
       message:
         "Product synced to Shopify as an unpublished product.",
     });

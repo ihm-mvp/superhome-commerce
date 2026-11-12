@@ -56,6 +56,9 @@ const [
 const [syncingProductId, setSyncingProductId] =
   useState<string | null>(null)
 
+const [inventoryPerVariant, setInventoryPerVariant] =
+  useState(10)
+
 const [syncResults, setSyncResults] =
   useState<Record<string, {
     success: boolean
@@ -134,11 +137,12 @@ setCategories(
     return
   }
 
-  const confirmed = window.confirm(
-    `Sync ${product.sku_code} to Shopify?\n\n` +
-    "This will create or update the Shopify product. " +
-    "It will not publish the product."
-  )
+const confirmed = window.confirm(
+  `Sync ${product.sku_code} to Shopify?\n\n` +
+  "This will create or update the Shopify product.\n" +
+  `Inventory will be reset to ${inventoryPerVariant} units per variant.\n` +
+  "Inventory location: China Guangdong Warehouse."
+)
 
   if (!confirmed) {
     return
@@ -162,9 +166,10 @@ setCategories(
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          product_id: product.id,
-        }),
+body: JSON.stringify({
+  product_id: product.id,
+  inventory_quantity: inventoryPerVariant,
+}),
       }
     )
 
@@ -356,6 +361,29 @@ setCategories(
 
     <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
 
+      <div className="flex items-center gap-2">
+  <label
+    htmlFor="inventory-per-variant"
+    className="text-sm font-medium text-gray-600"
+  >
+    Inventory / Variant
+  </label>
+
+  <input
+    id="inventory-per-variant"
+    type="number"
+    min="0"
+    step="1"
+    value={inventoryPerVariant}
+    onChange={(e) =>
+      setInventoryPerVariant(
+        Math.max(0, Math.floor(Number(e.target.value)))
+      )
+    }
+    className="border rounded-lg p-2 w-24 font-semibold"
+  />
+</div>
+      
       <div className="flex justify-between items-center">
 
         <h1 className="text-3xl font-semibold">
