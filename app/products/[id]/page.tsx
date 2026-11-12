@@ -1,7 +1,8 @@
 import { supabase } from "@/lib/supabase"
 import { shopifyQuery } from "@/lib/shopify"
 import ProductImages from "@/components/ProductImages"
-import ShopifyTestPurchase from "@/components/ShopifyTestPurchase"
+// import ShopifyTestPurchase from "@/components/ShopifyTestPurchase"
+import ShopifyProductPurchase from "@/components/ShopifyProductPurchase"
 import { notFound } from "next/navigation"
 
 type Props = {
@@ -313,12 +314,9 @@ return (
         {/* ===== Purchase ===== */}
         <div className="border-t pt-5">
 
-{purchaseVariant ? (
-  <ShopifyTestPurchase
-    variantId={purchaseVariant.id}
-    availableForSale={purchaseVariant.availableForSale}
-    price={purchaseVariant.price.amount}
-    currencyCode={purchaseVariant.price.currencyCode}
+{shopifyProduct.variants.nodes.length > 0 ? (
+  <ShopifyProductPurchase
+    variants={shopifyProduct.variants.nodes}
   />
 ) : (
   <p className="text-sm text-red-600">
