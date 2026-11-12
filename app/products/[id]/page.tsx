@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabase"
 import { shopifyQuery } from "@/lib/shopify"
 import ProductImages from "@/components/ProductImages"
+import ShopifyTestPurchase from "@/components/ShopifyTestPurchase"
 import { notFound } from "next/navigation"
 
 type Props = {
@@ -55,6 +56,8 @@ type ShopifyProductResult = {
     }
   } | null
 }
+
+
 
 // ===== SEO Metadata =====
 export async function generateMetadata({
@@ -206,225 +209,128 @@ try {
 
 const shopifyProduct = shopifyData.product
 
+
+
 if (!shopifyProduct) {
   notFound()
 }
 
-  // ===== Images =====
-  const { data: images } = await supabase
-    .from("product_images")
-    .select("image_url, sort_order")
-    .eq("product_id", id)
+const images = shopifyProduct.images.nodes
 
-  const sortedImages = (images || []).sort(
-    (a: any, b: any) =>
-      (a.sort_order || 0) - (b.sort_order || 0)
-  )
+const availableVariant = shopifyProduct.variants.nodes.find(
+  (variant) => variant.availableForSale
+)
 
-  // ===== Supplier =====
-  const { data: supplier } = await supabase
-    .from("suppliers")
-    .select("name")
-    .eq("id", product.supplier_id)
-    .single()
+const purchaseVariant =
+  availableVariant || shopifyProduct.variants.nodes[0]
+  
+return (
+  <main className="max-w-6xl mx-auto px-5 py-10">
 
-  // ===== Category =====
-  const { data: category } = await supabase
-    .from("categories")
-    .select("display_name")
-    .eq("id", product.category_id)
-    .single()
-
-  // ===== Variants =====
-  const { data: variants } = await supabase
-    .from("variants")
-    .select("*")
-    .eq("product_id", id)
-
-  // ===== Product Fields =====
-  const hiddenProductFields = [
-    "id",
-    "image_url",
-    "created_at",
-    "category_id",
-    "supplier_id",
-    "level",
-    "name",
-    "description",
-    "display_name_en",
-    "display_description_en",
-  ]
-
-  const fieldMap: Record<string, string> = {
-    sku_code: "SKU",
-    usage_type: "Usage",
-  }
-
-  const safeProduct = product as Record<string, any>
-
-  const displayFields = Object.entries(safeProduct)
-    .filter(
-      ([key, value]) =>
-        !hiddenProductFields.includes(key) &&
-        value !== null &&
-        value !== ""
-    )
-    .map(([key, value]) => ({
-      label:
-        fieldMap[key] ||
-        key.replace(/_/g, " "),
-      value: String(value),
-    }))
-
-  // ===== Inject Category =====
-  if (category?.display_name) {
-    displayFields.unshift({
-      label: "Category",
-      value: category.display_name,
-    })
-  }
-
-  // ===== Inject Supplier =====
-
-
-  return (
-    <div className="max-w-6xl mx-auto p-8 grid md:grid-cols-2 gap-10">
+    <div className="grid gap-10 md:grid-cols-2">
 
       {/* ===== Left Images ===== */}
-      <div>
-        <ProductImages images={sortedImages} />
-      </div>
+      <section>
+        <ProductImages
+          images={images.map((image) => ({
+            image_url: image.url,
+            alt_text: image.altText,
+          }))}
+        />
+      </section>
 
       {/* ===== Right Content ===== */}
-      <div className="space-y-6">
+      <section className="space-y-6">
 
         {/* ===== Title ===== */}
-        <div className="space-y-2">
-
+        <div>
           <h1 className="text-3xl font-semibold leading-tight">
-            {product.display_name_en || product.sku_code}
+            {shopifyProduct.title}
           </h1>
 
-          <div className="text-sm text-gray-400">
+          <div className="text-sm text-gray-400 mt-2">
             SKU: {product.sku_code}
           </div>
-
         </div>
 
         {/* ===== Description ===== */}
-        {product.display_description_en && (
-          <div className="text-gray-600 whitespace-pre-line leading-relaxed border-t pt-5">
-            {product.display_description_en}
-          </div>
-        )}
-
-{/* ===== Product Details ===== */}
         <div className="border-t pt-5">
-
-          <h2 className="text-sm font-semibold mb-4 text-gray-600 uppercase tracking-wide">
-            Product Details
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-600">
+            Product Description
           </h2>
 
-          <div className="space-y-2">
+          {shopifyProduct.descriptionHtml?.trim() ? (
+            <div
+              className="
+                product-description
+                leading-relaxed
+                text-gray-700
+                [&_h1]:text-2xl
+                [&_h1]:font-bold
+                [&_h1]:mb-4
+                [&_h2]:text-xl
+                [&_h2]:font-semibold
+                [&_h2]:mb-3
+                [&_h3]:text-lg
+                [&_h3]:font-semibold
+                [&_h3]:mb-2
+                [&_p]:mb-3
+                [&_ol]:list-decimal
+                [&_ol]:pl-6
+                [&_ol]:mb-4
+                [&_ul]:list-disc
+                [&_ul]:pl-6
+                [&_ul]:mb-4
+                [&_li]:pl-1
+                [&_li]:mb-2
+                [&_strong]:font-semibold
+                [&_a]:underline
+              "
+              dangerouslySetInnerHTML={{
+                __html: shopifyProduct.descriptionHtml,
+              }}
+            />
+          ) : (
+            <p className="whitespace-pre-line leading-relaxed text-gray-700">
+              {shopifyProduct.description || "No description provided."}
+            </p >
+          )}
+        </div>
 
-            {displayFields.map((item, idx) => (
-              <div
-                key={idx}
-                className="flex justify-between text-sm border-b pb-2 gap-4"
-              >
+        {/* ===== Product Options ===== */}
+        <div className="border-t pt-5">
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-600">
+            Product Options
+          </h2>
 
-                <span className="text-gray-500 whitespace-nowrap">
-                  {item.label}
-                </span>
+          <p className="text-sm text-gray-700">
+            {shopifyProduct.variants.nodes
+              .map((variant) => variant.title)
+              .join(", ") || "Default variant"}
+          </p >
+        </div>
 
-                <span className="text-gray-800 text-right">
-                  {item.value}
-                </span>
+        {/* ===== Purchase ===== */}
+        <div className="border-t pt-5">
 
-              </div>
-            ))}
-
-          </div>
+{purchaseVariant ? (
+  <ShopifyTestPurchase
+    variantId={purchaseVariant.id}
+    availableForSale={purchaseVariant.availableForSale}
+    price={purchaseVariant.price.amount}
+    currencyCode={purchaseVariant.price.currencyCode}
+  />
+) : (
+  <p className="text-sm text-red-600">
+    This product currently has no available variant.
+  </p >
+)}
 
         </div>
 
-        {/* ===== Variants ===== */}
-
-{variants && variants.length > 0 && (
-  <div className="border-t pt-5">
-
-    <h2 className="text-sm font-semibold mb-4 text-gray-600 uppercase tracking-wide">
-      Options
-    </h2>
-
-    <div className="space-y-3">
-
-      {variants.map((v: any) => {
-
-        const hasSize =
-          v.width_mm ||
-          v.length_mm ||
-          v.height_mm
-
-        const hasConfig =
-          v.display_config_en || v.config
-
-        if (!hasSize && !hasConfig) {
-          return null
-        }
-
-        return (
-          <div
-            key={v.id}
-            className="border rounded-xl p-4 text-sm space-y-2 bg-gray-50"
-          >
-
-            {/* ===== Config ===== */}
-            {hasConfig && (
-              <div className="space-y-1">
-
-                <div className="font-medium text-gray-800">
-                  {v.display_config_en || v.config}
-                </div>
-
-                {v.display_note_en && (
-                  <div className="text-xs text-gray-500">
-                    {v.display_note_en}
-                  </div>
-                )}
-
-              </div>
-            )}
-
-            {/* ===== Size ===== */}
-            {hasSize && (
-              <div className="flex justify-between gap-4 text-sm">
-
-                <span className="text-gray-500">
-                  Size
-                </span>
-
-                <span className="text-right">
-                  {v.width_mm || "-"} ×{" "}
-                  {v.length_mm || "-"} ×{" "}
-                  {v.height_mm || "-"} mm
-                </span>
-
-              </div>
-            )}
-
-          </div>
-        )
-      })}
+      </section>
 
     </div>
-
-  </div>
-)}
-
-
-      </div>
-
-    </div>
-  )
+  </main>
+)
 }
