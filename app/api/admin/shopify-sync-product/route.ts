@@ -249,6 +249,27 @@ const VARIANTS_UPDATE_MUTATION = `
   }
 `;
 
+const INVENTORY_TRACKING_MUTATION = `
+  mutation EnableInventoryTracking(
+    $id: ID!,
+    $input: InventoryItemInput!
+  ) {
+    inventoryItemUpdate(
+      id: $id,
+      input: $input
+    ) {
+      inventoryItem {
+        id
+        tracked
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`;
+
 const INVENTORY_ACTIVATE_MUTATION = `
   mutation ActivateInventory(
     $inventoryItemId: ID!,
@@ -952,6 +973,26 @@ for (const { label } of labeledVariants) {
     );
   }
 
+  const trackingResult =
+  await shopifyProductSyncGraphQL<{
+    inventoryItemUpdate: {
+      userErrors: ShopifyUserError[];
+    };
+  }>(
+    INVENTORY_TRACKING_MUTATION,
+    {
+      id: shopifyVariant.inventoryItem.id,
+      input: {
+        tracked: true,
+      },
+    }
+  );
+
+throwUserErrors(
+  trackingResult.inventoryItemUpdate.userErrors,
+  `Enable inventory tracking failed for ${label}`
+);
+  
   await syncVariantInventory(
     shopifyVariant.inventoryItem.id,
     inventoryLocationId,
