@@ -180,6 +180,23 @@ const PRODUCT_CREATE_MUTATION = `
   }
 `;
 
+const PRODUCT_PUBLISH_MUTATION = `
+  mutation PublishProduct(
+    $id: ID!,
+    $input: [PublicationInput!]!
+  ) {
+    publishablePublish(
+      id: $id,
+      input: $input
+    ) {
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`;
+
 const PRODUCT_UPDATE_MUTATION = `
   mutation UpdateProduct(
     $product: ProductUpdateInput!
@@ -1000,6 +1017,42 @@ throwUserErrors(
     shopifyVariant.inventoryItem.inventoryLevel !== null
   );
 }
+
+// Publish product to all configured sales channels.
+const publicationIds = (
+  process.env.SHOPIFY_PUBLICATION_IDS || ""
+)
+  .split(",")
+  .map((id) => id.trim())
+  .filter(Boolean);
+
+if (!publicationIds.length) {
+  throw new Error(
+    "SHOPIFY_PUBLICATION_IDS is not configured."
+  );
+}
+
+const publishResult =
+  await shopifyProductSyncGraphQL<{
+    publishablePublish: {
+      userErrors: ShopifyUserError[];
+    };
+  }>(
+    PRODUCT_PUBLISH_MUTATION,
+    {
+      id: shopifyProductId,
+      input: publicationIds.map(
+        (publicationId) => ({
+          publicationId,
+        })
+      ),
+    }
+  );
+
+throwUserErrors(
+  publishResult.publishablePublish.userErrors,
+  "Shopify product publishing failed"
+);
 
     const { error: finalSaveError } =
       await supabase
