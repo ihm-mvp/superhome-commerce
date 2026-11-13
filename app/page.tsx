@@ -90,10 +90,6 @@ export default async function HomePage() {
 
       <div className="space-y-3">
 
-        <div className="uppercase tracking-[0.15em] text-[10px] md:text-xs text-white/70">
-          MOVEINREADY · HOME PRODUCTS & SOLUTIONS
-        </div>
-
         <h1 className="text-3xl md:text-5xl font-semibold leading-tight">
           Make Your Home<br />
           MoveInReady.
