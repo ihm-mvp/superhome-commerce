@@ -56,6 +56,13 @@ const [
 const [syncingProductId, setSyncingProductId] =
   useState<string | null>(null)
 
+const [batchSyncing, setBatchSyncing] = useState(false)
+
+const [batchProgress, setBatchProgress] = useState({
+  current: 0,
+  total: 0,
+})
+
 const [inventoryPerVariant, setInventoryPerVariant] =
   useState(10)
 
@@ -210,6 +217,110 @@ body: JSON.stringify({
   } finally {
     setSyncingProductId(null)
   }
+}
+
+async function syncAllToShopify() {
+  if (batchSyncing || syncingProductId) return
+
+  if (!data.length) {
+    alert("No products loaded.")
+    return
+  }
+
+  const confirmed = window.confirm(
+    `Sync ALL ${data.length} products to Shopify?\n\n` +
+    `Inventory will be reset to ${inventoryPerVariant} units per variant.\n` +
+    "Inventory location: China Guangdong Warehouse.\n\n" +
+    "Only saved product data will be synced."
+  )
+
+  if (!confirmed) return
+
+  setBatchSyncing(true)
+  setBatchProgress({
+    current: 0,
+    total: data.length,
+  })
+
+  let successCount = 0
+  let failedCount = 0
+
+  for (let i = 0; i < data.length; i++) {
+    const product = data[i]
+
+    setBatchProgress({
+      current: i + 1,
+      total: data.length,
+    })
+
+    setSyncResults((prev) => ({
+      ...prev,
+      [product.id]: {
+        success: false,
+        message: `Syncing (${i + 1}/${data.length})...`,
+      },
+    }))
+
+    try {
+      const response = await fetch(
+        "/api/admin/shopify-sync-product",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            product_id: product.id,
+            inventory_quantity: inventoryPerVariant,
+          }),
+        }
+      )
+
+      const result = await response.json()
+
+      if (!response.ok || !result.success) {
+        throw new Error(
+          result.error || "Shopify sync failed"
+        )
+      }
+
+      successCount++
+
+      setSyncResults((prev) => ({
+        ...prev,
+        [product.id]: {
+          success: true,
+          message: `Synced successfully. Shopify status: ${
+            result.shopify_status || "ACTIVE"
+          }`,
+        },
+      }))
+    } catch (error) {
+      failedCount++
+
+      setSyncResults((prev) => ({
+        ...prev,
+        [product.id]: {
+          success: false,
+          message:
+            error instanceof Error
+              ? error.message
+              : "Unknown error",
+        },
+      }))
+    }
+  }
+
+  setBatchSyncing(false)
+
+  await load()
+
+  alert(
+    `Batch Shopify Sync completed.\n\n` +
+    `Successful: ${successCount}\n` +
+    `Failed: ${failedCount}\n` +
+    `Total: ${data.length}`
+  )
 }
 
   useEffect(() => {
@@ -384,26 +495,50 @@ body: JSON.stringify({
   />
 </div>
       
-      <div className="flex justify-between items-center">
+<div className="flex justify-between items-center">
 
-        <h1 className="text-3xl font-semibold">
-          Product Editor
-        </h1>
+  <h1 className="text-3xl font-semibold">
+    Product Editor
+  </h1>
 
-        <button
-          onClick={save}
-          className="
-            bg-black
-            text-white
-            px-6
-            py-3
-            rounded-lg
-          "
-        >
-          Save
-        </button>
+  <div className="flex items-center gap-3">
 
-      </div>
+    <button
+      type="button"
+      onClick={syncAllToShopify}
+      disabled={batchSyncing || syncingProductId !== null || loading}
+      className="
+        bg-blue-600
+        text-white
+        px-5
+        py-3
+        rounded-lg
+        disabled:opacity-50
+      "
+    >
+      {batchSyncing
+        ? `Syncing ${batchProgress.current}/${batchProgress.total}...`
+        : "Sync All Products to Shopify"}
+    </button>
+
+    <button
+      onClick={save}
+      disabled={batchSyncing}
+      className="
+        bg-black
+        text-white
+        px-6
+        py-3
+        rounded-lg
+        disabled:opacity-50
+      "
+    >
+      Save
+    </button>
+
+  </div>
+
+</div>
 
 <div
   className="
@@ -540,7 +675,7 @@ onChange={(e) => {
     <button
       type="button"
       onClick={() => syncToShopify(product)}
-      disabled={syncingProductId !== null}
+      disabled={syncingProductId !== null || batchSyncing}
       className="
         px-4
         py-2
