@@ -108,7 +108,7 @@ export default async function HomePage() {
   Discover a smarter way to make your home MoveInReady.
 </p >
 
-<div className="flex flex-wrap items-center gap-4">
+<div className="flex flex-wrap gap-4">
 
   <Link
     href="/layouts"
@@ -120,7 +120,7 @@ export default async function HomePage() {
 
   <Link
     href="/packages"
-    className="px-5 py-3 border border-white text-white rounded-lg text-sm"
+    className="px-5 py-3 border border-white text-white rounded-lg text-sm font-medium"
     prefetch={false}
   >
     View Packages
@@ -128,10 +128,10 @@ export default async function HomePage() {
 
   <Link
     href="/products"
-    className="text-white text-sm underline underline-offset-4"
+    className="px-5 py-3 border border-white/70 text-white rounded-lg text-sm font-medium hover:bg-white/10 transition"
     prefetch={false}
   >
-    Shop Home Products →
+    Shop Home Products
   </Link>
 
 </div>
@@ -143,53 +143,46 @@ export default async function HomePage() {
       </div>
 
       {/* ===== TRUST BAR ===== */}
-      <div className="grid md:grid-cols-4 gap-6 text-center text-sm text-gray-600">
+{/* ===== TRUST BAR ===== */}
+<div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center text-sm text-gray-600">
 
-        <div className="space-y-1">
+  <div className="space-y-1">
+    <div className="font-medium">
+      Real NZ Homes
+    </div>
+    <div className="text-xs text-gray-400">
+      Approved showhome layouts
+    </div>
+  </div>
 
-          <div className="font-medium">
-            Real NZ Homes
-          </div>
+  <div className="space-y-1">
+    <div className="font-medium">
+      Complete Packages
+    </div>
+    <div className="text-xs text-gray-400">
+      Curated furnishing solutions
+    </div>
+  </div>
 
-          <div className="text-xs text-gray-400">
-            Approved showhome layouts
-          </div>
+  <div className="space-y-1">
+    <div className="font-medium">
+      Home Products
+    </div>
+    <div className="text-xs text-gray-400">
+      Furniture, smart home and more
+    </div>
+  </div>
 
-        </div>
+  <div className="space-y-1">
+    <div className="font-medium">
+      Move-In Ready
+    </div>
+    <div className="text-xs text-gray-400">
+      Designed before you move in
+    </div>
+  </div>
 
-        <div className="space-y-1">
-
-          <div className="font-medium">
-            Complete Packages
-          </div>
-
-          <div className="text-xs text-gray-400">
-            Curated furnishing solutions
-          </div>
-
-        </div>
-
-<div className="font-medium">
-  Home Products
 </div>
-
-<div className="text-xs text-gray-400">
-  Furniture, smart home and more
-</div>
-
-        <div className="space-y-1">
-
-          <div className="font-medium">
-            Move-In Ready
-          </div>
-
-          <div className="text-xs text-gray-400">
-            Designed before you move in
-          </div>
-
-        </div>
-
-      </div>
 
       {/* ===== LAYOUTS ===== */}
       <div className="space-y-6">
@@ -484,7 +477,7 @@ export default async function HomePage() {
       <div className="h-48 bg-gray-100 overflow-hidden">
 
         <img
-          src="/images/furniture-products.jpg"
+          src="/images/furniture-products.png"
           className="w-full h-full object-cover group-hover:scale-105 transition"
           loading="lazy"
         />
@@ -519,7 +512,7 @@ export default async function HomePage() {
       <div className="h-48 bg-gray-100 overflow-hidden">
 
         <img
-          src="/images/better-life.jpg"
+          src="/images/better-life.png"
           className="w-full h-full object-cover group-hover:scale-105 transition"
           loading="lazy"
         />
