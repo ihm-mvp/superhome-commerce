@@ -3,30 +3,31 @@ import { supabase } from "@/lib/supabase"
 
 export const metadata = {
   title:
-    "MoveInReady | Real NZ Showhomes & Furniture Packages",
+    "MoveInReady | Home Products & Move-In Solutions NZ",
 
   description:
-    "Explore real New Zealand home layouts, approved showhome projects and complete move-in ready furniture packages designed for modern living.",
+    "Make your home MoveInReady. Explore real NZ home layouts, complete furniture packages and individual home products for better everyday living.",
 
   keywords: [
     "MoveInReady",
+    "move in ready solutions NZ",
+    "New Zealand home products",
     "New Zealand furniture packages",
     "Christchurch showhome",
-    "move in ready homes",
+    "Christchurch furniture",
+    "home furniture NZ",
+    "smart home products NZ",
+    "Better Life home products",
     "real NZ home layouts",
-    "showhome furnishing",
-    "modern NZ living",
-    "furniture package NZ",
     "turn key furnishing",
-    "home staging NZ",
   ],
 
   openGraph: {
     title:
-      "MoveInReady | Real NZ Showhomes & Furniture Packages",
+      "MoveInReady | Home Products & Move-In Solutions NZ",
 
     description:
-      "Discover real Christchurch showhome layouts and curated move-in ready furniture packages.",
+      "Explore real NZ home layouts, complete home furnishing solutions and individual home products for better living.",
 
     images: [
       "/images/hero-image.jpg",
@@ -89,42 +90,51 @@ export default async function HomePage() {
 
             <div className="space-y-3">
 
-              <div className="uppercase tracking-[0.2em] text-xs text-white/70">
-                Real NZ Showhomes
-              </div>
+<div className="uppercase tracking-[0.2em] text-xs text-white/70">
+  MOVEINREADY · HOME PRODUCTS & SOLUTIONS
+</div>
 
-              <h1 className="text-4xl md:text-5xl font-semibold leading-tight">
-                Real Homes.<br />
-                Move-In Ready.
-              </h1>
-
-            </div>
-
-            <p className="text-white/80 text-lg leading-relaxed max-w-xl">
-              Explore real New Zealand home layouts and
-              complete furniture packages designed for
-              modern move-in ready living.
-            </p >
-
-            <div className="flex gap-4">
-
-              <Link
-                href="/layouts"
-                className="px-5 py-3 bg-white text-black rounded-lg text-sm font-medium"
-                prefetch={false}
-              >
-                Browse Layouts
-              </Link>
-
-              <Link
-                href="/packages"
-                className="px-5 py-3 border border-white text-white rounded-lg text-sm"
-                prefetch={false}
-              >
-                View Packages
-              </Link>
+<h1 className="text-4xl md:text-5xl font-semibold leading-tight">
+  Make Your Home<br />
+  MoveInReady.
+</h1>
 
             </div>
+
+<p className="text-white/80 text-lg leading-relaxed max-w-xl">
+  From complete home furnishing packages tailored to
+  real New Zealand layouts, to individual home products
+  that make everyday living better.
+  Discover a smarter way to make your home MoveInReady.
+</p >
+
+<div className="flex flex-wrap items-center gap-4">
+
+  <Link
+    href="/layouts"
+    className="px-5 py-3 bg-white text-black rounded-lg text-sm font-medium"
+    prefetch={false}
+  >
+    Explore Home Layouts
+  </Link>
+
+  <Link
+    href="/packages"
+    className="px-5 py-3 border border-white text-white rounded-lg text-sm"
+    prefetch={false}
+  >
+    View Packages
+  </Link>
+
+  <Link
+    href="/products"
+    className="text-white text-sm underline underline-offset-4"
+    prefetch={false}
+  >
+    Shop Home Products →
+  </Link>
+
+</div>
 
           </div>
 
@@ -159,17 +169,13 @@ export default async function HomePage() {
 
         </div>
 
-        <div className="space-y-1">
+<div className="font-medium">
+  Home Products
+</div>
 
-          <div className="font-medium">
-            Transparent Pricing
-          </div>
-
-          <div className="text-xs text-gray-400">
-            Real package pricing
-          </div>
-
-        </div>
+<div className="text-xs text-gray-400">
+  Furniture, smart home and more
+</div>
 
         <div className="space-y-1">
 
@@ -278,13 +284,13 @@ export default async function HomePage() {
 
           <div className="space-y-1">
 
-            <h2 className="text-2xl font-semibold">
-              Move-in Ready Packages
-            </h2>
+<h2 className="text-2xl font-semibold">
+  Complete Home Packages
+</h2>
 
-            <div className="text-sm text-gray-400">
-              Move-in ready furnishing concepts
-            </div>
+<div className="text-sm text-gray-400">
+  Furniture packages designed around real home layouts
+</div>
 
           </div>
 
@@ -334,9 +340,9 @@ export default async function HomePage() {
             {layout.slug.toUpperCase()} · {pkg.name}
           </div>
 
-          <div className="text-sm text-gray-400">
-            Complete furniture package
-          </div>
+<div className="text-sm text-gray-400">
+  Complete home furnishing solution
+</div>
 
         </div>
 
@@ -375,12 +381,12 @@ export default async function HomePage() {
               From Layout to Move-In Ready
             </h2>
 
-            <p className="text-gray-600 leading-relaxed">
-              MoveInReady combines real home layouts,
-              curated furniture packages and staging concepts
-              into a complete furnishing experience for modern
-              New Zealand homes.
-            </p >
+<p className="text-gray-600 leading-relaxed">
+  MoveInReady helps you prepare your home for living.
+  Explore real home layouts and complete furnishing
+  packages, or shop individual products to improve
+  your home and everyday lifestyle.
+</p >
 
           </div>
 
@@ -440,54 +446,132 @@ export default async function HomePage() {
 
       </div>
 
-      {/* ===== PRODUCTS ===== */}
-      <div className="border-t pt-10 flex justify-between items-center">
+{/* ===== PRODUCTS ===== */}
+<div className="border-t pt-12 space-y-6">
 
-        <div>
+  <div className="flex justify-between items-end">
 
-          <h2 className="text-xl font-semibold">
-            Browse Furniture
-          </h2>
+    <div className="space-y-1">
 
-          <p className="text-sm text-gray-500 mt-1">
-            Explore individual furniture products from our curated collection.
-          </p >
+      <h2 className="text-2xl font-semibold">
+        Explore Home Products
+      </h2>
 
-        </div>
+      <p className="text-sm text-gray-500">
+        More ways to make your home MoveInReady.
+      </p >
 
-        <Link
-          href="/products"
-          className="px-4 py-2 border rounded-lg text-sm"
-          prefetch={false}
-        >
-          View Products →
-        </Link>
+    </div>
+
+    <Link
+      href="/products"
+      className="text-sm text-gray-500"
+      prefetch={false}
+    >
+      Shop All Products →
+    </Link>
+
+  </div>
+
+  <div className="grid md:grid-cols-2 gap-6">
+
+    <Link
+      href="/products"
+      className="group border rounded-2xl overflow-hidden hover:shadow-lg transition bg-white"
+      prefetch={false}
+    >
+
+      <div className="h-48 bg-gray-100 overflow-hidden">
+
+        <img
+          src="/images/furniture-products.jpg"
+          className="w-full h-full object-cover group-hover:scale-105 transition"
+          loading="lazy"
+        />
 
       </div>
+
+      <div className="p-5 space-y-2">
+
+        <h3 className="text-xl font-semibold">
+          Furniture
+        </h3>
+
+        <p className="text-sm text-gray-500">
+          Discover individual furniture pieces for
+          comfortable and stylish living.
+        </p >
+
+        <div className="pt-1 text-sm font-medium">
+          Shop Furniture →
+        </div>
+
+      </div>
+
+    </Link>
+
+    <Link
+      href="/products"
+      className="group border rounded-2xl overflow-hidden hover:shadow-lg transition bg-white"
+      prefetch={false}
+    >
+
+      <div className="h-48 bg-gray-100 overflow-hidden">
+
+        <img
+          src="/images/better-life.jpg"
+          className="w-full h-full object-cover group-hover:scale-105 transition"
+          loading="lazy"
+        />
+
+      </div>
+
+      <div className="p-5 space-y-2">
+
+        <h3 className="text-xl font-semibold">
+          Better Life
+        </h3>
+
+        <p className="text-sm text-gray-500">
+          Discover smart home products and practical
+          innovations for better everyday living.
+        </p >
+
+        <div className="pt-1 text-sm font-medium">
+          Explore Better Life →
+        </div>
+
+      </div>
+
+    </Link>
+
+  </div>
+
+</div>
 
       {/* ===== SEO CONTENT ===== */}
       <div className="border-t pt-12">
 
         <div className="max-w-4xl space-y-4 text-gray-600 leading-relaxed">
 
-          <h2 className="text-2xl font-semibold text-black">
-            Real New Zealand Showhomes with Move-In Ready Furniture Packages
-          </h2>
+<h2 className="text-2xl font-semibold text-black">
+  MoveInReady – Home Products & Move-In Solutions in New Zealand
+</h2>
 
-          <p>
-            MoveInReady connects real New Zealand home layouts
-            with curated furniture packages designed for modern
-            move-in ready living. Explore Christchurch showhome
-            projects, furnishing concepts and complete furniture
-            solutions tailored to real homes.
-          </p >
+<p>
+  MoveInReady brings together complete home furnishing
+  solutions and individual home products to help make
+  your home ready for living. Explore real New Zealand
+  home layouts, Christchurch showhome projects and
+  furniture packages designed around modern homes.
+</p >
 
-          <p>
-            From layout planning to furniture selection,
-            MoveInReady demonstrates how real homes can be
-            transformed into fully furnished living spaces
-            before homeowners move in.
-          </p >
+<p>
+  Whether you are furnishing an entire home or looking
+  for individual furniture and smart home products,
+  MoveInReady makes it easier to create a comfortable,
+  functional and enjoyable living space.
+</p >
 
         </div>
 
