@@ -73,74 +73,74 @@ export default async function HomePage() {
   return (
     <div className="max-w-7xl mx-auto px-6 py-10 space-y-20">
 
-      {/* ===== HERO ===== */}
-      <div className="relative rounded-2xl overflow-hidden">
+{/* ===== HERO ===== */}
+<div className="relative rounded-2xl overflow-hidden min-h-[680px] md:min-h-0 md:h-[520px]">
 
-        <img
-          src="/images/hero-image.jpg"
-          className="w-full h-[520px] object-cover"
-          loading="lazy"
-        />
+  <img
+    src="/images/hero-image.jpg"
+    className="absolute inset-0 w-full h-full object-cover"
+    loading="lazy"
+  />
 
-        <div className="absolute inset-0 bg-black/35" />
+  <div className="absolute inset-0 bg-black/35" />
 
-        <div className="absolute inset-0 flex items-center">
+  <div className="relative z-10 flex items-center min-h-[680px] md:min-h-0 md:h-full">
 
-          <div className="px-10 max-w-2xl text-white space-y-6">
+    <div className="px-6 py-10 md:px-10 max-w-2xl text-white space-y-5 md:space-y-6">
 
-            <div className="space-y-3">
+      <div className="space-y-3">
 
-<div className="uppercase tracking-[0.2em] text-xs text-white/70">
-  MOVEINREADY · HOME PRODUCTS & SOLUTIONS
-</div>
-
-<h1 className="text-4xl md:text-5xl font-semibold leading-tight">
-  Make Your Home<br />
-  MoveInReady.
-</h1>
-
-            </div>
-
-<p className="text-white/80 text-lg leading-relaxed max-w-xl">
-  From complete home furnishing packages tailored to
-  real New Zealand layouts, to individual home products
-  that make everyday living better.
-  Discover a smarter way to make your home MoveInReady.
-</p >
-
-<div className="flex flex-wrap gap-4">
-
-  <Link
-    href="/layouts"
-    className="px-5 py-3 bg-white text-black rounded-lg text-sm font-medium"
-    prefetch={false}
-  >
-    Explore Home Layouts
-  </Link>
-
-  <Link
-    href="/packages"
-    className="px-5 py-3 border border-white text-white rounded-lg text-sm font-medium"
-    prefetch={false}
-  >
-    View Packages
-  </Link>
-
-  <Link
-    href="/products"
-    className="px-5 py-3 border border-white/70 text-white rounded-lg text-sm font-medium hover:bg-white/10 transition"
-    prefetch={false}
-  >
-    Shop Home Products
-  </Link>
-
-</div>
-
-          </div>
-
+        <div className="uppercase tracking-[0.15em] text-[10px] md:text-xs text-white/70">
+          MOVEINREADY · HOME PRODUCTS & SOLUTIONS
         </div>
 
+        <h1 className="text-3xl md:text-5xl font-semibold leading-tight">
+          Make Your Home<br />
+          MoveInReady.
+        </h1>
+
       </div>
+
+      <p className="text-base md:text-lg text-white/80 leading-relaxed max-w-xl">
+        From complete home furnishing packages tailored to
+        real New Zealand layouts, to individual home products
+        that make everyday living better.
+        Discover a smarter way to make your home MoveInReady.
+      </p >
+
+      <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
+
+        <Link
+          href="/layouts"
+          className="w-full sm:w-auto text-center px-5 py-3 bg-white text-black rounded-lg text-sm font-medium"
+          prefetch={false}
+        >
+          Explore Home Layouts
+        </Link>
+
+        <Link
+          href="/packages"
+          className="w-full sm:w-auto text-center px-5 py-3 border border-white text-white rounded-lg text-sm font-medium"
+          prefetch={false}
+        >
+          View Packages
+        </Link>
+
+        <Link
+          href="/products"
+          className="w-full sm:w-auto text-center px-5 py-3 border border-white/70 text-white rounded-lg text-sm font-medium hover:bg-white/10 transition"
+          prefetch={false}
+        >
+          Shop Home Products
+        </Link>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
 
       {/* ===== TRUST BAR ===== */}
 {/* ===== TRUST BAR ===== */}
