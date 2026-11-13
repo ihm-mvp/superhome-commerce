@@ -42,6 +42,7 @@ export default async function Page() {
       sku_code,
       level,
       image_url,
+      display_name_en,
       categories (
         name,
         display_name,
@@ -49,7 +50,7 @@ export default async function Page() {
         sort_order
       )
     `)
-    .limit(120)
+    .limit(240)
 
   // ===== 分组 =====
   const grouped: Record<string, any[]> = {}
@@ -123,7 +124,7 @@ export default async function Page() {
         {categories.map((slug) => {
           const meta = categoryMeta[slug]
           const sorted = sortProducts(grouped[slug])
-          const preview = sorted.slice(0, 4)
+          const preview = sorted.slice(0, 2)
 
           return (
             <div key={slug} id={slug} className="space-y-4">
@@ -137,6 +138,7 @@ export default async function Page() {
                 <Link
                   href={`/products/category/${meta.slug}`}
                   className="text-sm text-gray-500"
+                  prefetch={false}
                 >
                   View all →
                 </Link>
@@ -150,18 +152,26 @@ export default async function Page() {
                     key={p.id}
                     href={`/products/${p.id}`}
                     className="block bg-white rounded-xl shadow-sm hover:shadow-md transition overflow-hidden"
+                    prefetch={false}
                   >
                     <div className="h-48 flex items-center justify-center bg-gray-100">
                       <img
                         src={p.image_url}
                         className="max-h-full object-contain"
+                        loading="lazy"
                       />
                     </div>
 
                     <div className="p-3">
-                      <div className="text-sm font-medium">
-                        {p.sku_code}
-                      </div>
+
+<div className="text-sm font-medium">
+  {p.display_name_en || p.sku_code}
+</div>
+
+<div className="text-xs text-gray-400 mt-1">
+  {p.sku_code}
+</div>
+
                     </div>
                   </Link>
                 ))}

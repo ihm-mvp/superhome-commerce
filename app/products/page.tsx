@@ -1,42 +1,43 @@
-import { supabase } from '@/lib/supabase'
-import Link from 'next/link'
+
+import { supabase } from "@/lib/supabase"
+import Link from "next/link"
 
 export const metadata = {
   title:
-    'Furniture Collection NZ | Modern Home Furniture | MoveInReady',
+    "Shop Home Products NZ | Furniture & Better Life | MoveInReady",
 
   description:
-    'Browse curated furniture collections designed for modern New Zealand homes. Explore sofas, dining tables, beds and more matched to real home layouts.',
+    "Discover home products at MoveInReady. Explore furniture, smart home technology and practical products designed to make everyday living better.",
 
   keywords: [
-    'furniture NZ',
-    'modern furniture NZ',
-    'home furniture collection',
-    'living room furniture',
-    'bedroom furniture NZ',
-    'dining furniture NZ',
-    'move in ready furniture',
-    'Christchurch furniture',
+    "MoveInReady",
+    "home products NZ",
+    "furniture NZ",
+    "smart home products NZ",
+    "Better Life",
+    "modern home products",
+    "Christchurch furniture",
+    "New Zealand home products",
   ],
 
   openGraph: {
     title:
-      'Furniture Collection | MoveInReady',
+      "Shop Home Products | MoveInReady",
 
     description:
-      'Curated furniture designed for modern New Zealand homes.',
+      "Explore furniture, smart home products and practical solutions for better everyday living.",
 
     images: [
-      '/images/hero-image.jpg',
+      "/images/hero-image.jpg",
     ],
   },
 }
 
 export default async function Page() {
 
-  // ✅ 仅增加 limit，其他逻辑完全不动
+  // ===== Load Products =====
   const { data: products } = await supabase
-    .from('products')
+    .from("products")
     .select(`
       id,
       sku_code,
@@ -52,7 +53,7 @@ export default async function Page() {
     `)
     .limit(240)
 
-  // ===== 分组 =====
+  // ===== Group Products by Category =====
   const grouped: Record<string, any[]> = {}
   const categoryMeta: Record<string, any> = {}
 
@@ -70,140 +71,142 @@ export default async function Page() {
     grouped[key].push(p)
   })
 
-  // ===== 产品排序（level + sku）=====
+  // ===== Product Sorting =====
   const sortProducts = (arr: any[]) => {
-    return arr.sort((a, b) => {
-      const levelA = Number(a.level?.replace('L', '') || 99)
-      const levelB = Number(b.level?.replace('L', '') || 99)
+    return [...arr].sort((a, b) => {
+      const levelA = Number(a.level?.replace("L", "") || 99)
+      const levelB = Number(b.level?.replace("L", "") || 99)
 
-      if (levelA !== levelB) return levelA - levelB
+      if (levelA !== levelB) {
+        return levelA - levelB
+      }
 
-      return a.sku_code.localeCompare(b.sku_code)
+      return (a.sku_code || "").localeCompare(b.sku_code || "")
     })
   }
 
-  // ===== 分类排序（sort_order）=====
+  // ===== Category Sorting =====
   const categories = Object.keys(grouped).sort((a, b) => {
-    return (categoryMeta[a].sort_order || 99) - (categoryMeta[b].sort_order || 99)
+    return (
+      (categoryMeta[a].sort_order || 99) -
+      (categoryMeta[b].sort_order || 99)
+    )
   })
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-10 space-y-12">
 
       {/* ===== HERO ===== */}
-      <div className="max-w-xl">
+      <div className="max-w-3xl space-y-3">
+
         <h1 className="text-3xl font-semibold">
-          Furniture Collection
+          Shop Home Products
         </h1>
 
-        <p className="text-gray-500 mt-2">
-          Curated furniture designed for real home layouts and complete your living spaces.
+        <p className="text-gray-500 leading-relaxed">
+          Discover furniture, smart home products and
+          practical solutions designed to make everyday
+          living more comfortable, convenient and enjoyable.
         </p >
 
-        {/* ===== 分类导航（新增）===== */}
-        <div className="flex flex-wrap gap-3 mt-6">
+      </div>
+
+      {/* ===== SHOP BY CATEGORY ===== */}
+      <div className="space-y-6">
+
+        <div className="space-y-1">
+
+          <h2 className="text-2xl font-semibold">
+            Shop by Category
+          </h2>
+
+          <p className="text-sm text-gray-400">
+            Explore products across our home and lifestyle collections.
+          </p >
+
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
           {categories.map((slug) => {
+
             const meta = categoryMeta[slug]
+            const sorted = sortProducts(grouped[slug])
+            const representative = sorted[0]
 
             return (
-              <a
+              <Link
                 key={slug}
-                href={`#${slug}`}
-                className="px-4 py-2 text-sm border rounded-lg hover:bg-gray-100 transition"
+                href={`/products/category/${slug}`}
+                className="group block bg-white border rounded-2xl overflow-hidden hover:shadow-lg transition"
+                prefetch={false}
               >
-                {meta.display_name}
-              </a >
+
+                <div className="aspect-square bg-gray-50 overflow-hidden flex items-center justify-center">
+
+                  {representative?.image_url && (
+                    <img
+                      src={representative.image_url}
+                      alt={meta.display_name}
+                      className="w-full h-full object-contain p-4 group-hover:scale-105 transition duration-300"
+                      loading="lazy"
+                    />
+                  )}
+
+                </div>
+
+                <div className="p-4 space-y-2">
+
+                  <h3 className="text-lg font-semibold">
+                    {meta.display_name}
+                  </h3>
+
+                  <div className="text-xs text-gray-400">
+                    {sorted.length} products
+                  </div>
+
+                  <div className="text-sm font-medium pt-1">
+                    Explore Collection →
+                  </div>
+
+                </div>
+
+              </Link>
             )
           })}
+
         </div>
-      </div>
 
-      {/* ===== CATEGORY PREVIEW ===== */}
-      <div className="space-y-12">
-
-        {categories.map((slug) => {
-          const meta = categoryMeta[slug]
-          const sorted = sortProducts(grouped[slug])
-          const preview = sorted.slice(0, 2)
-
-          return (
-            <div key={slug} id={slug} className="space-y-4">
-
-              {/* 分类标题 */}
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold">
-                  {meta.display_name}
-                </h2>
-
-                <Link
-                  href={`/products/category/${meta.slug}`}
-                  className="text-sm text-gray-500"
-                  prefetch={false}
-                >
-                  View all →
-                </Link>
-              </div>
-
-              {/* 产品预览 */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-
-                {preview.map((p) => (
-                  <Link
-                    key={p.id}
-                    href={`/products/${p.id}`}
-                    className="block bg-white rounded-xl shadow-sm hover:shadow-md transition overflow-hidden"
-                    prefetch={false}
-                  >
-                    <div className="h-48 flex items-center justify-center bg-gray-100">
-                      <img
-                        src={p.image_url}
-                        className="max-h-full object-contain"
-                        loading="lazy"
-                      />
-                    </div>
-
-                    <div className="p-3">
-
-<div className="text-sm font-medium">
-  {p.display_name_en || p.sku_code}
-</div>
-
-<div className="text-xs text-gray-400 mt-1">
-  {p.sku_code}
-</div>
-
-                    </div>
-                  </Link>
-                ))}
-
-              </div>
-
-            </div>
-          )
-        })}
+        {categories.length === 0 && (
+          <div className="text-sm text-gray-400">
+            Product collections are coming soon.
+          </div>
+        )}
 
       </div>
 
-      {/* ===== SEO Content ===== */}
+      {/* ===== SEO CONTENT ===== */}
       <div className="border-t pt-10">
 
         <div className="max-w-4xl space-y-4 text-gray-600 leading-relaxed">
 
-          <h2 className="text-2xl font-semibold text-black">
-            Modern Furniture Collections in New Zealand
+<h2 className="text-2xl font-semibold text-black">
+            Home Products for Better Everyday Living
           </h2>
 
           <p>
-            MoveInReady curates furniture collections designed
-            for real New Zealand home layouts. Explore sofas,
-            dining furniture, beds and storage solutions matched
-            to modern homes and move-in ready living.
+            MoveInReady brings together individual home
+            products and complete home furnishing solutions.
+            Explore furniture, smart home technology and
+            practical products selected to make modern
+            living more comfortable and convenient.
           </p >
 
           <p>
-            Our furniture collections help homeowners visualise,
-            compare and select furniture more efficiently across
-            living, dining and bedroom spaces.
+            Whether you are furnishing a new home or looking
+            for individual products to improve your existing
+            living space, discover a simpler way to make
+            your home MoveInReady.
           </p >
 
         </div>
