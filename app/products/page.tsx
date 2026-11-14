@@ -33,10 +33,23 @@ export const metadata = {
   },
 }
 
+
 export default async function Page() {
 
+  // ===== Load Categories =====
+  const { data: categoryData, error: categoryError } = await supabase
+    .from("categories")
+    .select(`
+      id,
+      name,
+      display_name,
+      slug,
+      sort_order
+    `)
+    .order("sort_order", { ascending: true })
+
   // ===== Load Products =====
-  const { data: products } = await supabase
+  const { data: products, error: productError } = await supabase
     .from("products")
     .select(`
       id,
@@ -44,31 +57,29 @@ export default async function Page() {
       level,
       image_url,
       display_name_en,
-      categories (
-        name,
-        display_name,
-        slug,
-        sort_order
-      )
+      category_id
     `)
     .limit(240)
 
-  // ===== Group Products by Category =====
+  if (categoryError) {
+    console.error("Load categories failed:", categoryError)
+  }
+
+  if (productError) {
+    console.error("Load products failed:", productError)
+  }
+
+  // ===== Group Products by Category ID =====
   const grouped: Record<string, any[]> = {}
-  const categoryMeta: Record<string, any> = {}
 
   products?.forEach((p: any) => {
-    const cat = p.categories
-    if (!cat) return
+    if (!p.category_id) return
 
-    const key = cat.slug
-
-    if (!grouped[key]) {
-      grouped[key] = []
-      categoryMeta[key] = cat
+    if (!grouped[p.category_id]) {
+      grouped[p.category_id] = []
     }
 
-    grouped[key].push(p)
+    grouped[p.category_id].push(p)
   })
 
   // ===== Product Sorting =====
@@ -86,11 +97,8 @@ export default async function Page() {
   }
 
   // ===== Category Sorting =====
-  const categories = Object.keys(grouped).sort((a, b) => {
-    return (
-      (categoryMeta[a].sort_order || 99) -
-      (categoryMeta[b].sort_order || 99)
-    )
+  const categories = (categoryData || []).filter((cat: any) => {
+    return (grouped[cat.id] || []).length > 0
   })
 
   return (
@@ -98,7 +106,6 @@ export default async function Page() {
 
       {/* ===== HERO ===== */}
       <div className="max-w-3xl space-y-3">
-
         <h1 className="text-3xl font-semibold">
           Shop Home Products
         </h1>
@@ -108,14 +115,12 @@ export default async function Page() {
           practical solutions designed to make everyday
           living more comfortable, convenient and enjoyable.
         </p >
-
       </div>
 
       {/* ===== SHOP BY CATEGORY ===== */}
       <div className="space-y-6">
 
         <div className="space-y-1">
-
           <h2 className="text-2xl font-semibold">
             Shop by Category
           </h2>
@@ -123,21 +128,19 @@ export default async function Page() {
           <p className="text-sm text-gray-400">
             Explore products across our home and lifestyle collections.
           </p >
-
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
 
-          {categories.map((slug) => {
+          {categories.map((meta: any) => {
 
-            const meta = categoryMeta[slug]
-            const sorted = sortProducts(grouped[slug])
+            const sorted = sortProducts(grouped[meta.id] || [])
             const representative = sorted[0]
 
             return (
               <Link
-                key={slug}
-                href={`/products/category/${slug}`}
+                key={meta.id}
+                href={`/products/category/${meta.slug}`}
                 className="group block bg-white border rounded-2xl overflow-hidden hover:shadow-lg transition"
                 prefetch={false}
               >
@@ -190,7 +193,7 @@ export default async function Page() {
 
         <div className="max-w-4xl space-y-4 text-gray-600 leading-relaxed">
 
-<h2 className="text-2xl font-semibold text-black">
+          <h2 className="text-2xl font-semibold text-black">
             Home Products for Better Everyday Living
           </h2>
 
