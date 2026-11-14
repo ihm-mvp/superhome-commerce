@@ -500,7 +500,7 @@ export default async function HomePage() {
     </Link>
 
     <Link
-      href="/products"
+      href="/products/category/smart-home"
       className="group border rounded-2xl overflow-hidden hover:shadow-lg transition bg-white"
       prefetch={false}
     >
